@@ -13,10 +13,11 @@ const logLevels = process.env.LOG_LEVEL?.split(',') as LogLevel[] || ['log', 'er
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('api/v1');
   app.useLogger(logLevels);
   
   await app.listen(port, host).then(() => {
-    Logger.log(`http://${host}:${port} - server start`);
+    Logger.log(`http://${host}:${port}/api/v1 - server start`);
   });
 }
 bootstrap();

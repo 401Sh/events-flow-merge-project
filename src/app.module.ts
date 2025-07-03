@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
 import { UsersModule } from './users/users.module';
 import { OauthModule } from './auth/oauth/oauth.module';
-import { ClientAuthModule } from './auth/client-auth/client-auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 
@@ -13,7 +12,6 @@ import { HttpModule } from '@nestjs/axios';
     EventsModule,
     UsersModule,
     OauthModule,
-    ClientAuthModule,
     ConfigModule.forRoot({
       isGlobal: true
     }),

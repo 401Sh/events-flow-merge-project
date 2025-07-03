@@ -4,15 +4,15 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class ClientAuthService implements OnModuleInit {
-  private readonly logger = new Logger(ClientAuthService.name);
+export class LeaderClientAuthService implements OnModuleInit {
+  private readonly logger = new Logger(LeaderClientAuthService.name);
 
-  private leaderTokensData: LeaderTokenResponse | null = null;
-  private leaderTokenExpireTimeout: NodeJS.Timeout | null = null;
+  private tokensData: LeaderTokenResponse | null = null;
+  private tokenExpireTimeout: NodeJS.Timeout | null = null;
 
   // обновление токена через 6.5 дней после получения
   // возможно срок действия следует вынести в конфиг
-  private readonly LeaderTokenExpirationTime = 6.5 * 24 * 60 * 60 * 1000;
+  private readonly tokenExpirationTime = 6.5 * 24 * 60 * 60 * 1000;
 
   constructor(
     private readonly configService: ConfigService,
@@ -20,7 +20,7 @@ export class ClientAuthService implements OnModuleInit {
   ) {}
 
 
-  private getLeaderAuthConfig() {
+  private getAuthConfig() {
     return {
       baseURL: this.configService.getOrThrow<string>('LEADER_API_URL'),
       clientId: this.configService.getOrThrow<string>('LEADER_CLIENT_ID'),
@@ -29,23 +29,18 @@ export class ClientAuthService implements OnModuleInit {
   }
   
 
-  getLeaderAccessToken(): string | undefined {
-    if (!this.leaderTokensData) {
+  getAccessToken(): string | undefined {
+    if (!this.tokensData) {
       this.logger.warn('Leader access token is not available');
       return undefined;
     };
 
-    return this.leaderTokensData.access_token;
+    return this.tokensData.access_token;
   }
 
 
-  getTimepadAccessToken() {
-    return this.configService.getOrThrow<string>('TIMEPAD_TOKEN');
-  }
-
-
-  async authenticateLeaderClient(): Promise<LeaderTokenResponse> {
-    const { baseURL, clientId, clientSecret } = this.getLeaderAuthConfig();
+  async authenticateClient(): Promise<LeaderTokenResponse> {
+    const { baseURL, clientId, clientSecret } = this.getAuthConfig();
 
     try {
       const response = await firstValueFrom(
@@ -59,13 +54,13 @@ export class ClientAuthService implements OnModuleInit {
         )
       );
 
-      this.setLeaderTokens(response.data);
+      this.setTokens(response.data);
       this.logger.log('Successfully authenticated into leader-ID and received tokens');
 
       return response.data;
     } catch (error) {
       this.logger.error(
-        'Failed to authenticate leader-id client',
+        'Failed to authenticate leader-ID client',
         error?.response?.data || error.message
       );
       throw new UnauthorizedException('Authentication failed', error);
@@ -73,26 +68,26 @@ export class ClientAuthService implements OnModuleInit {
   }
 
 
-  private setLeaderTokens(data: LeaderTokenResponse) {
-    this.leaderTokensData = data;
+  private setTokens(data: LeaderTokenResponse) {
+    this.tokensData = data;
 
-    if (this.leaderTokenExpireTimeout) {
-      clearTimeout(this.leaderTokenExpireTimeout);
+    if (this.tokenExpireTimeout) {
+      clearTimeout(this.tokenExpireTimeout);
     };
 
-    this.leaderTokenExpireTimeout = setTimeout(() => {
+    this.tokenExpireTimeout = setTimeout(() => {
       this.refreshAccessToken();
-    }, this.LeaderTokenExpirationTime);
+    }, this.tokenExpirationTime);
   }
 
 
   async refreshAccessToken(): Promise<LeaderTokenResponse> {
-    if (!this.leaderTokensData?.refresh_token) {
+    if (!this.tokensData?.refresh_token) {
       this.logger.warn('No refresh token available');
-      return this.authenticateLeaderClient();
+      return this.authenticateClient();
     };
 
-    const { baseURL, clientId, clientSecret } = this.getLeaderAuthConfig();
+    const { baseURL, clientId, clientSecret } = this.getAuthConfig();
 
     try {
       const response = await firstValueFrom(
@@ -102,12 +97,12 @@ export class ClientAuthService implements OnModuleInit {
             client_id: clientId,
             client_secret: clientSecret,
             grant_type: 'refresh_token',
-            refresh_token: this.leaderTokensData.refresh_token,
+            refresh_token: this.tokensData.refresh_token,
           }
         )
       );
 
-      this.setLeaderTokens(response.data);
+      this.setTokens(response.data);
       this.logger.log('Access token refreshed successfully');
 
       return response.data;
@@ -118,14 +113,14 @@ export class ClientAuthService implements OnModuleInit {
       );
 
       // стоит кидать ошибки, если повторная авторизация тоже не удалась
-      return this.authenticateLeaderClient();
+      return this.authenticateClient();
     };
   }
 
   
   async onModuleInit() {
     try {
-      await this.authenticateLeaderClient();
+      await this.authenticateClient();
       this.logger.log('Leader token retrieved on module init');
     } catch (error) {
       this.logger.error('Failed to retrieve leader token on module init', error);

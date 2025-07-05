@@ -9,8 +9,8 @@ export class GetEventListQueryDto {
 
   @IsInt()
   @IsOptional()
-  @Min(1, { message: 'Skip cannot be less than 1' })
-  skip?: number;
+  @Min(0, { message: 'Skip cannot be less than 0' })
+  skipPage?: number;
 
   @IsEnum(SortableFields, {
     message: `sortField must be one of: ${Object.values(SortableFields).join(', ')}`,

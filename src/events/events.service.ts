@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AbstractLeaderRepository } from './repositories/abstract-leader.repository';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { UnifiedEvent } from './interfaces/unified-event.interface';
 import { SortableFields } from './enums/query-event.enum';
 import { AbstractTimepadRepository } from './repositories/abstract-timepad.repository';
+import { EventsListResult } from './interfaces/events-list-result.interface';
 
 @Injectable()
 export class EventsService {
+  private readonly logger = new Logger(EventsService.name);
+
   constructor(
     private readonly leaderRepository: AbstractLeaderRepository,
     private readonly timepadRepository: AbstractTimepadRepository,
@@ -17,24 +20,71 @@ export class EventsService {
   }
 
 
-  async getEventsList(query: GetEventListQueryDto) {
-    const { limit = 1, skip = 1, sortField = SortableFields.StartsAt, sortOrder = 'asc' } = query;
+  async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
+    const {
+      limit = 1,
+      skipPage = 1,
+      sortField = SortableFields.StartsAt,
+      sortOrder = 'asc'
+    } = query;
 
-    // const leaderEvents = this.leaderRepository.getAll(limit, skip);
-    // const timepadEvents = this.timepadRepository.getAll(limit, skip);
-
-    // параллельный запрос данных
-    const [leaderEvents, timepadEvents] = await Promise.all([
-      this.leaderRepository.getAll(limit, skip),
-      this.timepadRepository.getAll(limit, skip),
+    // подсчет данных
+    // крайне важно потом закэшировать ее
+    const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
+      this.leaderRepository.getAmount(),
+      this.timepadRepository.getAmount()
     ]);
 
+    // определение сколько нужно взять и пропустить из каждого источника
+    const batchData = this.getBatchAtSkip(
+      limit,
+      skipPage,
+      leaderEventsAmount,
+      timepadEventsAmount
+    );
+
+    // если ивентов нет
+    if (batchData.isEmpty) {
+      this.logger.debug('No events found');
+
+      return {
+        data: {
+          events: []
+        },
+        meta: {
+          totalEvents: 0,
+          totalPageAmount: 0,
+          currentPage: 0
+        }
+      };
+    };
+
+    // определение количества страниц
+    const totalPageAmount = Math.ceil(
+      (leaderEventsAmount + timepadEventsAmount) / limit
+    );
+
+    // параллельный запрос данных ивентов
+    const [leaderEvents, timepadEvents] = await Promise.all([
+      this.leaderRepository.getAll(batchData.firstAmount, batchData.firstSkip),
+      this.timepadRepository.getAll(batchData.secondAmount, batchData.secondSkip),
+    ]);
+
+    // слияние и сортировка
     const allEvents: UnifiedEvent[] = [...leaderEvents, ...timepadEvents];
     const sortedEvents = this.sortEvents(allEvents, sortField, sortOrder);
 
-    // пока приходиться брать данные с избытком с API
-    // нет что делать, если на одном из API не будет нужного количества
-    return sortedEvents.slice(skip, skip + limit);
+    this.logger.debug('Finded events: ', sortedEvents);
+    return {
+      data: {
+        events: sortedEvents
+      },
+      meta: {
+        totalEvents: leaderEventsAmount + timepadEventsAmount,
+        totalPageAmount: totalPageAmount,
+        currentPage: skipPage + 1
+      }
+    }
   }
 
   
@@ -62,4 +112,84 @@ export class EventsService {
       return 0;
     });
   }
+
+
+  // функция для определения сколько пропустить и взять в каждом из api
+  // в данный момент лучшее, что я придумал
+  private getBatchAtSkip(
+    limit: number,
+    skipPage: number,
+    api1Total: number,
+    api2Total: number
+  ) {
+    let rest1 = api1Total;
+    let rest2 = api2Total;
+    let firstSkip = 0;
+    let secondSkip = 0;
+  
+    for (let i = 0; i < skipPage; i++) {
+      let need = limit;
+  
+      let take1 = Math.min(Math.ceil(limit / 2), rest1);
+      need -= take1;
+  
+      let take2 = Math.min(need, rest2);
+      need -= take2;
+  
+      // добор
+      if (need > 0 && rest1 - take1 > 0) {
+        const extra = Math.min(need, rest1 - take1);
+        take1 += extra;
+        need -= extra;
+      } else if (need > 0 && rest2 - take2 > 0) {
+        const extra = Math.min(need, rest2 - take2);
+        take2 += extra;
+        need -= extra;
+      };
+  
+      rest1 -= take1;
+      rest2 -= take2;
+      firstSkip += take1;
+      secondSkip += take2;
+    };
+  
+    // на случай, если элементы кончились
+    if (rest1 === 0 && rest2 === 0) {
+      return {
+        firstSkip,
+        firstAmount: 0,
+        secondSkip,
+        secondAmount: 0,
+        isEmpty: true,
+      };
+    };
+  
+    // рассчет страницы
+    let need = limit;
+  
+    let take1 = Math.min(Math.ceil(limit / 2), rest1);
+    need -= take1;
+  
+    let take2 = Math.min(need, rest2);
+    need -= take2;
+  
+    if (need > 0 && rest1 - take1 > 0) {
+      const extra = Math.min(need, rest1 - take1);
+      take1 += extra;
+      need -= extra;
+    } else if (need > 0 && rest2 - take2 > 0) {
+      const extra = Math.min(need, rest2 - take2);
+      take2 += extra;
+      need -= extra;
+    };
+  
+    return {
+      firstSkip,
+      firstAmount: take1,
+      secondSkip,
+      secondAmount: take2,
+      isEmpty: take1 + take2 === 0
+    };
+  }
+  
 }

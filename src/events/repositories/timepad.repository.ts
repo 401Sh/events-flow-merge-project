@@ -61,4 +61,41 @@ export class TimepadRepository extends AbstractTimepadRepository {
   async getOne(id: number): Promise<TimepadData | undefined> {
     return undefined;
   }
+
+  async getAmount(): Promise<number> {
+    const token = this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL')
+    const url = `${baseUrl}/events?limit=1`;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+      );
+
+      const amount = response.data.total || [];
+      
+      this.logger.debug('Timepad events amount recieved successfully');
+
+      return amount;
+    } catch (error) {
+      this.logger.warn(
+        'Failed to get Timepad events amount',
+        error?.response?.data || error.message,
+      );
+
+      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+      throw new HttpException(
+        {
+          message: 'Timepad events amount get request failed',
+          details: error?.response?.data || error.message,
+        },
+        status
+      );
+    };
+  }
 }

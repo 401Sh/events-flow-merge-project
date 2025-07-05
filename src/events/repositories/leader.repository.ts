@@ -63,4 +63,41 @@ export class LeaderRepository extends AbstractLeaderRepository {
   async getOne(id: number): Promise<LeaderData | undefined> {
     return undefined;
   }
+
+  async getAmount(): Promise<number> {
+    const token = this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL')
+    const url = `${baseUrl}/events/search?paginationSize=2`;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+      );
+
+      const amount = response.data.meta.totalCount || [];
+      
+      this.logger.debug('Leader events amount recieved successfully');
+
+      return amount;
+    } catch (error) {
+      this.logger.warn(
+        'Failed to get Leader events amount',
+        error?.response?.data || error.message,
+      );
+
+      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+      throw new HttpException(
+        {
+          message: 'Leader events amount get request failed',
+          details: error?.response?.data || error.message,
+        },
+        status
+      );
+    };
+  }
 }

@@ -1,19 +1,30 @@
 import { parse, formatISO } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
-import { UnifiedEvent } from '../interfaces/unified-event.interface';
 import { EventAPISource } from '../enums/event-source.enum';
 import { EventThemes } from '../interfaces/event-themes.interface';
 import { EventLocation } from '../interfaces/event-location.interface';
+import { LeaderData } from '../interfaces/leader-data.interface';
 
-// временная функция для приведения к одному формату времени с timepad
-function toIso(dateStr: string, tz: string): string {
-  // пример dateStr: "2021-04-29 10:00:00", tz: "+03:00"
-  const parsed = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
-  const utc = fromZonedTime(parsed, tz);
-  return formatISO(utc);
+/**
+ * Converts a local date with time zone offset into ISO 8601 UTC format.
+ * 
+ * @param dateStr - date string, e.g. "2024-05-28 00:10:43"
+ * @param tzOffset - time zone offset, e.g. "+03:00"
+ * @returns a string in UTC ISO format: "2024-05-27T21:10:43Z"
+ */
+export function toIso(dateStr: string, tzOffset: string): string {
+  // парсинг строки как локальное время (без временной зоны)
+  const localDate = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
+  // localeDate в UTC
+  const utcDate = fromZonedTime(localDate, tzOffset);
+  // UTC в ISO 8601 с Z (UTC)
+  const final_date = formatISO(utcDate, { representation: 'complete' });
+
+  return final_date
 }
 
-export function mapLeader(raw: any): UnifiedEvent {
+
+export function mapLeader(raw: any): LeaderData {
   const tz = raw.timezone?.value || '+03:00';
 
   // извлечь короткое описание из JSON
@@ -33,7 +44,7 @@ export function mapLeader(raw: any): UnifiedEvent {
     (t: EventThemes) => ({ id: t.id, name: t.name })
   );
 
-  const leaderObj: UnifiedEvent = {
+  const leaderObj: LeaderData = {
     id: raw.id,
     title: raw.full_name,
     shortDescription: shortDesc,
@@ -51,8 +62,12 @@ export function mapLeader(raw: any): UnifiedEvent {
 
     location: location,
     tags: tags,
-    
+
     source: EventAPISource.LEADER_ID,
+    specificData: {
+      participantsCount: raw.stat?.participants?.count || 0,
+      participants: raw.stat?.paticipants?.list || []
+    }
   };
   
   return leaderObj;

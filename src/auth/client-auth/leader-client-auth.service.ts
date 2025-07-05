@@ -63,7 +63,12 @@ export class LeaderClientAuthService implements OnModuleInit {
         'Failed to authenticate leader-ID client',
         error?.response?.data || error.message
       );
-      throw new UnauthorizedException('Authentication failed', error);
+
+      throw new UnauthorizedException({
+        message: 'Authentication failed',
+        cause: error,
+        description: error?.response?.data || error.message,
+      });
     };
   }
 

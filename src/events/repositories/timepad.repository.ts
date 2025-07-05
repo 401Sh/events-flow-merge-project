@@ -1,0 +1,64 @@
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { AbstractTimepadRepository } from './abstract-timepad.repository';
+import { TimepadData } from '../interfaces/timepad-data.interface';
+import { HttpService } from '@nestjs/axios';
+import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
+import { firstValueFrom } from 'rxjs';
+import { mapTimepad } from '../api-utils/timepad-map';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class TimepadRepository extends AbstractTimepadRepository {
+  private readonly logger = new Logger(TimepadRepository.name);
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+    private readonly authService: TimepadClientAuthService,
+  ) {
+    super();
+  }
+
+  async getAll(limit: number, skip: number): Promise<TimepadData[]> {
+    const token = this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL')
+    const url = `${baseUrl}/events?limit=${limit}&skip=${skip}`;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+      );
+
+      const rawEvents = response.data.values || [];
+      
+      const mappedEvents = rawEvents.map(mapTimepad);
+      
+      this.logger.debug('Timepad event list recieved successfully');
+
+      return mappedEvents;
+    } catch (error) {
+      this.logger.warn(
+        'Failed to get Timepad event list',
+        error?.response?.data || error.message,
+      );
+
+      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+      throw new HttpException(
+        {
+          message: 'Timepad get request failed',
+          details: error?.response?.data || error.message,
+        },
+        status
+      );
+    };
+  }
+
+  async getOne(id: number): Promise<TimepadData | undefined> {
+    return undefined;
+  }
+}

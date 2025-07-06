@@ -12,9 +12,15 @@ import { TimepadData } from "../interfaces/timepad-data.interface";
  * @param dateStr - date string with timezone offset, e.g. "2050-01-01T00:00:00+0300"
  * @returns a string in UTC ISO format: e.g. "2049-12-31T21:00:00Z"
  */
-export function toIsoFromOffsetString(dateStr: string): string {
-  const date = parseISO(dateStr); // parses with offset correctly
-  return formatISO(date, { representation: 'complete' });
+export function toIsoFromOffsetString(dateStr?: string): string | null {
+  if (!dateStr) return null;
+
+  try {
+    const date = parseISO(dateStr);
+    return formatISO(date, { representation: 'complete' });
+  } catch (e) {
+    return null;
+  }
 }
 
 export function mapTimepad(raw: any): TimepadData {

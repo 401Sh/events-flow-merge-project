@@ -4,7 +4,7 @@ import { SortableFields } from "../enums/query-event.enum";
 export class GetEventListQueryDto {
   @IsInt()
   @IsOptional()
-  @Min(1, { message: 'Limit cannot be less than 1' })
+  @Min(4, { message: 'Limit cannot be less than 4' })
   limit?: number;
 
   @IsInt()

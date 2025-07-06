@@ -29,11 +29,20 @@ export function mapLeader(raw: any): LeaderData {
 
   // извлечь короткое описание из JSON
   let shortDesc: string | null = null;
-  const info = JSON.parse(raw.info);
-  const firstBlock = info.blocks?.[0]?.data?.text ?? '';
+
+  let info: any = null;
+  try {
+    if (raw.info) {
+      info = JSON.parse(raw.info);
+    }
+  } catch (e) {
+    info = null;
+  }
+  
+  const firstBlock = info?.blocks?.[0]?.data?.text ?? '';
   shortDesc = firstBlock ? firstBlock.slice(0, 200) : null;
 
-  const addr = raw.space[0]?.address;
+  const addr = raw.space?.[0]?.address;
   const location: EventLocation = {
     country: addr?.titles?.country || null,
     city: addr?.city || null,
@@ -58,7 +67,7 @@ export function mapLeader(raw: any): LeaderData {
     // возможно стоит изменить
     url: `https://leader-id.ru/events/${raw.id}`,
     posterUrl: raw.photo || null,
-    organizer: raw.organizers[0]?.name || null,
+    organizer: raw.organizers?.[0]?.name || null,
 
     location: location,
     tags: tags,
@@ -66,7 +75,7 @@ export function mapLeader(raw: any): LeaderData {
     source: EventAPISource.LEADER_ID,
     specificData: {
       participantsCount: raw.stat?.participants?.count || 0,
-      participants: raw.stat?.paticipants?.list || []
+      participants: raw.stat?.participants?.list || []
     }
   };
   

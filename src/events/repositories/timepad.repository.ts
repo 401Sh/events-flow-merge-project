@@ -72,13 +72,13 @@ export class TimepadRepository extends AbstractTimepadRepository {
         })
       );
 
-      const rawEvents = response.data.values || null;
+      const rawEvent = response.data || null;
       
-      const mappedEvents = rawEvents.map(mapTimepad);
+      const normalizedEvent = mapTimepad(rawEvent);
       
       this.logger.debug('Timepad event recieved successfully');
 
-      return mappedEvents;
+      return normalizedEvent;
     } catch (error) {
       this.logger.warn(
         'Failed to get Timepad event',

@@ -38,8 +38,8 @@ export class EventsService {
 
   async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
     const {
-      limit = 1,
-      skipPage = 1,
+      limit = 4,
+      skipPage = 0,
       sortField = SortableFields.StartsAt,
       sortOrder = 'asc'
     } = query;
@@ -80,6 +80,7 @@ export class EventsService {
       (leaderEventsAmount + timepadEventsAmount) / limit
     );
 
+    console.dir(batchData, {depth:5})
     // параллельный запрос данных ивентов
     const [leaderEvents, timepadEvents] = await Promise.all([
       this.leaderRepository.getAll(batchData.firstAmount, batchData.firstSkip),

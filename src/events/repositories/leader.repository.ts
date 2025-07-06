@@ -116,7 +116,7 @@ export class LeaderRepository extends AbstractLeaderRepository {
       );
 
       const amount = response.data.meta.totalCount || [];
-      
+      console.dir(response.data, {depth:2})
       this.logger.debug('Leader events amount recieved successfully');
 
       return amount;

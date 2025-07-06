@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseEnumPipe, ParseIntPipe, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { EventAPISource } from './enums/event-source.enum';
@@ -14,11 +14,11 @@ export class EventsController {
     return await this.eventsService.getEventsList(query);
   }
 
-  
+
   @Get(':source/:eventId')
   async getEventBySource(
-    @Param('source', ParseUUIDPipe) source: EventAPISource,
-    @Param('eventId', ParseUUIDPipe) eventId: number
+    @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,
+    @Param('eventId', ParseIntPipe) eventId: number
   ) {
     return await this.eventsService.getFromSourceById(source, eventId);
   }

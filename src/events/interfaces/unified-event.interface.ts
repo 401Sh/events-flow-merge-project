@@ -15,7 +15,7 @@ export interface UnifiedEvent {
   fullDescription: string | null,
   /** Дата и время начала (ISO-8601) */
   // starts_at | date_start
-  startsAt: string,
+  startsAt: string | null,
   /** Дата и время окончания (ISO-8601) */
   // ends_at | date_end
   endsAt: string | null,

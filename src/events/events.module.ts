@@ -6,9 +6,13 @@ import { AbstractLeaderRepository } from './repositories/abstract-leader.reposit
 import { AbstractTimepadRepository } from './repositories/abstract-timepad.repository';
 import { LeaderRepository } from './repositories/leader.repository';
 import { TimepadRepository } from './repositories/timepad.repository';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [ClientAuthModule],
+  imports: [
+    ClientAuthModule,
+    HttpModule
+  ],
   controllers: [EventsController],
   providers: [
     EventsService,

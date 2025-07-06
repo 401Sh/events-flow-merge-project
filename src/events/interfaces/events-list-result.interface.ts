@@ -5,8 +5,8 @@ export interface EventsListResult {
     events: UnifiedEvent[]
   },
   meta: {
-    totalEvents: number,
-    totalPageAmount: number,
+    totalEventsAmount: number,
+    totalPagesAmount: number,
     currentPage: number
   }
 }

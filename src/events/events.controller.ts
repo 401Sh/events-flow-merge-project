@@ -15,6 +15,15 @@ export class EventsController {
   }
 
 
+  @Get(':source')
+  async getEventsListBySource(
+    @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,
+    @Query() query: GetEventListQueryDto
+  ) {
+    return await this.eventsService.getEventsListFromSource(source, query);
+  }
+
+
   @Get(':source/:eventId')
   async getEventBySource(
     @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,

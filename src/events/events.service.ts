@@ -8,6 +8,7 @@ import { EventsListResult } from './interfaces/events-list-result.interface';
 import { EventAPISource } from './enums/event-source.enum';
 import { LeaderData } from './interfaces/leader-data.interface';
 import { TimepadData } from './interfaces/timepad-data.interface';
+import { EventResultWithMeta } from './interfaces/events-result-with-meta.interface';
 
 @Injectable()
 export class EventsService {
@@ -68,15 +69,15 @@ export class EventsService {
           events: []
         },
         meta: {
-          totalEvents: 0,
-          totalPageAmount: 0,
+          totalEventsAmount: 0,
+          totalPagesAmount: 0,
           currentPage: 0
         }
       };
     };
 
     // определение количества страниц
-    const totalPageAmount = Math.ceil(
+    const totalPagesAmount = Math.ceil(
       (leaderEventsAmount + timepadEventsAmount) / limit
     );
 
@@ -84,7 +85,7 @@ export class EventsService {
     // параллельный запрос данных ивентов
     const [leaderEvents, timepadEvents] = await Promise.all([
       this.leaderRepository.getAll(batchData.firstAmount, batchData.firstSkip),
-      this.timepadRepository.getAll(batchData.secondAmount, batchData.secondSkip),
+      this.timepadRepository.getAll(batchData.secondAmount, batchData.secondSkip)
     ]);
 
     // слияние и сортировка
@@ -97,11 +98,35 @@ export class EventsService {
         events: sortedEvents
       },
       meta: {
-        totalEvents: leaderEventsAmount + timepadEventsAmount,
-        totalPageAmount: totalPageAmount,
+        totalEventsAmount: leaderEventsAmount + timepadEventsAmount,
+        totalPagesAmount: totalPagesAmount,
         currentPage: page
       }
-    }
+    };
+  }
+
+  
+  async getEventsListFromSource(source: EventAPISource, query: GetEventListQueryDto) {
+    const {
+      limit = 4,
+      page = 1,
+      sortField = SortableFields.StartsAt,
+      sortOrder = 'asc'
+    } = query;
+    
+    let result: EventResultWithMeta<LeaderData> | EventResultWithMeta<TimepadData>;
+  
+    if (source === EventAPISource.TIMEPAD) {
+      result = await this.timepadRepository.getAllWithMeta(limit, page);
+    } else {
+      result = await this.leaderRepository.getAllWithMeta(limit, page);
+    };
+
+    if (!result || !result.data) {
+      throw new NotFoundException(`Events not found in source ${source}`);
+    };
+  
+    return result;
   }
 
   
@@ -120,11 +145,11 @@ export class EventsService {
         const aDate = aVal ? new Date(aVal as string).getTime() : 0;
         const bDate = bVal ? new Date(bVal as string).getTime() : 0;
         return sortOrder === 'asc' ? aDate - bDate : bDate - aDate;
-      }
+      };
   
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
+      };
   
       return 0;
     });
@@ -177,7 +202,7 @@ export class EventsService {
         firstAmount: 0,
         secondSkip,
         secondAmount: 0,
-        isEmpty: true,
+        isEmpty: true
       };
     };
   
@@ -208,5 +233,4 @@ export class EventsService {
       isEmpty: take1 + take2 === 0
     };
   }
-  
 }

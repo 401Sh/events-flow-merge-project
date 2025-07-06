@@ -21,7 +21,6 @@ export class LeaderRepository extends AbstractLeaderRepository {
 
   async getAll(limit: number, skip: number): Promise<LeaderData[]> {
     const page = Math.floor(skip / limit) + 1;
-
     const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}`;
 
     const data = await this.fetchFromLeaderApi<{ items: any[] }>(urlPart);
@@ -33,10 +32,42 @@ export class LeaderRepository extends AbstractLeaderRepository {
     return mappedEvents;
   }
 
+
+  async getAllWithMeta(limit: number, page: number) {
+    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}`;
+
+    type LeaderResponseType = {
+      items: any[],
+      meta: {
+        totalCount: number,
+        paginationPageCount: number,
+      }
+    }
+
+    const data = await this.fetchFromLeaderApi<LeaderResponseType>(urlPart);
+    const rawEvents = data.items || [];
+    const mappedEvents = rawEvents.map(mapLeader);
+      
+    this.logger.debug('Leader event list recieved successfully');
+
+    const dataWithMeta = {
+      data: mappedEvents,
+      meta: {
+        totalEventsAmount: data.meta.totalCount,
+        totalPagesAmount: data.meta.paginationPageCount,
+        currentPage: page
+      }
+    }
+
+    return dataWithMeta
+  }
+
+
   // в актуальном API нет возможности запросить одно событие
   async getOne(id: number): Promise<LeaderData | null> {
     throw new Error('Method not implemented.');
   }
+
 
   async getAmount(): Promise<number> {
     const urlPart = `/events/search?paginationSize=2`;

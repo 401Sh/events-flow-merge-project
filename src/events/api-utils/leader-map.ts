@@ -39,8 +39,12 @@ export function mapLeader(raw: any): LeaderData {
     full_info = null;
   }
   
-  const firstBlock = full_info?.blocks?.[0]?.data?.text ?? '';
-  shortDesc = firstBlock ? firstBlock.slice(0, 200) : null;
+  // удаление HTML элементов после преобразования
+  if (full_info?.blocks?.length > 0) {
+    const firstText = full_info.blocks[0]?.data?.text ?? '';
+    const plainText = firstText.replace(/<[^>]*>/g, '').trim();
+    shortDesc = plainText ? plainText.slice(0, 200) : null;
+  }
 
   const addr = raw.space?.address;
   const location: EventLocation = {

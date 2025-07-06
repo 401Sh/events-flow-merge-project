@@ -31,6 +31,29 @@ export class TimepadRepository extends AbstractTimepadRepository {
     return mappedEvents
   }
 
+
+  async getAllWithMeta(limit: number, page: number) {
+    const skip = (page - 1) * limit;
+    const urlPart = `/events?limit=${limit}&skip=${skip}`;
+
+    const data = await this.fetchFromTimepad<{ values: any[], total: number }>(urlPart);
+    const rawEvents = data.values || [];
+    const mappedEvents = rawEvents.map(mapTimepad);
+    
+    this.logger.debug('Timepad event list with meta recieved successfully');
+
+    const dataWithMeta = {
+      data: mappedEvents,
+      meta: {
+        totalEventsAmount: data.total || 0,
+        totalPagesAmount: Math.ceil(data.total / limit) || 0,
+        currentPage: page
+      }
+    }
+
+    return dataWithMeta
+  }
+
   
   async getOne(id: number): Promise<TimepadData | null> {
     const urlPart = `/events/${id}`;

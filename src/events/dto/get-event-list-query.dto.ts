@@ -16,11 +16,11 @@ export class GetEventListQueryDto {
     message: `sortField must be one of: ${Object.values(SortableFields).join(', ')}`,
   })
   @IsOptional()
-  sortField: string;
+  sortField?: string;
 
   @IsEnum(['asc', 'desc'], {
     message: 'sortOrder must be either "asc" or "desc"',
   })
   @IsOptional()
-  sortOrder: string;
+  sortOrder?: string;
 }

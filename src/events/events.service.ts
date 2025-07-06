@@ -1,10 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractLeaderRepository } from './repositories/abstract-leader.repository';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { UnifiedEvent } from './interfaces/unified-event.interface';
 import { SortableFields } from './enums/query-event.enum';
 import { AbstractTimepadRepository } from './repositories/abstract-timepad.repository';
 import { EventsListResult } from './interfaces/events-list-result.interface';
+import { EventAPISource } from './enums/event-source.enum';
+import { LeaderData } from './interfaces/leader-data.interface';
+import { TimepadData } from './interfaces/timepad-data.interface';
 
 @Injectable()
 export class EventsService {
@@ -15,8 +18,21 @@ export class EventsService {
     private readonly timepadRepository: AbstractTimepadRepository,
   ) {}
 
-  getFromSourceById(source: string, id: string) {
-    throw new Error('Method not implemented.');
+
+  async getFromSourceById(source: EventAPISource, id: number) {
+    let data: LeaderData | TimepadData | null = null;
+  
+    if (source === EventAPISource.TIMEPAD) {
+      data = await this.timepadRepository.getOne(id);
+    } else {
+      data = await this.leaderRepository.getOne(id);
+    };
+
+    if (!data) {
+      throw new NotFoundException(`Event with id ${id} not found in source ${source}`);
+    };
+  
+    return { data };
   }
 
 

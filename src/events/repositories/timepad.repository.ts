@@ -20,8 +20,8 @@ export class TimepadRepository extends AbstractTimepadRepository {
   }
 
   async getAll(limit: number, skip: number): Promise<TimepadData[]> {
-    const token = this.authService.getAccessToken();
-    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL')
+    const token = await this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
     const url = `${baseUrl}/events?limit=${limit}&skip=${skip}`;
 
     try {
@@ -43,28 +43,63 @@ export class TimepadRepository extends AbstractTimepadRepository {
     } catch (error) {
       this.logger.warn(
         'Failed to get Timepad event list',
-        error?.response?.data || error.message,
+        error?.response?.data || error.message
       );
 
       const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
       throw new HttpException(
         {
-          message: 'Timepad get request failed',
-          details: error?.response?.data || error.message,
+          message: 'Timepad get event list request failed',
+          details: error?.response?.data || error.message
         },
         status
       );
     };
   }
 
-  async getOne(id: number): Promise<TimepadData | undefined> {
-    return undefined;
+  async getOne(id: number): Promise<TimepadData | null> {
+    const token = await this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
+    const url = `${baseUrl}/events/${id}`;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+      );
+
+      const rawEvents = response.data.values || null;
+      
+      const mappedEvents = rawEvents.map(mapTimepad);
+      
+      this.logger.debug('Timepad event recieved successfully');
+
+      return mappedEvents;
+    } catch (error) {
+      this.logger.warn(
+        'Failed to get Timepad event',
+        error?.response?.data || error.message
+      );
+
+      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+      throw new HttpException(
+        {
+          message: 'Timepad get event request failed',
+          details: error?.response?.data || error.message
+        },
+        status
+      );
+    };
   }
 
   async getAmount(): Promise<number> {
-    const token = this.authService.getAccessToken();
-    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL')
+    const token = await this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
     const url = `${baseUrl}/events?limit=1`;
 
     try {
@@ -84,7 +119,7 @@ export class TimepadRepository extends AbstractTimepadRepository {
     } catch (error) {
       this.logger.warn(
         'Failed to get Timepad events amount',
-        error?.response?.data || error.message,
+        error?.response?.data || error.message
       );
 
       const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
@@ -92,7 +127,7 @@ export class TimepadRepository extends AbstractTimepadRepository {
       throw new HttpException(
         {
           message: 'Timepad events amount get request failed',
-          details: error?.response?.data || error.message,
+          details: error?.response?.data || error.message
         },
         status
       );

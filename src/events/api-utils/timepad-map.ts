@@ -3,6 +3,7 @@ import { EventAPISource } from "../enums/event-source.enum";
 import { EventLocation } from "../interfaces/event-location.interface";
 import { EventThemes } from "../interfaces/event-themes.interface";
 import { TimepadData } from "../interfaces/timepad-data.interface";
+// import { htmlToText } from 'html-to-text'; для преобразования html
 
 /**
  * Converts a date string that includes a timezone offset (e.g. "+0300")

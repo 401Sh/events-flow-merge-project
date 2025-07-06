@@ -1,4 +1,4 @@
 export enum EventAPISource {
-  LEADER_ID = 'leader-id',
+  LEADER_ID = 'leaderId',
   TIMEPAD = 'timepad'
 }

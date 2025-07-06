@@ -1,6 +1,7 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
+import { EventAPISource } from './enums/event-source.enum';
 
 @Controller('events')
 export class EventsController {
@@ -13,10 +14,11 @@ export class EventsController {
     return await this.eventsService.getEventsList(query);
   }
 
+  
   @Get(':source/:eventId')
   async getEventBySource(
-    @Param('source', ParseUUIDPipe) source: 'timepad' | 'leader',
-    @Param('eventId', ParseUUIDPipe) eventId: string
+    @Param('source', ParseUUIDPipe) source: EventAPISource,
+    @Param('eventId', ParseUUIDPipe) eventId: number
   ) {
     return await this.eventsService.getFromSourceById(source, eventId);
   }

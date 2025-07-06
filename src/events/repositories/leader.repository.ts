@@ -22,8 +22,8 @@ export class LeaderRepository extends AbstractLeaderRepository {
   async getAll(limit: number, skip: number): Promise<LeaderData[]> {
     const page = Math.floor(skip / limit) + 1;
 
-    const token = this.authService.getAccessToken();
-    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL')
+    const token = await this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
     const url = `${baseUrl}/events/search?paginationSize=${limit}&paginationPage=${page}`;
 
     try {
@@ -45,28 +45,65 @@ export class LeaderRepository extends AbstractLeaderRepository {
     } catch (error) {
       this.logger.warn(
         'Failed to get Leader event list',
-        error?.response?.data || error.message,
+        error?.response?.data || error.message
       );
 
       const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
       throw new HttpException(
         {
-          message: 'Leader get request failed',
-          details: error?.response?.data || error.message,
+          message: 'Leader get event list request failed',
+          details: error?.response?.data || error.message
         },
         status
       );
     };
   }
 
-  async getOne(id: number): Promise<LeaderData | undefined> {
-    return undefined;
+  // в актуальном API нет возможности запросить одно событие
+  async getOne(id: number): Promise<LeaderData | null> {
+    throw new Error('Method not implemented.');
+  //   const token = await this.authService.getAccessToken();
+  //   const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
+  //   const url = `${baseUrl}/events/${id}`;
+    
+  //   try {
+  //     const response = await firstValueFrom(
+  //       this.httpService.get(url, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       })
+  //     );
+
+  //     const rawEvent = response.data || null;
+      
+  //     const normalizedEvent = mapLeader(rawEvent);
+      
+  //     this.logger.debug('Leader event recieved successfully');
+
+  //     return normalizedEvent;
+  //   } catch (error) {
+  //     this.logger.warn(
+  //       `Failed to get Leader event ${id}`,
+  //       error?.response?.data || error.message
+  //     );
+
+  //     const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+  //     throw new HttpException(
+  //       {
+  //         message: 'Leader get event request failed',
+  //         details: error?.response?.data || error.message
+  //       },
+  //       status
+  //     );
+  //   };
   }
 
   async getAmount(): Promise<number> {
-    const token = this.authService.getAccessToken();
-    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL')
+    const token = await this.authService.getAccessToken();
+    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
     const url = `${baseUrl}/events/search?paginationSize=2`;
 
     try {
@@ -86,7 +123,7 @@ export class LeaderRepository extends AbstractLeaderRepository {
     } catch (error) {
       this.logger.warn(
         'Failed to get Leader events amount',
-        error?.response?.data || error.message,
+        error?.response?.data || error.message
       );
 
       const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
@@ -94,7 +131,7 @@ export class LeaderRepository extends AbstractLeaderRepository {
       throw new HttpException(
         {
           message: 'Leader events amount get request failed',
-          details: error?.response?.data || error.message,
+          details: error?.response?.data || error.message
         },
         status
       );

@@ -39,7 +39,7 @@ export class EventsService {
   async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
     const {
       limit = 4,
-      skipPage = 0,
+      page = 1,
       sortField = SortableFields.StartsAt,
       sortOrder = 'asc'
     } = query;
@@ -54,7 +54,7 @@ export class EventsService {
     // определение сколько нужно взять и пропустить из каждого источника
     const batchData = this.getBatchAtSkip(
       limit,
-      skipPage,
+      page,
       leaderEventsAmount,
       timepadEventsAmount
     );
@@ -99,7 +99,7 @@ export class EventsService {
       meta: {
         totalEvents: leaderEventsAmount + timepadEventsAmount,
         totalPageAmount: totalPageAmount,
-        currentPage: skipPage + 1
+        currentPage: page
       }
     }
   }
@@ -135,7 +135,7 @@ export class EventsService {
   // в данный момент лучшее, что я придумал
   private getBatchAtSkip(
     limit: number,
-    skipPage: number,
+    page: number,
     api1Total: number,
     api2Total: number
   ) {
@@ -144,7 +144,7 @@ export class EventsService {
     let firstSkip = 0;
     let secondSkip = 0;
   
-    for (let i = 0; i < skipPage; i++) {
+    for (let i = 0; i < page - 1; i++) {
       let need = limit;
   
       let take1 = Math.min(Math.ceil(limit / 2), rest1);

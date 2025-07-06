@@ -23,6 +23,7 @@ export function toIsoFromOffsetString(dateStr?: string): string | null {
   }
 }
 
+
 export function mapTimepad(raw: any): TimepadData {
   const location: EventLocation = {
     country: raw.location?.country || null,

@@ -30,19 +30,19 @@ export function mapLeader(raw: any): LeaderData {
   // извлечь короткое описание из JSON
   let shortDesc: string | null = null;
 
-  let info: any = null;
+  let full_info: any = null;
   try {
-    if (raw.info) {
-      info = JSON.parse(raw.info);
+    if (raw.full_info) {
+      full_info = JSON.parse(raw.full_info);
     }
   } catch (e) {
-    info = null;
+    full_info = null;
   }
   
-  const firstBlock = info?.blocks?.[0]?.data?.text ?? '';
+  const firstBlock = full_info?.blocks?.[0]?.data?.text ?? '';
   shortDesc = firstBlock ? firstBlock.slice(0, 200) : null;
 
-  const addr = raw.space?.[0]?.address;
+  const addr = raw.space?.address;
   const location: EventLocation = {
     country: addr?.titles?.country || null,
     city: addr?.city || null,
@@ -59,7 +59,7 @@ export function mapLeader(raw: any): LeaderData {
     shortDescription: shortDesc,
     // тут нужно подумать над форматом
     // сейчас это JSON, что очень плохо, ведь у timepad это html
-    fullDescription: raw.info || null,
+    fullDescription: raw.full_info || null,
     startsAt: toIso(raw.date_start, tz),
     endsAt: raw.date_end ? toIso(raw.date_end, tz) : null,
     registrationStart: raw.registrationDateStart ? toIso(raw.registrationDateStart, tz) : null,

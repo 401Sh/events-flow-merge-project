@@ -55,7 +55,7 @@ export function mapTimepad(raw: any): TimepadData {
 
     source: EventAPISource.TIMEPAD,
     specificData: {
-      isSendingFreeTickets: raw.is_sending_free_tickets || null
+      isSendingFreeTickets: raw.is_sending_free_tickets ?? null
     }
   };
 

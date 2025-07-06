@@ -22,107 +22,54 @@ export class LeaderRepository extends AbstractLeaderRepository {
   async getAll(limit: number, skip: number): Promise<LeaderData[]> {
     const page = Math.floor(skip / limit) + 1;
 
-    const token = await this.authService.getAccessToken();
-    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
-    const url = `${baseUrl}/events/search?paginationSize=${limit}&paginationPage=${page}`;
+    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}`;
 
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-      );
-
-      const rawEvents = response.data.items || [];
+    const data = await this.fetchFromLeaderApi<{ items: any[] }>(urlPart);
+    const rawEvents = data.items || [];
+    const mappedEvents = rawEvents.map(mapLeader);
       
-      const mappedEvents = rawEvents.map(mapLeader);
-      
-      this.logger.debug('Leader event list recieved successfully');
+    this.logger.debug('Leader event list recieved successfully');
 
-      return mappedEvents;
-    } catch (error) {
-      this.logger.warn(
-        'Failed to get Leader event list',
-        error?.response?.data || error.message
-      );
-
-      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
-      throw new HttpException(
-        {
-          message: 'Leader get event list request failed',
-          details: error?.response?.data || error.message
-        },
-        status
-      );
-    };
+    return mappedEvents;
   }
 
   // в актуальном API нет возможности запросить одно событие
   async getOne(id: number): Promise<LeaderData | null> {
     throw new Error('Method not implemented.');
-  //   const token = await this.authService.getAccessToken();
-  //   const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
-  //   const url = `${baseUrl}/events/${id}`;
-    
-  //   try {
-  //     const response = await firstValueFrom(
-  //       this.httpService.get(url, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`
-  //         }
-  //       })
-  //     );
-
-  //     const rawEvent = response.data || null;
-      
-  //     const normalizedEvent = mapLeader(rawEvent);
-      
-  //     this.logger.debug('Leader event recieved successfully');
-
-  //     return normalizedEvent;
-  //   } catch (error) {
-  //     this.logger.warn(
-  //       `Failed to get Leader event ${id}`,
-  //       error?.response?.data || error.message
-  //     );
-
-  //     const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
-  //     throw new HttpException(
-  //       {
-  //         message: 'Leader get event request failed',
-  //         details: error?.response?.data || error.message
-  //       },
-  //       status
-  //     );
-  //   };
   }
 
   async getAmount(): Promise<number> {
-    const token = await this.authService.getAccessToken();
+    const urlPart = `/events/search?paginationSize=2`;
+
+    const data = await this.fetchFromLeaderApi<{ meta: { totalCount: number } }>(urlPart);
+
+    this.logger.debug('Leader events amount recieved successfully');
+
+    return data.meta?.totalCount || 0;
+  }
+
+
+  private async fetchFromLeaderApi<T>(urlPart: string): Promise<T> {
     const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
-    const url = `${baseUrl}/events/search?paginationSize=2`;
+    const url = `${baseUrl}${urlPart}`;
+
+    const token = await this.authService.getAccessToken();
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get(url, {
+        this.httpService.get<T>(url, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
       );
 
-      const amount = response.data.meta.totalCount || [];
-      console.dir(response.data, {depth:2})
-      this.logger.debug('Leader events amount recieved successfully');
+      this.logger.debug(`Leader API request to ${url} succeeded`);
 
-      return amount;
+      return response.data;
     } catch (error) {
       this.logger.warn(
-        'Failed to get Leader events amount',
+        `Failed to fetch from Leader API URL: ${url}`,
         error?.response?.data || error.message
       );
 
@@ -130,11 +77,11 @@ export class LeaderRepository extends AbstractLeaderRepository {
 
       throw new HttpException(
         {
-          message: 'Leader events amount get request failed',
+          message: `Leader API request failed for URL: ${url}`,
           details: error?.response?.data || error.message
         },
         status
       );
-    };
+    }
   }
 }

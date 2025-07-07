@@ -26,9 +26,14 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     query: GetEventListQueryDto
   ): Promise<LeaderData[]> {
     const page = Math.floor(skip / limit) + 1;
-    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}&sort=date`;
+    const urlPart = '/events/search';
+    const params = {
+      paginationSize: limit,
+      paginationPage: page,
+      sort: 'date'
+    };
 
-    const data = await this.fetchFromLeaderApi<{ items: any[] }>(urlPart);
+    const data = await this.fetchFromLeaderApi<{ items: any[] }>(urlPart, params);
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
       
@@ -44,7 +49,12 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       page = 1
     } = query;
     
-    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}&sort=date`;
+    const urlPart = '/events/search';
+    const params = {
+      paginationSize: limit,
+      paginationPage: page,
+      sort: 'date'
+    };
 
     type LeaderResponseType = {
       items: any[],
@@ -52,9 +62,9 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
         totalCount: number,
         paginationPageCount: number,
       }
-    }
+    };
 
-    const data = await this.fetchFromLeaderApi<LeaderResponseType>(urlPart);
+    const data = await this.fetchFromLeaderApi<LeaderResponseType>(urlPart, params);
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
       
@@ -67,7 +77,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
         totalPagesAmount: data.meta.paginationPageCount,
         currentPage: page
       }
-    }
+    };
 
     return dataWithMeta
   }
@@ -80,9 +90,12 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
 
   async getAmount(): Promise<number> {
-    const urlPart = `/events/search?paginationSize=2`;
+    const urlPart = '/events/search';
+    const params = { paginationSize: 2 };
 
-    const data = await this.fetchFromLeaderApi<{ meta: { totalCount: number } }>(urlPart);
+    const data = await this.fetchFromLeaderApi<{ 
+      meta: { totalCount: number } 
+    }>(urlPart, params);
 
     this.logger.debug('Leader events amount recieved successfully');
 
@@ -90,7 +103,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
   }
 
 
-  private async fetchFromLeaderApi<T>(urlPart: string): Promise<T> {
+  private async fetchFromLeaderApi<T>(urlPart: string, params?: Object): Promise<T> {
     const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
     const url = `${baseUrl}${urlPart}`;
 
@@ -101,7 +114,8 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
         this.httpService.get<T>(url, {
           headers: {
             Authorization: `Bearer ${token}`
-          }
+          },
+          params: params
         })
       );
 

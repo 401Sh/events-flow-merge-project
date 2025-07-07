@@ -25,9 +25,17 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     skip: number,
     query: GetEventListQueryDto
   ): Promise<TimepadData[]> {
-    const urlPart = `/events?limit=${limit}&skip=${skip}&sort=starts_at`;
+    const urlPart = '/events';
+    const params = {
+      limit: limit,
+      skip: skip,
+      sort: 'starts_at'
+    };
 
-    const data = await this.fetchFromTimepad<{ values: any[] }>(urlPart);
+    const data = await this.fetchFromTimepad<{ values: any[] }>(
+      urlPart,
+      params
+    );
     const rawEvents = data.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
       
@@ -44,9 +52,18 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     } = query;
     
     const skip = (page - 1) * limit;
-    const urlPart = `/events?limit=${limit}&skip=${skip}&sort=starts_at`;
+    const urlPart = '/events';
+    const params = {
+      limit: limit,
+      skip: skip,
+      sort: 'starts_at'
+    };
 
-    const data = await this.fetchFromTimepad<{ values: any[], total: number }>(urlPart);
+    const data = await this.fetchFromTimepad<{ 
+      values: any[], 
+      total: number 
+    }>(urlPart, params);
+
     const rawEvents = data.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
     
@@ -59,7 +76,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
         totalPagesAmount: Math.ceil(data.total / limit) || 0,
         currentPage: page
       }
-    }
+    };
 
     return dataWithMeta
   }
@@ -78,16 +95,19 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
 
 
   async getAmount(): Promise<number> {
-    const urlPart = `/events?limit=1`;
+    const urlPart = '/events';
+    const params = { limit: 1 };
       
-    const data = await this.fetchFromTimepad<{ total: number }>(urlPart);
+    const data = await this.fetchFromTimepad<{ total: number }>(
+      urlPart, params
+    );
     
     this.logger.debug('Timepad events amount recieved successfully');
     return data.total || 0;
   }
 
 
-  private async fetchFromTimepad<T>(urlPart: string): Promise<T> {
+  private async fetchFromTimepad<T>(urlPart: string, params?: Object): Promise<T> {
     const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
     const url = `${baseUrl}${urlPart}`;
 
@@ -98,7 +118,8 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
         this.httpService.get<T>(url, {
           headers: {
             Authorization: `Bearer ${token}`
-          }
+          },
+          params: params
         })
       );
   

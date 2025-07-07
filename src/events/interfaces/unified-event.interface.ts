@@ -13,19 +13,19 @@ export interface UnifiedEvent {
   // info (в формате JSON - сложно привести к тексту, много лишней информации)
   // пока данное поле больше как заглушка
   fullDescription: string | null,
-  /** Дата и время начала (ISO-8601) */
+  /** Дата и время начала (2024-05-27T21:10:43Z) */
   // starts_at | date_start
   startsAt: string | null,
-  /** Дата и время окончания (ISO-8601) */
+  /** Дата и время окончания (2024-05-27T21:10:43Z) */
   // ends_at | date_end
   endsAt: string | null,
   // у timepad нету | registrationStart
   registrationStart: string | null,
   // registration_data.sale_ends_at (у timepad это дата конца продаж билетов) | registrationEnd 
   registrationEnd: string | null
-  // location?.country | space[0]?.address?.country
-  // location?.city | space[0]?.address?.city
-  // location?.address | space[0]?.address?.street + " " + space[0]?.address?.house
+  // location?.country | space?.address?.country
+  // location?.city | space?.address?.city
+  // location?.address | space?.address?.street + " " + space[0]?.address?.house
   location: EventLocation,
   // url | у leader этого нет - нужно формировать вручную https://leader-id.ru/events/{id}
   url: string | null,
@@ -35,6 +35,6 @@ export interface UnifiedEvent {
   tags: EventThemes[],
   // organization.name | organizers[0]?.name (возможно вообще нет этого поля - api не совпадает с реальными данными)
   organizer: string | null,
-  /** Откуда пришло это событие (timepad или leader-id) */
+  /** Откуда пришло это событие (timepad или leaderId) */
   source: EventAPISource
 }

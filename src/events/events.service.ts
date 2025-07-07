@@ -2,7 +2,6 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractLeaderRepository } from './repositories/abstract-leader.repository';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { UnifiedEvent } from './interfaces/unified-event.interface';
-import { SortableFields } from './enums/query-event.enum';
 import { AbstractTimepadRepository } from './repositories/abstract-timepad.repository';
 import { EventsListResult } from './interfaces/events-list-result.interface';
 import { EventAPISource } from './enums/event-source.enum';
@@ -38,12 +37,8 @@ export class EventsService {
 
 
   async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
-    const {
-      limit = 4,
-      page = 1,
-      sortField = SortableFields.StartsAt,
-      sortOrder = 'asc'
-    } = query;
+    const limit = query.limit ?? 4
+    const page = query.page ?? 1
 
     // подсчет данных
     // крайне важно потом закэшировать ее
@@ -81,16 +76,15 @@ export class EventsService {
       (leaderEventsAmount + timepadEventsAmount) / limit
     );
 
-    console.dir(batchData, {depth:5})
     // параллельный запрос данных ивентов
     const [leaderEvents, timepadEvents] = await Promise.all([
-      this.leaderRepository.getAll(batchData.firstAmount, batchData.firstSkip),
-      this.timepadRepository.getAll(batchData.secondAmount, batchData.secondSkip)
+      this.leaderRepository.getAll(batchData.firstAmount, batchData.firstSkip, query),
+      this.timepadRepository.getAll(batchData.secondAmount, batchData.secondSkip, query)
     ]);
 
     // слияние и сортировка
     const allEvents: UnifiedEvent[] = [...leaderEvents, ...timepadEvents];
-    const sortedEvents = this.sortEvents(allEvents, sortField, sortOrder);
+    const sortedEvents = this.sortEvents(allEvents);
 
     this.logger.debug('Finded events: ', sortedEvents);
     return {
@@ -107,19 +101,12 @@ export class EventsService {
 
   
   async getEventsListFromSource(source: EventAPISource, query: GetEventListQueryDto) {
-    const {
-      limit = 4,
-      page = 1,
-      sortField = SortableFields.StartsAt,
-      sortOrder = 'asc'
-    } = query;
-    
     let result: EventResultWithMeta<LeaderData> | EventResultWithMeta<TimepadData>;
   
     if (source === EventAPISource.TIMEPAD) {
-      result = await this.timepadRepository.getAllWithMeta(limit, page);
+      result = await this.timepadRepository.getAllWithMeta(query);
     } else {
-      result = await this.leaderRepository.getAllWithMeta(limit, page);
+      result = await this.leaderRepository.getAllWithMeta(query);
     };
 
     if (!result || !result.data) {
@@ -129,35 +116,23 @@ export class EventsService {
     return result;
   }
 
-  
-  // убогий вариант сортировочной функции
-  // нужно попытаться улучшить
-  private sortEvents(
-    events: UnifiedEvent[],
-    sortBy: string = SortableFields.StartsAt,
-    sortOrder: string = 'asc',
-  ): UnifiedEvent[] {
-    return [...events].sort((a, b) => {
-      const aVal = a[sortBy];
-      const bVal = b[sortBy];
-  
-      if (sortBy === 'startsAt' || sortBy === 'endsAt') {
-        const aDate = aVal ? new Date(aVal as string).getTime() : 0;
-        const bDate = bVal ? new Date(bVal as string).getTime() : 0;
-        return sortOrder === 'asc' ? aDate - bDate : bDate - aDate;
-      };
-  
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      };
-  
-      return 0;
+
+  private sortEvents(events: UnifiedEvent[]): UnifiedEvent[] {
+    // сортировка без мутации
+    // return [...events].sort((a, b) => {
+    // сортирует с мутацией исходного массива
+    const sortedEvents = events.sort((a, b) => {
+      const aDate = a.startsAt ? new Date(a.startsAt).getTime() : 0;
+      const bDate = b.startsAt ? new Date(b.startsAt).getTime() : 0;
+      return aDate - bDate;
     });
+
+    return sortedEvents;
   }
 
 
-  // функция для определения сколько пропустить и взять в каждом из api
-  // в данный момент лучшее, что я придумал
+  // функция для определения сколько
+  // пропустить и взять в каждом из api
   private getBatchAtSkip(
     limit: number,
     page: number,

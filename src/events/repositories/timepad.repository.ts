@@ -6,6 +6,7 @@ import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-au
 import { firstValueFrom } from 'rxjs';
 import { mapTimepad } from '../api-utils/timepad-map';
 import { ConfigService } from '@nestjs/config';
+import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 
 @Injectable()
 export class TimepadRepository extends AbstractTimepadRepository {
@@ -19,8 +20,12 @@ export class TimepadRepository extends AbstractTimepadRepository {
     super();
   }
 
-  async getAll(limit: number, skip: number): Promise<TimepadData[]> {
-    const urlPart = `/events?limit=${limit}&skip=${skip}`;
+  async getAll(
+    limit: number, 
+    skip: number,
+    query: GetEventListQueryDto
+  ): Promise<TimepadData[]> {
+    const urlPart = `/events?limit=${limit}&skip=${skip}&sort=starts_at`;
 
     const data = await this.fetchFromTimepad<{ values: any[] }>(urlPart);
     const rawEvents = data.values || [];
@@ -32,9 +37,14 @@ export class TimepadRepository extends AbstractTimepadRepository {
   }
 
 
-  async getAllWithMeta(limit: number, page: number) {
+  async getAllWithMeta(query: GetEventListQueryDto) {
+    const {
+      limit = 4,
+      page = 1
+    } = query;
+    
     const skip = (page - 1) * limit;
-    const urlPart = `/events?limit=${limit}&skip=${skip}`;
+    const urlPart = `/events?limit=${limit}&skip=${skip}&sort=starts_at`;
 
     const data = await this.fetchFromTimepad<{ values: any[], total: number }>(urlPart);
     const rawEvents = data.values || [];

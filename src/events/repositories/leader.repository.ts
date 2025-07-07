@@ -6,6 +6,7 @@ import { mapLeader } from '../api-utils/leader-map';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { ConfigService } from '@nestjs/config';
+import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 
 @Injectable()
 export class LeaderRepository extends AbstractLeaderRepository {
@@ -19,9 +20,13 @@ export class LeaderRepository extends AbstractLeaderRepository {
     super();
   }
 
-  async getAll(limit: number, skip: number): Promise<LeaderData[]> {
+  async getAll(
+    limit: number, 
+    skip: number, 
+    query: GetEventListQueryDto
+  ): Promise<LeaderData[]> {
     const page = Math.floor(skip / limit) + 1;
-    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}`;
+    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}&sort=date`;
 
     const data = await this.fetchFromLeaderApi<{ items: any[] }>(urlPart);
     const rawEvents = data.items || [];
@@ -33,8 +38,13 @@ export class LeaderRepository extends AbstractLeaderRepository {
   }
 
 
-  async getAllWithMeta(limit: number, page: number) {
-    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}`;
+  async getAllWithMeta(query: GetEventListQueryDto) {
+    const {
+      limit = 4,
+      page = 1
+    } = query;
+    
+    const urlPart = `/events/search?paginationSize=${limit}&paginationPage=${page}&sort=date`;
 
     type LeaderResponseType = {
       items: any[],

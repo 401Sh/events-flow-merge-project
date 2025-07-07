@@ -1,12 +1,12 @@
-import { UnifiedEvent } from "./unified-event.interface"
+import { UnifiedEvent } from './unified-event.interface';
 
 export interface EventsListResult {
   data: {
-    events: UnifiedEvent[]
-  },
+    events: UnifiedEvent[];
+  };
   meta: {
-    totalEventsAmount: number,
-    totalPagesAmount: number,
-    currentPage: number
-  }
+    totalEventsAmount: number;
+    totalPagesAmount: number;
+    currentPage: number;
+  };
 }

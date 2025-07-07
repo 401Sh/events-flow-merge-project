@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional, IsString, Min } from "class-validator";
+import { IsInt, IsOptional, Min } from 'class-validator';
 
 export class GetEventListQueryDto {
   @IsInt()

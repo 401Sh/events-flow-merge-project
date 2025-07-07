@@ -9,15 +9,15 @@ import { TimepadEventRepository } from './repositories/timepad-event.repository'
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    ClientAuthModule,
-    HttpModule
-  ],
+  imports: [ClientAuthModule, HttpModule],
   controllers: [EventsController],
   providers: [
     EventsService,
     { provide: AbstractLeaderEventRepository, useClass: LeaderEventRepository },
-    { provide: AbstractTimepadEventRepository, useClass: TimepadEventRepository },
-  ]
+    {
+      provide: AbstractTimepadEventRepository,
+      useClass: TimepadEventRepository,
+    },
+  ],
 })
 export class EventsModule {}

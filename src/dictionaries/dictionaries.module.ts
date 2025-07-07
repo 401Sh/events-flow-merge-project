@@ -9,21 +9,18 @@ import { HttpModule } from '@nestjs/axios';
 import { ClientAuthModule } from 'src/auth/client-auth/client-auth.module';
 
 @Module({
-  imports: [
-    ClientAuthModule,
-    HttpModule
-  ],
+  imports: [ClientAuthModule, HttpModule],
   controllers: [DictionariesController],
   providers: [
     DictionariesService,
-    { 
-      provide: AbstractLeaderDictionaryRepository, 
-      useClass: LeaderDictionaryRepository 
+    {
+      provide: AbstractLeaderDictionaryRepository,
+      useClass: LeaderDictionaryRepository,
     },
-    { 
-      provide: AbstractTimepadDictionaryRepository, 
-      useClass: TimepadDictionaryRepository 
+    {
+      provide: AbstractTimepadDictionaryRepository,
+      useClass: TimepadDictionaryRepository,
     },
-  ]
+  ],
 })
 export class DictionariesModule {}

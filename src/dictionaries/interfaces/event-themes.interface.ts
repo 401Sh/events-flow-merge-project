@@ -1,4 +1,4 @@
 export interface EventThemes {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }

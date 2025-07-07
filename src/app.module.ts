@@ -14,12 +14,12 @@ import { DictionariesModule } from './dictionaries/dictionaries.module';
     UsersModule,
     OauthModule,
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     HttpModule,
-    DictionariesModule
+    DictionariesModule,
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule {}

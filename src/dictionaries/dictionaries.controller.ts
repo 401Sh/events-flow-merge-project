@@ -8,7 +8,7 @@ export class DictionariesController {
 
   @Get('themes/:source')
   async getEventThemesBySource(
-    @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource
+    @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,
   ) {
     return await this.dictionariesService.getEventThemesBySource(source);
   }

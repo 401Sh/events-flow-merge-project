@@ -1,5 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  OnModuleInit,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 
@@ -16,24 +22,25 @@ export class LeaderClientAuthService implements OnModuleInit {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly httpService: HttpService
+    private readonly httpService: HttpService,
   ) {}
-
 
   private getAuthConfig() {
     return {
       baseURL: this.configService.getOrThrow<string>('LEADER_API_URL'),
       clientId: this.configService.getOrThrow<string>('LEADER_CLIENT_ID'),
-      clientSecret: this.configService.getOrThrow<string>('LEADER_CLIENT_SECRET'),
+      clientSecret: this.configService.getOrThrow<string>(
+        'LEADER_CLIENT_SECRET',
+      ),
     };
   }
-  
 
+  
   getAccessToken(): string | undefined {
     if (!this.tokensData) {
       this.logger.warn('Leader access token is not available');
       return undefined;
-    };
+    }
 
     return this.tokensData.access_token;
   }
@@ -44,24 +51,23 @@ export class LeaderClientAuthService implements OnModuleInit {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.post<LeaderTokenResponse>(
-          `${baseURL}/oauth/token`,
-          {
-            client_id: clientId,
-            client_secret: clientSecret,
-            grant_type: 'client_credentials'
-          }
-        )
+        this.httpService.post<LeaderTokenResponse>(`${baseURL}/oauth/token`, {
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'client_credentials',
+        }),
       );
 
       this.setTokens(response.data);
-      this.logger.log('Successfully authenticated into leader-ID and received tokens');
+      this.logger.log(
+        'Successfully authenticated into leader-ID and received tokens',
+      );
 
       return response.data;
     } catch (error) {
       this.logger.error(
         'Failed to authenticate leader-ID client',
-        error?.response?.data || error.message
+        error?.response?.data || error.message,
       );
 
       throw new UnauthorizedException({
@@ -69,7 +75,7 @@ export class LeaderClientAuthService implements OnModuleInit {
         cause: error,
         description: error?.response?.data || error.message,
       });
-    };
+    }
   }
 
 
@@ -78,7 +84,7 @@ export class LeaderClientAuthService implements OnModuleInit {
 
     if (this.tokenExpireTimeout) {
       clearTimeout(this.tokenExpireTimeout);
-    };
+    }
 
     this.tokenExpireTimeout = setTimeout(() => {
       this.refreshAccessToken();
@@ -90,21 +96,18 @@ export class LeaderClientAuthService implements OnModuleInit {
     if (!this.tokensData?.refresh_token) {
       this.logger.warn('No refresh token available');
       return this.authenticateClient();
-    };
+    }
 
     const { baseURL, clientId, clientSecret } = this.getAuthConfig();
 
     try {
       const response = await firstValueFrom(
-        this.httpService.post<LeaderTokenResponse>(
-          `${baseURL}/oauth/token`,
-          {
-            client_id: clientId,
-            client_secret: clientSecret,
-            grant_type: 'refresh_token',
-            refresh_token: this.tokensData.refresh_token,
-          }
-        )
+        this.httpService.post<LeaderTokenResponse>(`${baseURL}/oauth/token`, {
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: this.tokensData.refresh_token,
+        }),
       );
 
       this.setTokens(response.data);
@@ -119,17 +122,22 @@ export class LeaderClientAuthService implements OnModuleInit {
 
       // стоит кидать ошибки, если повторная авторизация тоже не удалась
       return this.authenticateClient();
-    };
+    }
   }
 
-  
+
   async onModuleInit() {
     try {
       await this.authenticateClient();
       this.logger.log('Leader token retrieved on module init');
     } catch (error) {
-      this.logger.error('Failed to retrieve leader token on module init', error);
-      throw new InternalServerErrorException('Failed to initialize authentication service');
-    };
+      this.logger.error(
+        'Failed to retrieve leader token on module init',
+        error,
+      );
+      throw new InternalServerErrorException(
+        'Failed to initialize authentication service',
+      );
+    }
   }
 }

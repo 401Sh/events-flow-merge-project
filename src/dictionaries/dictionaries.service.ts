@@ -12,24 +12,24 @@ export class DictionariesService {
     private readonly leaderRepository: AbstractLeaderDictionaryRepository,
     private readonly timepadRepository: AbstractTimepadDictionaryRepository,
   ) {}
-  
+
   async getEventThemesBySource(source: EventAPISource) {
     let result: EventThemes[];
-  
+
     if (source === EventAPISource.TIMEPAD) {
       result = await this.timepadRepository.getAllThemes();
     } else {
       result = await this.leaderRepository.getAllThemes();
-    };
+    }
 
     if (!result) {
       throw new NotFoundException(`Themes not found in source ${source}`);
-    };
-  
-    return { 
+    }
+
+    return {
       data: {
-        themes: result
-      } 
+        themes: result,
+      },
     };
   }
 }

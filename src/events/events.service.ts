@@ -18,33 +18,34 @@ export class EventsService {
     private readonly timepadRepository: AbstractTimepadEventRepository,
   ) {}
 
-
   async getFromSourceById(source: EventAPISource, id: number) {
     let data: LeaderData | TimepadData | null = null;
-  
+
     if (source === EventAPISource.TIMEPAD) {
       data = await this.timepadRepository.getOne(id);
     } else {
       data = await this.leaderRepository.getOne(id);
-    };
+    }
 
     if (!data) {
-      throw new NotFoundException(`Event with id ${id} not found in source ${source}`);
-    };
-  
+      throw new NotFoundException(
+        `Event with id ${id} not found in source ${source}`,
+      );
+    }
+
     return { data };
   }
 
-
+  
   async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
-    const limit = query.limit ?? 4
-    const page = query.page ?? 1
+    const limit = query.limit ?? 4;
+    const page = query.page ?? 1;
 
     // подсчет данных
     // крайне важно потом закэшировать ее
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
       this.leaderRepository.getAmount(),
-      this.timepadRepository.getAmount()
+      this.timepadRepository.getAmount(),
     ]);
 
     // определение сколько нужно взять и пропустить из каждого источника
@@ -52,7 +53,7 @@ export class EventsService {
       limit,
       page,
       leaderEventsAmount,
-      timepadEventsAmount
+      timepadEventsAmount,
     );
 
     // если ивентов нет
@@ -61,25 +62,33 @@ export class EventsService {
 
       return {
         data: {
-          events: []
+          events: [],
         },
         meta: {
           totalEventsAmount: 0,
           totalPagesAmount: 0,
-          currentPage: 0
-        }
+          currentPage: 0,
+        },
       };
-    };
+    }
 
     // определение количества страниц
     const totalPagesAmount = Math.ceil(
-      (leaderEventsAmount + timepadEventsAmount) / limit
+      (leaderEventsAmount + timepadEventsAmount) / limit,
     );
 
     // параллельный запрос данных ивентов
     const [leaderEvents, timepadEvents] = await Promise.all([
-      this.leaderRepository.getAll(batchData.firstAmount, batchData.firstSkip, query),
-      this.timepadRepository.getAll(batchData.secondAmount, batchData.secondSkip, query)
+      this.leaderRepository.getAll(
+        batchData.firstAmount,
+        batchData.firstSkip,
+        query,
+      ),
+      this.timepadRepository.getAll(
+        batchData.secondAmount,
+        batchData.secondSkip,
+        query,
+      ),
     ]);
 
     // слияние и сортировка
@@ -89,30 +98,35 @@ export class EventsService {
     this.logger.debug('Finded events: ', sortedEvents);
     return {
       data: {
-        events: sortedEvents
+        events: sortedEvents,
       },
       meta: {
         totalEventsAmount: leaderEventsAmount + timepadEventsAmount,
         totalPagesAmount: totalPagesAmount,
-        currentPage: page
-      }
+        currentPage: page,
+      },
     };
   }
 
-  
-  async getEventsListFromSource(source: EventAPISource, query: GetEventListQueryDto) {
-    let result: EventResultWithMeta<LeaderData> | EventResultWithMeta<TimepadData>;
-  
+
+  async getEventsListFromSource(
+    source: EventAPISource,
+    query: GetEventListQueryDto,
+  ) {
+    let result:
+      | EventResultWithMeta<LeaderData>
+      | EventResultWithMeta<TimepadData>;
+
     if (source === EventAPISource.TIMEPAD) {
       result = await this.timepadRepository.getAllWithMeta(query);
     } else {
       result = await this.leaderRepository.getAllWithMeta(query);
-    };
+    }
 
     if (!result || !result.data) {
       throw new NotFoundException(`Events not found in source ${source}`);
-    };
-  
+    }
+
     return result;
   }
 
@@ -137,22 +151,22 @@ export class EventsService {
     limit: number,
     page: number,
     api1Total: number,
-    api2Total: number
+    api2Total: number,
   ) {
     let rest1 = api1Total;
     let rest2 = api2Total;
     let firstSkip = 0;
     let secondSkip = 0;
-  
+
     for (let i = 0; i < page - 1; i++) {
       let need = limit;
-  
+
       let take1 = Math.min(Math.ceil(limit / 2), rest1);
       need -= take1;
-  
+
       let take2 = Math.min(need, rest2);
       need -= take2;
-  
+
       // добор
       if (need > 0 && rest1 - take1 > 0) {
         const extra = Math.min(need, rest1 - take1);
@@ -162,14 +176,14 @@ export class EventsService {
         const extra = Math.min(need, rest2 - take2);
         take2 += extra;
         need -= extra;
-      };
-  
+      }
+
       rest1 -= take1;
       rest2 -= take2;
       firstSkip += take1;
       secondSkip += take2;
-    };
-  
+    }
+
     // на случай, если элементы кончились
     if (rest1 === 0 && rest2 === 0) {
       return {
@@ -177,19 +191,19 @@ export class EventsService {
         firstAmount: 0,
         secondSkip,
         secondAmount: 0,
-        isEmpty: true
+        isEmpty: true,
       };
-    };
-  
+    }
+
     // рассчет страницы
     let need = limit;
-  
+
     let take1 = Math.min(Math.ceil(limit / 2), rest1);
     need -= take1;
-  
+
     let take2 = Math.min(need, rest2);
     need -= take2;
-  
+
     if (need > 0 && rest1 - take1 > 0) {
       const extra = Math.min(need, rest1 - take1);
       take1 += extra;
@@ -198,14 +212,14 @@ export class EventsService {
       const extra = Math.min(need, rest2 - take2);
       take2 += extra;
       need -= extra;
-    };
-  
+    }
+
     return {
       firstSkip,
       firstAmount: take1,
       secondSkip,
       secondAmount: take2,
-      isEmpty: take1 + take2 === 0
+      isEmpty: take1 + take2 === 0,
     };
   }
 }

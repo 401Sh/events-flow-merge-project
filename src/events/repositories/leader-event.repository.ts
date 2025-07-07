@@ -21,22 +21,25 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
   }
 
   async getAll(
-    limit: number, 
-    skip: number, 
-    query: GetEventListQueryDto
+    limit: number,
+    skip: number,
+    query: GetEventListQueryDto,
   ): Promise<LeaderData[]> {
     const page = Math.floor(skip / limit) + 1;
     const urlPart = '/events/search';
     const params = {
       paginationSize: limit,
       paginationPage: page,
-      sort: 'date'
+      sort: 'date',
     };
 
-    const data = await this.fetchFromLeaderApi<{ items: any[] }>(urlPart, params);
+    const data = await this.fetchFromLeaderApi<{ items: any[] }>(
+      urlPart,
+      params,
+    );
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
-      
+
     this.logger.debug('Leader event list recieved successfully');
 
     return mappedEvents;
@@ -44,30 +47,30 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
 
   async getAllWithMeta(query: GetEventListQueryDto) {
-    const {
-      limit = 4,
-      page = 1
-    } = query;
-    
+    const { limit = 4, page = 1 } = query;
+
     const urlPart = '/events/search';
     const params = {
       paginationSize: limit,
       paginationPage: page,
-      sort: 'date'
+      sort: 'date',
     };
 
     type LeaderResponseType = {
-      items: any[],
+      items: any[];
       meta: {
-        totalCount: number,
-        paginationPageCount: number,
-      }
+        totalCount: number;
+        paginationPageCount: number;
+      };
     };
 
-    const data = await this.fetchFromLeaderApi<LeaderResponseType>(urlPart, params);
+    const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+      urlPart,
+      params,
+    );
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
-      
+
     this.logger.debug('Leader event list recieved successfully');
 
     const dataWithMeta = {
@@ -75,11 +78,11 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       meta: {
         totalEventsAmount: data.meta.totalCount,
         totalPagesAmount: data.meta.paginationPageCount,
-        currentPage: page
-      }
+        currentPage: page,
+      },
     };
 
-    return dataWithMeta
+    return dataWithMeta;
   }
 
 
@@ -93,8 +96,8 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     const urlPart = '/events/search';
     const params = { paginationSize: 2 };
 
-    const data = await this.fetchFromLeaderApi<{ 
-      meta: { totalCount: number } 
+    const data = await this.fetchFromLeaderApi<{
+      meta: { totalCount: number };
     }>(urlPart, params);
 
     this.logger.debug('Leader events amount recieved successfully');
@@ -102,8 +105,11 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     return data.meta?.totalCount || 0;
   }
 
-
-  private async fetchFromLeaderApi<T>(urlPart: string, params?: Object): Promise<T> {
+  
+  private async fetchFromLeaderApi<T>(
+    urlPart: string,
+    params?: object,
+  ): Promise<T> {
     const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
     const url = `${baseUrl}${urlPart}`;
 
@@ -113,10 +119,10 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       const response = await firstValueFrom(
         this.httpService.get<T>(url, {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          params: params
-        })
+          params: params,
+        }),
       );
 
       this.logger.debug(`Leader API request to ${url} succeeded`);
@@ -125,17 +131,18 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     } catch (error) {
       this.logger.warn(
         `Failed to fetch from Leader API URL: ${url}`,
-        error?.response?.data || error.message
+        error?.response?.data || error.message,
       );
 
-      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const status =
+        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
       throw new HttpException(
         {
           message: `Leader API request failed for URL: ${url}`,
-          details: error?.response?.data || error.message
+          details: error?.response?.data || error.message,
         },
-        status
+        status,
       );
     }
   }

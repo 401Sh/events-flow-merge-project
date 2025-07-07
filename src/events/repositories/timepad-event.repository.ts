@@ -21,52 +21,49 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   }
 
   async getAll(
-    limit: number, 
+    limit: number,
     skip: number,
-    query: GetEventListQueryDto
+    query: GetEventListQueryDto,
   ): Promise<TimepadData[]> {
     const urlPart = '/events';
     const params = {
       limit: limit,
       skip: skip,
-      sort: 'starts_at'
+      sort: 'starts_at',
     };
 
     const data = await this.fetchFromTimepad<{ values: any[] }>(
       urlPart,
-      params
+      params,
     );
     const rawEvents = data.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
-      
+
     this.logger.debug('Timepad event list recieved successfully');
 
-    return mappedEvents
+    return mappedEvents;
   }
 
-
+  
   async getAllWithMeta(query: GetEventListQueryDto) {
-    const {
-      limit = 4,
-      page = 1
-    } = query;
-    
+    const { limit = 4, page = 1 } = query;
+
     const skip = (page - 1) * limit;
     const urlPart = '/events';
     const params = {
       limit: limit,
       skip: skip,
-      sort: 'starts_at'
+      sort: 'starts_at',
     };
 
-    const data = await this.fetchFromTimepad<{ 
-      values: any[], 
-      total: number 
+    const data = await this.fetchFromTimepad<{
+      values: any[];
+      total: number;
     }>(urlPart, params);
 
     const rawEvents = data.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
-    
+
     this.logger.debug('Timepad event list with meta recieved successfully');
 
     const dataWithMeta = {
@@ -74,20 +71,20 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       meta: {
         totalEventsAmount: data.total || 0,
         totalPagesAmount: Math.ceil(data.total / limit) || 0,
-        currentPage: page
-      }
+        currentPage: page,
+      },
     };
 
-    return dataWithMeta
+    return dataWithMeta;
   }
 
-  
+
   async getOne(id: number): Promise<TimepadData | null> {
     const urlPart = `/events/${id}`;
-      
+
     const rawEvent = await this.fetchFromTimepad<any>(urlPart);
     const normalizedEvent = rawEvent ? mapTimepad(rawEvent) : null;
-      
+
     this.logger.debug('Timepad event recieved successfully');
 
     return normalizedEvent;
@@ -97,51 +94,55 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   async getAmount(): Promise<number> {
     const urlPart = '/events';
     const params = { limit: 1 };
-      
+
     const data = await this.fetchFromTimepad<{ total: number }>(
-      urlPart, params
+      urlPart,
+      params,
     );
-    
+
     this.logger.debug('Timepad events amount recieved successfully');
     return data.total || 0;
   }
 
-
-  private async fetchFromTimepad<T>(urlPart: string, params?: Object): Promise<T> {
+  
+  private async fetchFromTimepad<T>(
+    urlPart: string,
+    params?: object,
+  ): Promise<T> {
     const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
     const url = `${baseUrl}${urlPart}`;
 
     const token = await this.authService.getAccessToken();
-  
+
     try {
       const response = await firstValueFrom(
         this.httpService.get<T>(url, {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          params: params
-        })
+          params: params,
+        }),
       );
-  
+
       this.logger.debug(`Timepad request to ${url} succeeded`);
-  
+
       return response.data;
     } catch (error) {
       this.logger.warn(
         `Failed to fetch from Timepad URL: ${url}`,
-        error?.response?.data || error.message
+        error?.response?.data || error.message,
       );
-  
-      const status = error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-  
+
+      const status =
+        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
       throw new HttpException(
         {
           message: `Timepad request failed for URL: ${url}`,
-          details: error?.response?.data || error.message
+          details: error?.response?.data || error.message,
         },
-        status
+        status,
       );
     }
   }
-  
 }

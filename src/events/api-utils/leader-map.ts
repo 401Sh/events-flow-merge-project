@@ -7,7 +7,7 @@ import { LeaderData } from '../interfaces/leader-data.interface';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.
- * 
+ *
  * @param dateStr - date string, e.g. "2024-05-28 00:10:43"
  * @param tzOffset - time zone offset, e.g. "+03:00"
  * @returns a string in UTC ISO format: "2024-05-27T21:10:43Z"
@@ -20,7 +20,7 @@ export function toIso(dateStr: string, tzOffset: string): string {
   // UTC в ISO 8601 с Z (UTC)
   const final_date = formatISO(utcDate, { representation: 'complete' });
 
-  return final_date
+  return final_date;
 }
 
 
@@ -38,7 +38,7 @@ export function mapLeader(raw: any): LeaderData {
   } catch (e) {
     full_info = null;
   }
-  
+
   // удаление HTML элементов после преобразования
   if (full_info?.blocks?.length > 0) {
     const firstText = full_info.blocks[0]?.data?.text ?? '';
@@ -50,12 +50,15 @@ export function mapLeader(raw: any): LeaderData {
   const location: EventLocation = {
     country: addr?.titles?.country || null,
     city: addr?.city || null,
-    address: addr ? `${addr.street ?? ''} ${addr.house ?? ''}`.trim() || null : null,
+    address: addr
+      ? `${addr.street ?? ''} ${addr.house ?? ''}`.trim() || null
+      : null,
   };
 
-  const tags: EventThemes[] = (raw.themes || []).map(
-    (t: EventThemes) => ({ id: t.id, name: t.name })
-  );
+  const tags: EventThemes[] = (raw.themes || []).map((t: EventThemes) => ({
+    id: t.id,
+    name: t.name,
+  }));
 
   const leaderObj: LeaderData = {
     id: raw.id,
@@ -66,8 +69,12 @@ export function mapLeader(raw: any): LeaderData {
     fullDescription: raw.full_info || null,
     startsAt: toIso(raw.date_start, tz),
     endsAt: raw.date_end ? toIso(raw.date_end, tz) : null,
-    registrationStart: raw.registrationDateStart ? toIso(raw.registrationDateStart, tz) : null,
-    registrationEnd: raw.registrationDateEnd ? toIso(raw.registrationDateEnd, tz) : null,
+    registrationStart: raw.registrationDateStart
+      ? toIso(raw.registrationDateStart, tz)
+      : null,
+    registrationEnd: raw.registrationDateEnd
+      ? toIso(raw.registrationDateEnd, tz)
+      : null,
     // возможно стоит изменить
     url: `https://leader-id.ru/events/${raw.id}`,
     posterUrl: raw.photo || null,
@@ -79,9 +86,9 @@ export function mapLeader(raw: any): LeaderData {
     source: EventAPISource.LEADER_ID,
     specificData: {
       participantsCount: raw.stat?.participants?.count || 0,
-      participants: raw.stat?.participants?.list || []
-    }
+      participants: raw.stat?.participants?.list || [],
+    },
   };
-  
+
   return leaderObj;
 }

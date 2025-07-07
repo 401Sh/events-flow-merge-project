@@ -1,6 +1,6 @@
 import { EventAPISource } from '../enums/event-source.enum'
 import { EventLocation } from './event-location.interface'
-import { EventThemes } from './event-themes.interface'
+import { EventThemes } from '../../dictionaries/interfaces/event-themes.interface'
 
 export interface UnifiedEvent {
   // id | id

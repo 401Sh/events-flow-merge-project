@@ -1,7 +1,7 @@
 import { parse, formatISO } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 import { EventAPISource } from '../enums/event-source.enum';
-import { EventThemes } from '../interfaces/event-themes.interface';
+import { EventThemes } from '../../dictionaries/interfaces/event-themes.interface';
 import { EventLocation } from '../interfaces/event-location.interface';
 import { LeaderData } from '../interfaces/leader-data.interface';
 

@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { OauthModule } from './auth/oauth/oauth.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
+import { DictionariesModule } from './dictionaries/dictionaries.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { HttpModule } from '@nestjs/axios';
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    HttpModule
+    HttpModule,
+    DictionariesModule
   ],
   controllers: [AppController],
   providers: [AppService]

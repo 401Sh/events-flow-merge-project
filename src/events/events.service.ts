@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AbstractLeaderRepository } from './repositories/abstract-leader.repository';
+import { AbstractLeaderEventRepository } from './repositories/abstract-leader-event.repository';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { UnifiedEvent } from './interfaces/unified-event.interface';
-import { AbstractTimepadRepository } from './repositories/abstract-timepad.repository';
+import { AbstractTimepadEventRepository } from './repositories/abstract-timepad-event.repository';
 import { EventsListResult } from './interfaces/events-list-result.interface';
 import { EventAPISource } from './enums/event-source.enum';
 import { LeaderData } from './interfaces/leader-data.interface';
@@ -14,8 +14,8 @@ export class EventsService {
   private readonly logger = new Logger(EventsService.name);
 
   constructor(
-    private readonly leaderRepository: AbstractLeaderRepository,
-    private readonly timepadRepository: AbstractTimepadRepository,
+    private readonly leaderRepository: AbstractLeaderEventRepository,
+    private readonly timepadRepository: AbstractTimepadEventRepository,
   ) {}
 
 

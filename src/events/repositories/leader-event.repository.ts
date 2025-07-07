@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { AbstractLeaderRepository } from './abstract-leader.repository';
+import { AbstractLeaderEventRepository } from './abstract-leader-event.repository';
 import { LeaderData } from '../interfaces/leader-data.interface';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
@@ -9,8 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 
 @Injectable()
-export class LeaderRepository extends AbstractLeaderRepository {
-  private readonly logger = new Logger(LeaderRepository.name);
+export class LeaderEventRepository extends AbstractLeaderEventRepository {
+  private readonly logger = new Logger(LeaderEventRepository.name);
 
   constructor(
     private readonly configService: ConfigService,

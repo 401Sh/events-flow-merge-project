@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { AbstractTimepadRepository } from './abstract-timepad.repository';
+import { AbstractTimepadEventRepository } from './abstract-timepad-event.repository';
 import { TimepadData } from '../interfaces/timepad-data.interface';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
@@ -9,8 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 
 @Injectable()
-export class TimepadRepository extends AbstractTimepadRepository {
-  private readonly logger = new Logger(TimepadRepository.name);
+export class TimepadEventRepository extends AbstractTimepadEventRepository {
+  private readonly logger = new Logger(TimepadEventRepository.name);
 
   constructor(
     private readonly configService: ConfigService,

@@ -2,7 +2,7 @@ import { GetEventListQueryDto } from "../dto/get-event-list-query.dto";
 import { EventResultWithMeta } from "../interfaces/events-result-with-meta.interface";
 import { TimepadData } from "../interfaces/timepad-data.interface";
 
-export abstract class AbstractTimepadRepository {
+export abstract class AbstractTimepadEventRepository {
   abstract getAll(
     limit: number, 
     skip: number, 

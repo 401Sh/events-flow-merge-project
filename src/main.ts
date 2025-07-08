@@ -1,12 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
-import { Logger, LogLevel } from '@nestjs/common';
+import { Logger, LogLevel, ValidationPipe } from '@nestjs/common';
+import * as cors from "cors";
 
 dotenv.config();
 
 const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
+
+const allowedFrontendHost = process.env.FRONTEND_HOST || '127.0.0.1';
+const allowedFrontendPort = process.env.FRONTEND_PORT ? +process.env.FRONTEND_PORT : 5173;
 
 const logLevels = (process.env.LOG_LEVEL?.split(',') as LogLevel[]) || [
   'log',
@@ -19,6 +23,19 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   app.useLogger(logLevels);
+
+  app.use(cors({
+    origin: `http://${allowedFrontendHost}:${allowedFrontendPort}`,
+    credentials: true,
+    methods: "GET,POST,PUT,DELETE,PATCH",
+    allowedHeaders: "Content-Type,Authorization",
+  }));
+
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }));
 
   await app.listen(port, host).then(() => {
     Logger.log(`http://${host}:${port}/api/v1 - server start`);

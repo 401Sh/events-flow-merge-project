@@ -31,6 +31,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       paginationSize: limit,
       paginationPage: page,
       sort: 'date',
+      query: query.search,
     };
 
     const data = await this.fetchFromLeaderApi<{ items: any[] }>(
@@ -54,6 +55,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       paginationSize: limit,
       paginationPage: page,
       sort: 'date',
+      query: query.search,
     };
 
     type LeaderResponseType = {

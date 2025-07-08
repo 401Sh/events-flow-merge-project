@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetEventListQueryDto {
   @Type(() => Number)
@@ -13,4 +13,8 @@ export class GetEventListQueryDto {
   @IsOptional()
   @Min(1, { message: 'Page cannot be less than 1' })
   page?: number;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
 }

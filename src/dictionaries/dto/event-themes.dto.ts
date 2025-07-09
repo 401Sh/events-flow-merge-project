@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
-import { EventThemes } from "../interfaces/event-themes.interface";
 
-export class EventThemesDto implements EventThemes {
+export class EventThemesDto {
   @ApiProperty()
   @IsNumber()
   id: number;

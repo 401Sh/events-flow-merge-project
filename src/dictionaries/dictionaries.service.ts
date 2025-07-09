@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
 import { AbstractLeaderDictionaryRepository } from './repositories/abstract-leader-dictionary.repository';
 import { AbstractTimepadDictionaryRepository } from './repositories/abstract-timepad-dictionary.repository';
-import { EventThemes } from './interfaces/event-themes.interface';
+import { EventThemesDto } from './dto/event-themes.dto';
 
 @Injectable()
 export class DictionariesService {
@@ -14,7 +14,7 @@ export class DictionariesService {
   ) {}
 
   async getEventThemesBySource(source: EventAPISource) {
-    let result: EventThemes[];
+    let result: EventThemesDto[];
 
     if (source === EventAPISource.TIMEPAD) {
       result = await this.timepadRepository.getAllThemes();

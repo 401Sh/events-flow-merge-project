@@ -1,10 +1,10 @@
 import { formatISO, parseISO } from 'date-fns';
 import { EventAPISource } from '../enums/event-source.enum';
 import { EventLocation } from '../interfaces/event-location.interface';
-import { EventThemes } from '../../dictionaries/interfaces/event-themes.interface';
 import { TimepadData } from '../interfaces/timepad-data.interface';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { plainToInstance } from 'class-transformer';
+import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 // import { htmlToText } from 'html-to-text'; для преобразования html
 
 /**
@@ -32,7 +32,7 @@ export function mapTimepad(raw: any): TimepadDataDto {
     address: raw.location?.address || null,
   };
 
-  const tags: EventThemes[] = (raw.categories || []).map((t: EventThemes) => ({
+  const themes: EventThemesDto[] = (raw.categories || []).map((t: EventThemesDto) => ({
     id: t.id,
     name: t.name,
   }));
@@ -53,7 +53,7 @@ export function mapTimepad(raw: any): TimepadDataDto {
     organizer: raw.organization?.name || null,
 
     location: location,
-    tags: tags,
+    themes: themes,
 
     source: EventAPISource.TIMEPAD,
     specificData: {

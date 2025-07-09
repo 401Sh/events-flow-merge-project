@@ -63,7 +63,7 @@ export class UnifiedEventDto implements UnifiedEvent {
   @ApiProperty({ type: [EventThemesDto] })
   @ValidateNested({ each: true })
   @Type(() => EventThemesDto)
-  tags: EventThemesDto[];
+  themes: EventThemesDto[];
 
   @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()

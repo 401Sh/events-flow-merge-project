@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { Logger, LogLevel, ValidationPipe } from '@nestjs/common';
 import * as cors from "cors";
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 dotenv.config();
 
@@ -37,8 +38,18 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
+  const swaggerConfig = new DocumentBuilder()
+    .setDescription('API documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document);
+
   await app.listen(port, host).then(() => {
     Logger.log(`http://${host}:${port}/api/v1 - server start`);
+    Logger.log(`http://${host}:${port}/api/docs - swagger start`);
   });
 }
 bootstrap();

@@ -48,6 +48,7 @@ src/
 │── constants/
 │
 │── dictionaries/       # Модуль словарей
+│   ├── dto/
 │   ├── interfaces/
 │   ├── repositories/   # Абстракции и реализации запросов dictionaries со сторонних API
 │

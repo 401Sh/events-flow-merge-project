@@ -3,6 +3,8 @@ import { EventAPISource } from '../enums/event-source.enum';
 import { EventLocation } from '../interfaces/event-location.interface';
 import { EventThemes } from '../../dictionaries/interfaces/event-themes.interface';
 import { TimepadData } from '../interfaces/timepad-data.interface';
+import { TimepadDataDto } from '../dto/timepad-data.dto';
+import { plainToInstance } from 'class-transformer';
 // import { htmlToText } from 'html-to-text'; для преобразования html
 
 /**
@@ -23,7 +25,7 @@ export function toIsoFromOffsetString(dateStr?: string): string | null {
   }
 }
 
-export function mapTimepad(raw: any): TimepadData {
+export function mapTimepad(raw: any): TimepadDataDto {
   const location: EventLocation = {
     country: raw.location?.country || null,
     city: raw.location?.city || null,
@@ -59,5 +61,5 @@ export function mapTimepad(raw: any): TimepadData {
     },
   };
 
-  return timepadObj;
+  return plainToInstance(TimepadDataDto, timepadObj);
 }

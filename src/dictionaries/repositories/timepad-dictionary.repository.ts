@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { AbstractTimepadDictionaryRepository } from './abstract-timepad-dictionary.repository';
-import { EventThemes } from '../interfaces/event-themes.interface';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { EventThemesDto } from '../dto/event-themes.dto';
 
 @Injectable()
 export class TimepadDictionaryRepository extends AbstractTimepadDictionaryRepository {
@@ -18,10 +18,10 @@ export class TimepadDictionaryRepository extends AbstractTimepadDictionaryReposi
     super();
   }
 
-  async getAllThemes(): Promise<EventThemes[]> {
+  async getAllThemes(): Promise<EventThemesDto[]> {
     const urlPart = `/dictionary/event_categories`;
 
-    const rawThemes = await this.fetchFromTimepad<{ values: EventThemes[] }>(
+    const rawThemes = await this.fetchFromTimepad<{ values: EventThemesDto[] }>(
       urlPart,
     );
 

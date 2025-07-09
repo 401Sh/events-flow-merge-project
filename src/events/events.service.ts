@@ -1,13 +1,13 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractLeaderEventRepository } from './repositories/abstract-leader-event.repository';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
-import { UnifiedEvent } from './interfaces/unified-event.interface';
 import { AbstractTimepadEventRepository } from './repositories/abstract-timepad-event.repository';
 import { EventsListResult } from './interfaces/events-list-result.interface';
 import { EventAPISource } from './enums/event-source.enum';
-import { LeaderData } from './interfaces/leader-data.interface';
-import { TimepadData } from './interfaces/timepad-data.interface';
 import { EventResultWithMeta } from './interfaces/events-result-with-meta.interface';
+import { UnifiedEventDto } from './dto/unified-event.dto';
+import { LeaderDataDto } from './dto/leader-data.dto';
+import { TimepadDataDto } from './dto/timepad-data.dto';
 
 @Injectable()
 export class EventsService {
@@ -19,7 +19,7 @@ export class EventsService {
   ) {}
 
   async getFromSourceById(source: EventAPISource, id: number) {
-    let data: LeaderData | TimepadData | null = null;
+    let data: LeaderDataDto | TimepadDataDto | null = null;
 
     if (source === EventAPISource.TIMEPAD) {
       data = await this.timepadRepository.getOne(id);
@@ -89,7 +89,7 @@ export class EventsService {
     ]);
 
     // слияние и сортировка
-    const allEvents: UnifiedEvent[] = [...leaderEvents, ...timepadEvents];
+    const allEvents: UnifiedEventDto[] = [...leaderEvents, ...timepadEvents];
     const sortedEvents = this.sortEvents(allEvents);
 
     this.logger.debug('Finded events: ', sortedEvents);
@@ -111,8 +111,8 @@ export class EventsService {
     query: GetEventListQueryDto,
   ) {
     let result:
-      | EventResultWithMeta<LeaderData>
-      | EventResultWithMeta<TimepadData>;
+      | EventResultWithMeta<LeaderDataDto>
+      | EventResultWithMeta<TimepadDataDto>;
 
     if (source === EventAPISource.TIMEPAD) {
       result = await this.timepadRepository.getAllWithMeta(query);
@@ -128,7 +128,7 @@ export class EventsService {
   }
 
 
-  private sortEvents(events: UnifiedEvent[]): UnifiedEvent[] {
+  private sortEvents(events: UnifiedEventDto[]): UnifiedEventDto[] {
     // сортировка без мутации
     // return [...events].sort((a, b) => {
     // сортирует с мутацией исходного массива

@@ -41,8 +41,8 @@ export class EventsService {
     const limit = query.limit ?? 4;
     const page = query.page ?? 1;
 
+    // TODO: Добавить кэширование
     // подсчет данных
-    // крайне важно потом закэшировать ее
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
       this.leaderRepository.getAmount(),
       this.timepadRepository.getAmount(),
@@ -145,7 +145,7 @@ export class EventsService {
   }
 
 
-  // функция для определения сколько
+  // функция для определения сколько мероприятий
   // пропустить и взять в каждом из api
   private getBatchAtSkip(
     limit: number,
@@ -167,7 +167,7 @@ export class EventsService {
       let take2 = Math.min(need, rest2);
       need -= take2;
 
-      // добор
+      // добор недостающих
       if (need > 0 && rest1 - take1 > 0) {
         const extra = Math.min(need, rest1 - take1);
         take1 += extra;

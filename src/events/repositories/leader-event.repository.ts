@@ -88,7 +88,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
   }
 
 
-  // в актуальном API нет возможности запросить одно событие
+  // NOTE: В актуальном API leader нет роута для получения информации о событии
   async getOne(id: number): Promise<LeaderData | null> {
     throw new Error('Method not implemented.');
   }

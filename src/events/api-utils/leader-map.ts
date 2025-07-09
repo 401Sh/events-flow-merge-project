@@ -64,8 +64,7 @@ export function mapLeader(raw: any): LeaderData {
     id: raw.id,
     title: raw.full_name,
     shortDescription: shortDesc,
-    // тут нужно подумать над форматом
-    // сейчас это JSON, что очень плохо, ведь у timepad это html
+    // TODO: Привести к одному формату с timepad
     fullDescription: raw.full_info || null,
     startsAt: toIso(raw.date_start, tz),
     endsAt: raw.date_end ? toIso(raw.date_end, tz) : null,
@@ -75,7 +74,6 @@ export function mapLeader(raw: any): LeaderData {
     registrationEnd: raw.registrationDateEnd
       ? toIso(raw.registrationDateEnd, tz)
       : null,
-    // возможно стоит изменить
     url: `https://leader-id.ru/events/${raw.id}`,
     posterUrl: raw.photo || null,
     organizer: raw.organizers?.[0]?.name || null,

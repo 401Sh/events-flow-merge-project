@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { LEADER_API_TOKEN_TTL } from 'src/constants/auth.constant';
 
 @Injectable()
 export class LeaderClientAuthService implements OnModuleInit {
@@ -16,9 +17,7 @@ export class LeaderClientAuthService implements OnModuleInit {
   private tokensData: LeaderTokenResponse | null = null;
   private tokenExpireTimeout: NodeJS.Timeout | null = null;
 
-  // обновление токена через 6.5 дней после получения
-  // возможно срок действия следует вынести в конфиг
-  private readonly tokenExpirationTime = 6.5 * 24 * 60 * 60 * 1000;
+  private readonly tokenExpirationTime = LEADER_API_TOKEN_TTL;
 
   constructor(
     private readonly configService: ConfigService,
@@ -120,7 +119,7 @@ export class LeaderClientAuthService implements OnModuleInit {
         error?.response?.data || error.message,
       );
 
-      // стоит кидать ошибки, если повторная авторизация тоже не удалась
+      // TODO: Реализовать обработку ошибок при неудачной повторной авторизации
       return this.authenticateClient();
     }
   }

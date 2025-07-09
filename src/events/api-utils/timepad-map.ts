@@ -39,8 +39,7 @@ export function mapTimepad(raw: any): TimepadData {
     id: raw.id,
     title: raw.name,
     shortDescription: raw.description_short || null,
-    // тут нужно подумать над форматом
-    // сейчас это html, что очень плохо, ведь у leader это json
+    // TODO: Привести к одному формату с leader
     fullDescription: raw.description_html || null,
     startsAt: toIsoFromOffsetString(raw.starts_at),
     endsAt: toIsoFromOffsetString(raw.ends_at) || null,

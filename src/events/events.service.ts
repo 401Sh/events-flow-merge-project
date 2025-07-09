@@ -4,7 +4,6 @@ import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { AbstractTimepadEventRepository } from './repositories/abstract-timepad-event.repository';
 import { EventsListResult } from './interfaces/events-list-result.interface';
 import { EventAPISource } from './enums/event-source.enum';
-import { EventResultWithMeta } from './interfaces/events-result-with-meta.interface';
 import { UnifiedEventDto } from './dto/unified-event.dto';
 import { LeaderDataDto } from './dto/leader-data.dto';
 import { TimepadDataDto } from './dto/timepad-data.dto';
@@ -37,7 +36,7 @@ export class EventsService {
   }
 
   
-  async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
+  async getEventsList(query: GetEventListQueryDto) {
     // TODO: Добавить кэширование
     // подсчет данных
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
@@ -111,8 +110,8 @@ export class EventsService {
     query: GetEventListQueryDto,
   ) {
     let result:
-      | EventResultWithMeta<LeaderDataDto>
-      | EventResultWithMeta<TimepadDataDto>;
+      | EventsListResult<LeaderDataDto>
+      | EventsListResult<TimepadDataDto>;
 
     if (source === EventAPISource.TIMEPAD) {
       result = await this.timepadRepository.getAllWithMeta(query);

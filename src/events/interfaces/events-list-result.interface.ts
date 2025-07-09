@@ -1,9 +1,5 @@
-import { UnifiedEvent } from './unified-event.interface';
-
-export interface EventsListResult {
-  data: {
-    events: UnifiedEvent[];
-  };
+export interface EventsListResult<T> {
+  data: T[];
   meta: {
     totalEventsAmount: number;
     totalPagesAmount: number;

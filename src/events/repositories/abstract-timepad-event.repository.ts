@@ -1,6 +1,6 @@
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
-import { EventResultWithMeta } from '../interfaces/events-result-with-meta.interface';
+import { EventsListResult } from '../interfaces/events-list-result.interface';
 
 export abstract class AbstractTimepadEventRepository {
   abstract getAll(
@@ -10,7 +10,7 @@ export abstract class AbstractTimepadEventRepository {
   ): Promise<TimepadDataDto[]>;
   abstract getAllWithMeta(
     query: GetEventListQueryDto,
-  ): Promise<EventResultWithMeta<TimepadDataDto>>;
+  ): Promise<EventsListResult<TimepadDataDto>>;
   abstract getOne(id: number): Promise<TimepadDataDto | null>;
   abstract getAmount(): Promise<number>;
 }

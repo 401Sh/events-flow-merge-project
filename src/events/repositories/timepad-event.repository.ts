@@ -48,7 +48,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
 
   
   async getAllWithMeta(query: GetEventListQueryDto) {
-    const { limit = 4, page = 1 } = query;
+    const { limit, page } = query;
 
     const skip = (page - 1) * limit;
     const urlPart = '/events';

@@ -38,9 +38,6 @@ export class EventsService {
 
   
   async getEventsList(query: GetEventListQueryDto): Promise<EventsListResult> {
-    const limit = query.limit ?? 4;
-    const page = query.page ?? 1;
-
     // TODO: Добавить кэширование
     // подсчет данных
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
@@ -50,8 +47,8 @@ export class EventsService {
 
     // определение сколько нужно взять и пропустить из каждого источника
     const batchData = this.getBatchAtSkip(
-      limit,
-      page,
+      query.limit,
+      query.page,
       leaderEventsAmount,
       timepadEventsAmount,
     );
@@ -74,7 +71,7 @@ export class EventsService {
 
     // определение количества страниц
     const totalPagesAmount = Math.ceil(
-      (leaderEventsAmount + timepadEventsAmount) / limit,
+      (leaderEventsAmount + timepadEventsAmount) / query.limit,
     );
 
     // параллельный запрос данных ивентов
@@ -103,7 +100,7 @@ export class EventsService {
       meta: {
         totalEventsAmount: leaderEventsAmount + timepadEventsAmount,
         totalPagesAmount: totalPagesAmount,
-        currentPage: page,
+        currentPage: query.page,
       },
     };
   }

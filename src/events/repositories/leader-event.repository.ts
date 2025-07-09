@@ -48,7 +48,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
 
   async getAllWithMeta(query: GetEventListQueryDto) {
-    const { limit = 4, page = 1 } = query;
+    const { limit, page } = query;
 
     const urlPart = '/events/search';
     const params = {

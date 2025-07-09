@@ -26,10 +26,6 @@ export class DictionariesService {
       throw new NotFoundException(`Themes not found in source ${source}`);
     }
 
-    return {
-      data: {
-        themes: result,
-      },
-    };
+    return { data: result };
   }
 }

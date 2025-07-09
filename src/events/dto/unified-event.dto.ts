@@ -7,40 +7,40 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { UnifiedEvent } from '../interfaces/unified-event.interface';
 
 export class UnifiedEventDto implements UnifiedEvent {
-  @ApiProperty()
+  @ApiProperty({ type: Number })
   @IsNumber()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: String })
   @IsString()
   title: string;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   shortDescription: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   fullDescription: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   startsAt: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   endsAt: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   registrationStart: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   registrationEnd: string | null;
@@ -50,12 +50,12 @@ export class UnifiedEventDto implements UnifiedEvent {
   @Type(() => EventLocationDto)
   location: EventLocationDto;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   url: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   posterUrl: string | null;
@@ -65,7 +65,7 @@ export class UnifiedEventDto implements UnifiedEvent {
   @Type(() => EventThemesDto)
   tags: EventThemesDto[];
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
   organizer: string | null;

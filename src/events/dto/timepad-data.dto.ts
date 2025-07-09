@@ -5,7 +5,7 @@ import { UnifiedEventDto } from './unified-event.dto';
 import { Type } from 'class-transformer';
 
 export class TimepadSpecificDataDto {
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true, type: Boolean, required: false })
   @IsOptional()
   @IsBoolean()
   isSendingFreeTickets: boolean | null;

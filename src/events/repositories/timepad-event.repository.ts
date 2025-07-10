@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { AbstractTimepadEventRepository } from './abstract-timepad-event.repository';
-import { TimepadData } from '../interfaces/timepad-data.interface';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
 import { firstValueFrom } from 'rxjs';
 import { mapTimepad } from '../api-utils/timepad-map';
 import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
+import { TimepadDataDto } from '../dto/timepad-data.dto';
 
 @Injectable()
 export class TimepadEventRepository extends AbstractTimepadEventRepository {
@@ -24,7 +24,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     limit: number,
     skip: number,
     query: GetEventListQueryDto,
-  ): Promise<TimepadData[]> {
+  ): Promise<TimepadDataDto[]> {
     const urlPart = '/events';
     const keywords = query.search?.split(" ")
     const params = {
@@ -83,7 +83,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   }
 
 
-  async getOne(id: number): Promise<TimepadData | null> {
+  async getOne(id: number): Promise<TimepadDataDto | null> {
     const urlPart = `/events/${id}`;
 
     const rawEvent = await this.fetchFromTimepad<any>(urlPart);

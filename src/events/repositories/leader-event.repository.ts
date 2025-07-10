@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { AbstractLeaderEventRepository } from './abstract-leader-event.repository';
-import { LeaderData } from '../interfaces/leader-data.interface';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
+import { LeaderDataDto } from '../dto/leader-data.dto';
 
 @Injectable()
 export class LeaderEventRepository extends AbstractLeaderEventRepository {
@@ -24,7 +24,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     limit: number,
     skip: number,
     query: GetEventListQueryDto,
-  ): Promise<LeaderData[]> {
+  ): Promise<LeaderDataDto[]> {
     const page = Math.floor(skip / limit) + 1;
     const urlPart = '/events/search';
     const params = {
@@ -89,7 +89,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
 
   // NOTE: В актуальном API leader нет роута для получения информации о событии
-  async getOne(id: number): Promise<LeaderData | null> {
+  async getOne(id: number): Promise<LeaderDataDto | null> {
     throw new Error('Method not implemented.');
   }
 

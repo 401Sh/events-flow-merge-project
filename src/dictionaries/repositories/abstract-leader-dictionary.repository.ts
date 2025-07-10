@@ -1,5 +1,5 @@
-import { EventThemes } from '../interfaces/event-themes.interface';
+import { EventThemesDto } from '../dto/event-themes.dto';
 
 export abstract class AbstractLeaderDictionaryRepository {
-  abstract getAllThemes(): Promise<EventThemes[]>;
+  abstract getAllThemes(): Promise<EventThemesDto[]>;
 }

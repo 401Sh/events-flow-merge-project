@@ -1,16 +1,16 @@
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
-import { EventResultWithMeta } from '../interfaces/events-result-with-meta.interface';
-import { LeaderData } from '../interfaces/leader-data.interface';
+import { LeaderDataDto } from '../dto/leader-data.dto';
+import { EventsListResult } from '../interfaces/events-list-result.interface';
 
 export abstract class AbstractLeaderEventRepository {
   abstract getAll(
     limit: number,
     skip: number,
     query: GetEventListQueryDto,
-  ): Promise<LeaderData[]>;
+  ): Promise<LeaderDataDto[]>;
   abstract getAllWithMeta(
     query: GetEventListQueryDto,
-  ): Promise<EventResultWithMeta<LeaderData>>;
-  abstract getOne(id: number): Promise<LeaderData | null>;
+  ): Promise<EventsListResult<LeaderDataDto>>;
+  abstract getOne(id: number): Promise<LeaderDataDto | null>;
   abstract getAmount(): Promise<number>;
 }

@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { AbstractLeaderDictionaryRepository } from './abstract-leader-dictionary.repository';
-import { EventThemes } from '../interfaces/event-themes.interface';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { EventThemesDto } from '../dto/event-themes.dto';
 
 @Injectable()
 export class LeaderDictionaryRepository extends AbstractLeaderDictionaryRepository {
@@ -18,10 +18,10 @@ export class LeaderDictionaryRepository extends AbstractLeaderDictionaryReposito
     super();
   }
 
-  async getAllThemes(): Promise<EventThemes[]> {
+  async getAllThemes(): Promise<EventThemesDto[]> {
     const urlPart = `/themes`;
 
-    const rawThemes = await this.fetchFromLeaderApi<EventThemes[]>(urlPart);
+    const rawThemes = await this.fetchFromLeaderApi<EventThemesDto[]>(urlPart);
 
     this.logger.debug('Leader themes recieved successfully');
 

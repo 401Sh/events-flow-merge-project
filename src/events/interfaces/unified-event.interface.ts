@@ -1,6 +1,6 @@
+import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { EventAPISource } from '../enums/event-source.enum';
 import { EventLocation } from './event-location.interface';
-import { EventThemes } from '../../dictionaries/interfaces/event-themes.interface';
 
 export interface UnifiedEvent {
   // id | id
@@ -32,7 +32,7 @@ export interface UnifiedEvent {
   // poster_image.default_url | photo
   posterUrl: string | null;
   // categories[] | themes[]
-  tags: EventThemes[];
+  themes: EventThemesDto[];
   // organization.name | organizers[0]?.name (возможно вообще нет этого поля - api не совпадает с реальными данными)
   organizer: string | null;
   /** Откуда пришло это событие (timepad или leaderId) */

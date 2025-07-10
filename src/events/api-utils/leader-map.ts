@@ -1,9 +1,11 @@
 import { parse, formatISO } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 import { EventAPISource } from '../enums/event-source.enum';
-import { EventThemes } from '../../dictionaries/interfaces/event-themes.interface';
 import { EventLocation } from '../interfaces/event-location.interface';
 import { LeaderData } from '../interfaces/leader-data.interface';
+import { plainToInstance } from 'class-transformer';
+import { LeaderDataDto } from '../dto/leader-data.dto';
+import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.
@@ -24,7 +26,7 @@ export function toIso(dateStr: string, tzOffset: string): string {
 }
 
 
-export function mapLeader(raw: any): LeaderData {
+export function mapLeader(raw: any): LeaderDataDto {
   const tz = raw.timezone?.value || '+03:00';
 
   // извлечь короткое описание из JSON
@@ -55,7 +57,7 @@ export function mapLeader(raw: any): LeaderData {
       : null,
   };
 
-  const tags: EventThemes[] = (raw.themes || []).map((t: EventThemes) => ({
+  const themes: EventThemesDto[] = (raw.themes || []).map((t: EventThemesDto) => ({
     id: t.id,
     name: t.name,
   }));
@@ -79,7 +81,7 @@ export function mapLeader(raw: any): LeaderData {
     organizer: raw.organizers?.[0]?.name || null,
 
     location: location,
-    tags: tags,
+    themes: themes,
 
     source: EventAPISource.LEADER_ID,
     specificData: {
@@ -88,5 +90,5 @@ export function mapLeader(raw: any): LeaderData {
     },
   };
 
-  return leaderObj;
+  return plainToInstance(LeaderDataDto, leaderObj);
 }

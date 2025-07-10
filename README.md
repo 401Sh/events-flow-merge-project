@@ -34,7 +34,7 @@ npm install
 npm run start
 ```
 
-После запуска проект будет доступен по адресу {HOST}:{PORT}/api/v1
+После запуска проект будет доступен по адресу {HOST}:{PORT}/api/v1, а Swagger по адресу {HOST}:{PORT}/api/v1/docs
 
 ## Структура проекта
 
@@ -50,6 +50,7 @@ src/
 │── constants/
 │
 │── dictionaries/       # Модуль словарей
+│   ├── dto/
 │   ├── interfaces/
 │   ├── repositories/   # Абстракции и реализации запросов dictionaries со сторонних API
 │

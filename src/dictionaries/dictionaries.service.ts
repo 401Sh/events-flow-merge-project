@@ -3,15 +3,29 @@ import { EventAPISource } from 'src/events/enums/event-source.enum';
 import { AbstractLeaderDictionaryRepository } from './repositories/abstract-leader-dictionary.repository';
 import { AbstractTimepadDictionaryRepository } from './repositories/abstract-timepad-dictionary.repository';
 import { EventThemes } from './interfaces/event-themes.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EventThemeEntity } from './entities/theme.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class DictionariesService {
   private readonly logger = new Logger(DictionariesService.name);
 
   constructor(
+    @InjectRepository(EventThemeEntity)
+    private eventThemeRepository: Repository<EventThemeEntity>,
+
     private readonly leaderRepository: AbstractLeaderDictionaryRepository,
     private readonly timepadRepository: AbstractTimepadDictionaryRepository,
   ) {}
+
+  async getEventThemes() {
+    const themes = await this.eventThemeRepository.find();
+    
+    this.logger.debug(`Finded themes`, themes);
+    return { data: themes };
+  }
+
 
   async getEventThemesBySource(source: EventAPISource) {
     let result: EventThemes[];

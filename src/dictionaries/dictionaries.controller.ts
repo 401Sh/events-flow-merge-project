@@ -6,6 +6,12 @@ import { DictionariesService } from './dictionaries.service';
 export class DictionariesController {
   constructor(private dictionariesService: DictionariesService) {}
 
+  @Get('themes')
+  async getEventThemes() {
+    return await this.dictionariesService.getEventThemes();
+  }
+
+
   @Get('themes/:source')
   async getEventThemesBySource(
     @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,

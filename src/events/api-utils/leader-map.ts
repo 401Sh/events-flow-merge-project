@@ -57,10 +57,12 @@ export function mapLeader(raw: any): LeaderDataDto {
       : null,
   };
 
-  const themes: EventThemesDto[] = (raw.themes || []).map((t: EventThemesDto) => ({
-    id: t.id,
-    name: t.name,
-  }));
+  const themes: EventThemesDto[] = (raw.themes || []).map(
+    (t: EventThemesDto) => ({
+      id: t.id,
+      name: t.name,
+    }),
+  );
 
   const leaderObj: LeaderData = {
     id: raw.id,

@@ -9,15 +9,27 @@ import {
 import { EventsService } from './events.service';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { EventAPISource } from './enums/event-source.enum';
-import { ApiExtraModels, ApiOperation, ApiParam, ApiQuery, ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { EventsListResultDto } from './dto/events-list-result.dto';
-import { LeaderEventResultDto, TimepadEventResultDto } from './dto/event-result.dto';
+import {
+  LeaderEventResultDto,
+  TimepadEventResultDto,
+} from './dto/event-result.dto';
 
 @Controller('events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
-  @ApiOperation({ summary: 'Получить список мероприятий от leaderId и timepad вместе' })
+  @ApiOperation({
+    summary: 'Получить список мероприятий от leaderId и timepad вместе',
+  })
   @ApiQuery({
     name: 'limit',
     required: false,
@@ -38,8 +50,8 @@ export class EventsController {
     description: 'Фильтр по названию',
     example: 'ФОТО экскурсия',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Список мероприятий от двух источников',
     type: EventsListResultDto,
   })
@@ -48,7 +60,10 @@ export class EventsController {
     return await this.eventsService.getEventsList(query);
   }
 
-  @ApiOperation({ summary: 'Получить список мероприятий из leaderId или timepad' })
+  
+  @ApiOperation({
+    summary: 'Получить список мероприятий из leaderId или timepad',
+  })
   @ApiParam({
     name: 'source',
     required: true,
@@ -77,7 +92,7 @@ export class EventsController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Список мероприятий от источника', 
+    description: 'Список мероприятий от источника',
     type: EventsListResultDto,
   })
   @Get(':source')
@@ -103,9 +118,9 @@ export class EventsController {
     example: '744099',
   })
   @ApiExtraModels(TimepadEventResultDto, LeaderEventResultDto)
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Данные о мероприятии', 
+  @ApiResponse({
+    status: 200,
+    description: 'Данные о мероприятии',
     schema: {
       oneOf: [
         { $ref: getSchemaPath(LeaderEventResultDto) },

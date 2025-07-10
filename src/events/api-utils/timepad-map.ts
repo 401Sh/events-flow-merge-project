@@ -25,6 +25,7 @@ export function toIsoFromOffsetString(dateStr?: string): string | null {
   }
 }
 
+
 export function mapTimepad(raw: any): TimepadDataDto {
   const location: EventLocation = {
     country: raw.location?.country || null,
@@ -32,10 +33,12 @@ export function mapTimepad(raw: any): TimepadDataDto {
     address: raw.location?.address || null,
   };
 
-  const themes: EventThemesDto[] = (raw.categories || []).map((t: EventThemesDto) => ({
-    id: t.id,
-    name: t.name,
-  }));
+  const themes: EventThemesDto[] = (raw.categories || []).map(
+    (t: EventThemesDto) => ({
+      id: t.id,
+      name: t.name,
+    }),
+  );
 
   const timepadObj: TimepadData = {
     id: raw.id,

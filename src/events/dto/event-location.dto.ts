@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
-import { EventLocation } from "../interfaces/event-location.interface";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
+import { EventLocation } from '../interfaces/event-location.interface';
 
 export class EventLocationDto implements EventLocation {
   @ApiProperty({ nullable: true, type: String, required: false })

@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { ValidateNested } from "class-validator";
-import { TimepadDataDto } from "./timepad-data.dto";
-import { LeaderDataDto } from "./leader-data.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
+import { TimepadDataDto } from './timepad-data.dto';
+import { LeaderDataDto } from './leader-data.dto';
 
 export class TimepadEventResultDto {
   @ApiProperty()

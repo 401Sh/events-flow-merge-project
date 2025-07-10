@@ -26,12 +26,12 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     query: GetEventListQueryDto,
   ): Promise<TimepadDataDto[]> {
     const urlPart = '/events';
-    const keywords = query.search?.split(" ")
+    const keywords = query.search?.split(' ');
     const params = {
       limit: limit,
       skip: skip,
       sort: 'starts_at',
-      keywords: keywords
+      keywords: keywords,
     };
 
     const data = await this.fetchFromTimepad<{ values: any[] }>(
@@ -52,12 +52,12 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
 
     const skip = (page - 1) * limit;
     const urlPart = '/events';
-    const keywords = query.search?.split(" ")
+    const keywords = query.search?.split(' ');
     const params = {
       limit: limit,
       skip: skip,
       sort: 'starts_at',
-      keywords: keywords
+      keywords: keywords,
     };
 
     const data = await this.fetchFromTimepad<{
@@ -108,7 +108,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     return data.total || 0;
   }
 
-  
+
   private async fetchFromTimepad<T>(
     urlPart: string,
     params?: object,

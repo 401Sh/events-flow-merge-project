@@ -38,7 +38,34 @@ export class OAuthLeaderHelper {
     if (!data.user_validated) {
       this.logger.debug('Unauthorized user:', data.user_id);
       throw new UnauthorizedException('Leader ID - unauthorized');
-    }
+    };
+
+    return data;
+  }
+
+
+  async refreshToken(refreshToken: string) {
+    const urlPart = '/oauth/token';
+    const LeaderConfig = this.authService.getAuthConfig();
+
+    const body = {
+      client_id: LeaderConfig.clientId,
+      client_secret: LeaderConfig.clientSecret,
+      grant_type: "refresh_token",
+      refresh_token: refreshToken
+    };
+
+    const data = await this.leaderApiPostRequest<CallbackResultDto>(
+      urlPart, 
+      body
+    );
+
+    this.logger.debug('Received Leader refresh token response');
+
+    if (!data.user_validated) {
+      this.logger.debug('Unauthorized user:', data.user_id);
+      throw new UnauthorizedException('Leader ID - unauthorized');
+    };
 
     return data;
   }

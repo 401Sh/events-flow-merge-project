@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
 import { CallbackDto } from '../dto/callback.dto';
@@ -31,6 +31,17 @@ export class OAuthService {
 
   async getLeaderAccessToken(query: CallbackDto) {
     const data = await this.oAuthLeaderHelper.exchangeСode(query.code);
+
+    return data;
+  }
+
+
+  async refreshLeaderToken(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('refresh token is missing');
+    };
+
+    const data = await this.oAuthLeaderHelper.refreshToken(refreshToken);
 
     return data;
   }

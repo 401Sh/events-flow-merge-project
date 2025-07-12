@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseEnumPipe, Query, Res } from '@nestjs/common';
+import { Controller, Get, Param, ParseEnumPipe, Post, Query, Res, Request } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
@@ -28,9 +28,21 @@ export class OAuthController {
     
     res.cookie('refreshToken', result.refresh_token, refreshCookieOptions);
 
-    return res.json({ 
-      accessToken: result.access_token,
-      userId: result.user_id,
-    });
+    return res.json({ accessToken: result.access_token });
+  }
+
+
+  @Post('refresh/leaderId')
+  async oauthLeaderRefresh(
+    @Request() req,
+    @Res() res: Response,
+  ) {
+    const refreshToken = req.cookies['refreshToken'];
+
+    const result = await this.oAuthService.refreshLeaderToken(refreshToken);
+
+    res.cookie('refreshToken', result.refresh_token, refreshCookieOptions);
+
+    return res.json({ accessToken: result.access_token });
   }
 }

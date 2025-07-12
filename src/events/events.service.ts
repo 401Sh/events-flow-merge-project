@@ -26,12 +26,6 @@ export class EventsService {
       data = await this.leaderRepository.getOne(id);
     }
 
-    if (!data) {
-      throw new NotFoundException(
-        `Event with id ${id} not found in source ${source}`,
-      );
-    }
-
     return { data };
   }
 

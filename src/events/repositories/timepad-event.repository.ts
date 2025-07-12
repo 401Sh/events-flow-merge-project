@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractTimepadEventRepository } from './abstract-timepad-event.repository';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
@@ -34,7 +34,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       keywords: keywords,
     };
 
-    const data = await this.fetchFromTimepad<{ values: any[] }>(
+    const data = await this.fetchFromTimepadApi<{ values: any[] }>(
       urlPart,
       params,
     );
@@ -60,7 +60,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       keywords: keywords,
     };
 
-    const data = await this.fetchFromTimepad<{
+    const data = await this.fetchFromTimepadApi<{
       values: any[];
       total: number;
     }>(urlPart, params);
@@ -86,8 +86,16 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   async getOne(id: number): Promise<TimepadDataDto | null> {
     const urlPart = `/events/${id}`;
 
-    const rawEvent = await this.fetchFromTimepad<any>(urlPart);
-    const normalizedEvent = rawEvent ? mapTimepad(rawEvent) : null;
+    const rawEvent = await this.fetchFromTimepadApi<any>(urlPart);
+
+    if (!rawEvent.items || rawEvent.items.length == 0) {
+      this.logger.log(`Timepad event ${id} not found`);
+      throw new NotFoundException(
+        `Event with id ${id} not found in source timepad`,
+      );
+    };
+
+    const normalizedEvent = mapTimepad(rawEvent);
 
     this.logger.debug('Timepad event recieved successfully');
 
@@ -99,7 +107,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     const urlPart = '/events';
     const params = { limit: 1 };
 
-    const data = await this.fetchFromTimepad<{ total: number }>(
+    const data = await this.fetchFromTimepadApi<{ total: number }>(
       urlPart,
       params,
     );
@@ -109,7 +117,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   }
 
 
-  private async fetchFromTimepad<T>(
+  private async fetchFromTimepadApi<T>(
     urlPart: string,
     params?: object,
   ): Promise<T> {

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractLeaderEventRepository } from './abstract-leader-event.repository';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
@@ -88,9 +88,31 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
   }
 
 
-  // NOTE: В актуальном API leader нет роута для получения информации о событии
   async getOne(id: number): Promise<LeaderDataDto | null> {
-    throw new Error('Method not implemented.');
+    const urlPart = `/events/search`;
+    const params = {
+      paginationSize: 2,
+      paginationPage: 1,
+      query: id,
+    };
+
+    const dataResponce = await this.fetchFromLeaderApi<{ items: any[] }>(
+      urlPart, 
+      params
+    );
+    
+    if (!dataResponce.items || dataResponce.items.length == 0) {
+      this.logger.log(`Leader event ${id} not found`);
+      throw new NotFoundException(
+        `Event with id ${id} not found in source leaderId`,
+      );
+    };
+
+    const normalizedEvent = mapLeader(dataResponce.items[0]);
+
+    this.logger.debug('Leader event recieved successfully');
+
+    return normalizedEvent;
   }
 
 

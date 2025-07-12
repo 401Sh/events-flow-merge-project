@@ -1,0 +1,84 @@
+import { HttpService } from "@nestjs/axios";
+import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { LeaderClientAuthService } from "../client-auth/leader-client-auth.service";
+import { firstValueFrom } from "rxjs";
+import { CallbackResultDto } from "../dto/callback-result.dto";
+
+@Injectable()
+export class OAuthLeaderHelper {
+  private readonly logger = new Logger(OAuthLeaderHelper.name);
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+    private readonly authService: LeaderClientAuthService,
+  ) {}
+
+  
+  
+  async exchangeСode(code: string): Promise<CallbackResultDto> {
+    const urlPart = '/oauth/token';
+    const LeaderConfig = this.authService.getAuthConfig();
+
+    const body = {
+      client_id: LeaderConfig.clientId,
+      client_secret: LeaderConfig.clientSecret,
+      grant_type: "authorization_code",
+      code: code,
+    };
+
+    const data = await this.leaderApiPostRequest<CallbackResultDto>(
+      urlPart, 
+      body
+    );
+
+    this.logger.debug('Received Leader user code exchange response');
+
+    if (!data.user_validated) {
+      this.logger.debug('Unauthorized user:', data.user_id);
+      throw new UnauthorizedException('Leader ID - unauthorized');
+    }
+
+    return data;
+  }
+
+
+  private async leaderApiPostRequest<T>(
+    urlPart: string,
+    body?: object,
+  ): Promise<T> {
+    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
+    const url = `${baseUrl}${urlPart}`;
+  
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<T>(url, body, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }),
+      );
+  
+      this.logger.debug(`Leader API POST request to ${url} succeeded`);
+  
+      return response.data;
+    } catch (error) {
+      this.logger.warn(
+        `Failed to POST to Leader API URL: ${url}`,
+        error?.response?.data || error.message,
+      );
+  
+      const status =
+        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+  
+      throw new HttpException(
+        {
+          message: `Leader API POST request failed for URL: ${url}`,
+          details: error?.response?.data || error.message,
+        },
+        status,
+      );
+    }
+  }  
+}

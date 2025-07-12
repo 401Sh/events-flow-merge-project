@@ -1,12 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { CallbackDto } from '../dto/callback.dto';
+import { OAuthLeaderHelper } from './oauth-leader-helper';
 
 @Injectable()
 export class OAuthService {
   private readonly logger = new Logger(OAuthService.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly oAuthLeaderHelper: OAuthLeaderHelper,
+  ) {}
 
   getRedircetUrl(source: EventAPISource) {
     // TODO: вынести редирект в конфиг или env и заменить на реальное значение
@@ -21,6 +26,13 @@ export class OAuthService {
 
     this.logger.debug(`${source} authorize redirect url: `, authUrl);
     return authUrl;
+  }
+
+
+  async getLeaderAccessToken(query: CallbackDto) {
+    const data = await this.oAuthLeaderHelper.exchangeСode(query.code);
+
+    return data;
   }
 
 

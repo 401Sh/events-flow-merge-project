@@ -24,7 +24,7 @@ export class LeaderClientAuthService implements OnModuleInit {
     private readonly httpService: HttpService,
   ) {}
 
-  private getAuthConfig() {
+  getAuthConfig() {
     return {
       baseURL: this.configService.getOrThrow<string>('LEADER_API_URL'),
       clientId: this.configService.getOrThrow<string>('LEADER_CLIENT_ID'),

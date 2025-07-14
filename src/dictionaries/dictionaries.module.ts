@@ -7,9 +7,19 @@ import { LeaderDictionaryRepository } from './repositories/leader-dictionary.rep
 import { TimepadDictionaryRepository } from './repositories/timepad-dictionary.repository';
 import { HttpModule } from '@nestjs/axios';
 import { ClientAuthModule } from 'src/auth/client-auth/client-auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EventThemeEntity } from './entities/theme.entity';
+import { ExternalThemeRefEntity } from './entities/external-theme.entity';
 
 @Module({
-  imports: [ClientAuthModule, HttpModule],
+  imports: [
+    ClientAuthModule, 
+    HttpModule,
+    TypeOrmModule.forFeature([
+      EventThemeEntity,
+      ExternalThemeRefEntity,
+    ])
+  ],
   controllers: [DictionariesController],
   providers: [
     DictionariesService,

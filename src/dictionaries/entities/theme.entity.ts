@@ -1,0 +1,36 @@
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { ExternalThemeRefEntity } from './external-theme.entity';
+
+@Entity('event_themes')
+export class EventThemeEntity extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  name: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  tag: string;
+
+  @Column({ type: 'integer', nullable: true })
+  idTimepad: number;
+
+  @Column({ type: 'integer', nullable: true })
+  idLeader: number;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(
+    () => ExternalThemeRefEntity,
+    (externalRef) => externalRef.eventTheme,
+    { cascade: true, onDelete: 'CASCADE' }
+  )
+  externalRefs: ExternalThemeRefEntity[];
+}

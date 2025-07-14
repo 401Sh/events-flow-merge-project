@@ -7,6 +7,8 @@ import { OauthModule } from './auth/oauth/oauth.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { DictionariesModule } from './dictionaries/dictionaries.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from './configs/typeorm.config';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { DictionariesModule } from './dictionaries/dictionaries.module';
     }),
     HttpModule,
     DictionariesModule,
+    TypeOrmModule.forRoot(dataSourceOptions),
   ],
   controllers: [AppController],
   providers: [AppService],

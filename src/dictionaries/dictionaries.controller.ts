@@ -8,6 +8,21 @@ import { EventThemesList } from './dto/event-themes-list.dto';
 export class DictionariesController {
   constructor(private dictionariesService: DictionariesService) {}
 
+
+  @ApiOperation({
+    summary: 'Получить общий список тем мероприятий',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список общий список тем',
+    type: EventThemesList,
+  })
+  @Get('themes')
+  async getEventThemes() {
+    return await this.dictionariesService.getEventThemes();
+  }
+
+
   @ApiOperation({
     summary: 'Получить список тем мероприятий для leaderId или timepad',
   })

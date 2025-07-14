@@ -12,12 +12,6 @@ export class EventThemeEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   tag: string;
 
-  @Column({ type: 'integer', nullable: true })
-  idTimepad: number;
-
-  @Column({ type: 'integer', nullable: true })
-  idLeader: number;
-
   @Column({ default: true })
   isActive: boolean;
 

@@ -10,15 +10,22 @@ export class OAuthService {
 
   private readonly appUrl: string;
   private readonly leaderOAuthUrl: string;
+  private readonly leaderClientId: string;
+  
   private readonly timepadOAuthUrl: string;
+  private readonly timepadClientId: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly oAuthLeaderHelper: OAuthLeaderHelper,
   ) {
-    this.appUrl = this.configService.getOrThrow("APP_BASE_URL");
-    this.leaderOAuthUrl = this.configService.getOrThrow("LEADER_OAUTH_URL");
-    this.timepadOAuthUrl = this.configService.getOrThrow("TIMEPAD_OAUTH_URL");
+    this.appUrl = this.configService.getOrThrow('APP_BASE_URL');
+
+    this.leaderOAuthUrl = this.configService.getOrThrow('LEADER_OAUTH_URL');
+    this.leaderClientId = this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
+
+    this.timepadOAuthUrl = this.configService.getOrThrow('TIMEPAD_OAUTH_URL');
+    this.timepadClientId = this.configService.getOrThrow('TIMEPAD_CLIENT_ID')
   }
 
   getRedircetUrl(source: EventAPISource) {
@@ -56,20 +63,16 @@ export class OAuthService {
 
   getSourceRedirectUrlParts(source: EventAPISource) {
     if (source == EventAPISource.LEADER_ID) {
-      const clientId = this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
-      
       return {
         baseURL: this.leaderOAuthUrl,
-        clientId: clientId,
+        clientId: this.leaderClientId,
         type: 'code',
       };
     }
-
-    const clientId = this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
     
     return {
       baseURL: this.timepadOAuthUrl,
-      clientId: clientId,
+      clientId: this.timepadClientId,
       type: 'token',
     };
   }

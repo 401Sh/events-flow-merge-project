@@ -1,11 +1,12 @@
 import { HttpService } from "@nestjs/axios";
-import { Logger, UnauthorizedException, HttpStatus, HttpException } from "@nestjs/common";
+import { Logger, UnauthorizedException, HttpStatus, HttpException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { firstValueFrom } from "rxjs";
 import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
 import { CallbackResultDto } from "src/auth/dto/callback-result.dto";
 import { AbstractLeaderOAuthRepository } from "./abstract-leader-oauth.repository";
 
+@Injectable()
 export class LeaderOAuthRepository extends AbstractLeaderOAuthRepository {
   private readonly logger = new Logger(LeaderOAuthRepository.name);
 
@@ -15,6 +16,7 @@ export class LeaderOAuthRepository extends AbstractLeaderOAuthRepository {
     private readonly authService: LeaderClientAuthService,
   ) {
     super();
+    console.log(this.configService.get('TIMEPAD_TOKEN'))
   }
 
   

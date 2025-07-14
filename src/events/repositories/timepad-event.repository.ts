@@ -90,7 +90,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
 
     const rawEvent = await this.fetchFromTimepadApi<any>(urlPart);
 
-    if (!rawEvent.items || rawEvent.items.length == 0) {
+    if (!rawEvent) {
       this.logger.log(`Timepad event ${id} not found`);
       throw new NotFoundException(
         `Event with id ${id} not found in source timepad`,

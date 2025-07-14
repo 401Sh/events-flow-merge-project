@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TimepadClientAuthService {
-  constructor(private readonly configService: ConfigService) {}
+  readonly apiToken: string;
 
-  getAccessToken(): string {
-    return this.configService.getOrThrow<string>('TIMEPAD_TOKEN');
+  constructor(private readonly configService: ConfigService) {
+    this.apiToken = this.configService.getOrThrow<string>('TIMEPAD_TOKEN');
   }
 }

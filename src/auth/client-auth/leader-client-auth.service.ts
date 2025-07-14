@@ -18,20 +18,20 @@ export class LeaderClientAuthService implements OnModuleInit {
   private tokenExpireTimeout: NodeJS.Timeout | null = null;
 
   private readonly tokenExpirationTime = LEADER_API_TOKEN_TTL;
+  private readonly baseUrl: string;
+
+  readonly clientId: string;
+  readonly clientSecret: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-  ) {}
-
-  private getAuthConfig() {
-    return {
-      baseURL: this.configService.getOrThrow<string>('LEADER_API_URL'),
-      clientId: this.configService.getOrThrow<string>('LEADER_CLIENT_ID'),
-      clientSecret: this.configService.getOrThrow<string>(
-        'LEADER_CLIENT_SECRET',
-      ),
-    };
+  ) {
+    this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
+    this.clientId = this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
+    this.clientSecret = this.configService.getOrThrow<string>(
+      'LEADER_CLIENT_SECRET'
+    );
   }
 
   
@@ -46,13 +46,11 @@ export class LeaderClientAuthService implements OnModuleInit {
 
 
   async authenticateClient(): Promise<LeaderTokenResponse> {
-    const { baseURL, clientId, clientSecret } = this.getAuthConfig();
-
     try {
       const response = await firstValueFrom(
-        this.httpService.post<LeaderTokenResponse>(`${baseURL}/oauth/token`, {
-          client_id: clientId,
-          client_secret: clientSecret,
+        this.httpService.post<LeaderTokenResponse>(`${this.baseUrl}/oauth/token`, {
+          client_id: this.clientId,
+          client_secret: this.clientSecret,
           grant_type: 'client_credentials',
         }),
       );
@@ -97,13 +95,11 @@ export class LeaderClientAuthService implements OnModuleInit {
       return this.authenticateClient();
     }
 
-    const { baseURL, clientId, clientSecret } = this.getAuthConfig();
-
     try {
       const response = await firstValueFrom(
-        this.httpService.post<LeaderTokenResponse>(`${baseURL}/oauth/token`, {
-          client_id: clientId,
-          client_secret: clientSecret,
+        this.httpService.post<LeaderTokenResponse>(`${this.baseUrl}/oauth/token`, {
+          client_id: this.clientId,
+          client_secret: this.clientSecret,
           grant_type: 'refresh_token',
           refresh_token: this.tokensData.refresh_token,
         }),

@@ -9,6 +9,7 @@ import { EventThemesDto } from '../dto/event-themes.dto';
 @Injectable()
 export class LeaderDictionaryRepository extends AbstractLeaderDictionaryRepository {
   private readonly logger = new Logger(LeaderDictionaryRepository.name);
+  private readonly baseUrl: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -16,6 +17,7 @@ export class LeaderDictionaryRepository extends AbstractLeaderDictionaryReposito
     private readonly authService: LeaderClientAuthService,
   ) {
     super();
+    this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
 
   async getAllThemes(): Promise<EventThemesDto[]> {
@@ -30,8 +32,7 @@ export class LeaderDictionaryRepository extends AbstractLeaderDictionaryReposito
 
   
   private async fetchFromLeaderApi<T>(urlPart: string): Promise<T> {
-    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
-    const url = `${baseUrl}${urlPart}`;
+    const url = `${this.baseUrl}${urlPart}`;
 
     const token = await this.authService.getAccessToken();
 

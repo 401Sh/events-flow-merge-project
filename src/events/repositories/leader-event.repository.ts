@@ -11,6 +11,7 @@ import { LeaderDataDto } from '../dto/leader-data.dto';
 @Injectable()
 export class LeaderEventRepository extends AbstractLeaderEventRepository {
   private readonly logger = new Logger(LeaderEventRepository.name);
+  private readonly baseUrl: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -18,6 +19,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     private readonly authService: LeaderClientAuthService,
   ) {
     super();
+    this.baseUrl = this.configService.getOrThrow('LEADER_API_URL')
   }
 
   async getAll(
@@ -134,8 +136,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     urlPart: string,
     params?: object,
   ): Promise<T> {
-    const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
-    const url = `${baseUrl}${urlPart}`;
+    const url = `${this.baseUrl}${urlPart}`;
 
     const token = await this.authService.getAccessToken();
 

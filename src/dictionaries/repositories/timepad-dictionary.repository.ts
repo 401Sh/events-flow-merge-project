@@ -9,6 +9,7 @@ import { EventThemesDto } from '../dto/event-themes.dto';
 @Injectable()
 export class TimepadDictionaryRepository extends AbstractTimepadDictionaryRepository {
   private readonly logger = new Logger(TimepadDictionaryRepository.name);
+  private readonly baseUrl: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -16,6 +17,7 @@ export class TimepadDictionaryRepository extends AbstractTimepadDictionaryReposi
     private readonly authService: TimepadClientAuthService,
   ) {
     super();
+    this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
 
   async getAllThemes(): Promise<EventThemesDto[]> {
@@ -32,10 +34,9 @@ export class TimepadDictionaryRepository extends AbstractTimepadDictionaryReposi
 
   
   private async fetchFromTimepad<T>(urlPart: string): Promise<T> {
-    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
-    const url = `${baseUrl}${urlPart}`;
+    const url = `${this.baseUrl}${urlPart}`;
 
-    const token = await this.authService.getAccessToken();
+    const token = this.authService.apiToken;
 
     try {
       const response = await firstValueFrom(

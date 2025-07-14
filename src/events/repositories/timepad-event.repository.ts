@@ -11,6 +11,7 @@ import { TimepadDataDto } from '../dto/timepad-data.dto';
 @Injectable()
 export class TimepadEventRepository extends AbstractTimepadEventRepository {
   private readonly logger = new Logger(TimepadEventRepository.name);
+  private readonly baseUrl: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -18,6 +19,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     private readonly authService: TimepadClientAuthService,
   ) {
     super();
+    this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
 
   async getAll(
@@ -121,10 +123,9 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     urlPart: string,
     params?: object,
   ): Promise<T> {
-    const baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
-    const url = `${baseUrl}${urlPart}`;
+    const url = `${this.baseUrl}${urlPart}`;
 
-    const token = await this.authService.getAccessToken();
+    const token = this.authService.apiToken;
 
     try {
       const response = await firstValueFrom(

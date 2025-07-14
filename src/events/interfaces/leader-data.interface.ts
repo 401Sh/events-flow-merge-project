@@ -7,9 +7,7 @@ export interface LeaderParticipant {
 }
 
 export interface LeaderSpecificData {
-  // stat?.participants?.count
   participantsCount: number;
-  // stat?.paticipants?.list?[] -> id, name, photo
   participants: LeaderParticipant[];
 }
 

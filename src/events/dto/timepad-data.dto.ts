@@ -1,4 +1,3 @@
-// timepad-specific-data.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 import { UnifiedEventDto } from './unified-event.dto';

@@ -32,13 +32,11 @@ export class EventsService {
   
   async getEventsList(query: GetEventListQueryDto) {
     // TODO: Добавить кэширование
-    // подсчет данных
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
       this.leaderRepository.getAmount(),
       this.timepadRepository.getAmount(),
     ]);
 
-    // определение сколько нужно взять и пропустить из каждого источника
     const batchData = this.getBatchAtSkip(
       query.limit,
       query.page,
@@ -46,7 +44,6 @@ export class EventsService {
       timepadEventsAmount,
     );
 
-    // если ивентов нет
     if (batchData.isEmpty) {
       this.logger.debug('No events found');
 
@@ -62,12 +59,10 @@ export class EventsService {
       };
     }
 
-    // определение количества страниц
     const totalPagesAmount = Math.ceil(
       (leaderEventsAmount + timepadEventsAmount) / query.limit,
     );
 
-    // параллельный запрос данных ивентов
     const [leaderEvents, timepadEvents] = await Promise.all([
       this.leaderRepository.getAll(
         batchData.firstAmount,
@@ -81,7 +76,6 @@ export class EventsService {
       ),
     ]);
 
-    // слияние и сортировка
     const allEvents: UnifiedEventDto[] = [...leaderEvents, ...timepadEvents];
     const sortedEvents = this.sortEvents(allEvents);
 
@@ -122,9 +116,6 @@ export class EventsService {
 
 
   private sortEvents(events: UnifiedEventDto[]): UnifiedEventDto[] {
-    // сортировка без мутации
-    // return [...events].sort((a, b) => {
-    // сортирует с мутацией исходного массива
     const sortedEvents = events.sort((a, b) => {
       const aDate = a.startsAt ? new Date(a.startsAt).getTime() : 0;
       const bDate = b.startsAt ? new Date(b.startsAt).getTime() : 0;
@@ -135,8 +126,6 @@ export class EventsService {
   }
 
 
-  // функция для определения сколько мероприятий
-  // пропустить и взять в каждом из api
   private getBatchAtSkip(
     limit: number,
     page: number,

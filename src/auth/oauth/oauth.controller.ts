@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseEnumPipe, Post, Query, Res, Request } from '@nestjs/common';
+import { Controller, Get, Param, ParseEnumPipe, Post, Query, Res, Request, UseGuards } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
@@ -6,6 +6,7 @@ import { CallbackDto } from '../dto/callback.dto';
 import { refreshCookieOptions } from 'src/configs/cookie.config';
 import { ApiCookieAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { TokenResponseDto } from '../dto/token-response.dto';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @Controller('oauth')
 export class OAuthController {
@@ -75,6 +76,7 @@ export class OAuthController {
   })
   @ApiCookieAuth('refreshToken')
   @Post('refresh/leaderId')
+  @UseGuards(RefreshTokenGuard)
   async oauthLeaderRefresh(
     @Request() req,
     @Res() res: Response,

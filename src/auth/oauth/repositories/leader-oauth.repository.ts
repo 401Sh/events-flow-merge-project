@@ -1,21 +1,22 @@
 import { HttpService } from "@nestjs/axios";
-import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { Logger, UnauthorizedException, HttpStatus, HttpException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { LeaderClientAuthService } from "../client-auth/leader-client-auth.service";
 import { firstValueFrom } from "rxjs";
-import { CallbackResultDto } from "../dto/callback-result.dto";
+import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
+import { CallbackResultDto } from "src/auth/dto/callback-result.dto";
+import { AbstractLeaderOAuthRepository } from "./abstract-leader-oauth.repository";
 
-@Injectable()
-export class OAuthLeaderHelper {
-  private readonly logger = new Logger(OAuthLeaderHelper.name);
+export class LeaderOAuthRepository extends AbstractLeaderOAuthRepository {
+  private readonly logger = new Logger(LeaderOAuthRepository.name);
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
-  ) {}
+  ) {
+    super();
+  }
 
-  
   
   async exchangeСode(code: string): Promise<CallbackResultDto> {
     const urlPart = '/oauth/token';

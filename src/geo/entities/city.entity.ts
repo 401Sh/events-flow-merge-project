@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Point, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
 
 @Entity('cities')
 export class CityEntity {
@@ -16,10 +17,7 @@ export class CityEntity {
     spatialFeatureType: 'Point',
     srid: 4326,
   })
-  geometry: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
+  location: Point;
 
   @CreateDateColumn()
   createdAt: Date;

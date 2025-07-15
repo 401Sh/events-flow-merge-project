@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs
 import { GeoService } from './geo.service';
 import { CoordinatesDto } from './dto/coordinates.dto';
 import { GetCitiesQueryDto } from './dto/get-cities-query.dto';
+import { GetNearestCitiesQueryDto } from './dto/get-nearest-cities-query.dto';
 
 @Controller('geo')
 export class GeoController {
@@ -14,12 +15,15 @@ export class GeoController {
     return await this.geoService.getCityList(query); 
   }
 
+
   @Get(':cityId/nearest')
   async getNearestCities(
     @Param('cityId', ParseIntPipe) cityId: number,
+    @Query() query: GetNearestCitiesQueryDto,
   ) {
-    return await this.geoService.findNearestCities(cityId);
+    return await this.geoService.findNearestCities(cityId, query);
   }
+
 
   @Post('coords')
   async getCityByCoords(@Body() coords: CoordinatesDto) {

@@ -9,6 +9,7 @@ import { HttpModule } from '@nestjs/axios';
 import { DictionariesModule } from './dictionaries/dictionaries.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './configs/typeorm.config';
+import { GeoModule } from './geo/geo.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { dataSourceOptions } from './configs/typeorm.config';
     HttpModule,
     DictionariesModule,
     TypeOrmModule.forRoot(dataSourceOptions),
+    GeoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

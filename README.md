@@ -78,6 +78,8 @@ src/
 │   ├── interfaces/
 │   ├── repositories/   # Абстракции и реализации запросов events со сторонних API
 │
+│── geo/                # Модуль городов и местоположения
+│
 │── users/              # Модуль пользователей
 .env
 tsconfig.json

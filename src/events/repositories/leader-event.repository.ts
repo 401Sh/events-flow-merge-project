@@ -7,6 +7,8 @@ import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth
 import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { LeaderDataDto } from '../dto/leader-data.dto';
+import { DictionariesService } from 'src/dictionaries/dictionaries.service';
+import { EventAPISource } from '../enums/event-source.enum';
 
 @Injectable()
 export class LeaderEventRepository extends AbstractLeaderEventRepository {
@@ -17,6 +19,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
+    private readonly dictionariesService: DictionariesService,
   ) {
     super();
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL')
@@ -34,6 +37,15 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       paginationPage: page,
       sort: 'date',
       query: query.search,
+    };
+
+    if (query.themes) {
+      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
+        query.themes, 
+        EventAPISource.LEADER_ID
+      );
+
+      params['themeIds[]'] = timepadThemes;
     };
 
     const data = await this.fetchFromLeaderApi<{ items: any[] }>(
@@ -58,6 +70,15 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       paginationPage: page,
       sort: 'date',
       query: query.search,
+    };
+
+    if (query.themes) {
+      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
+        query.themes, 
+        EventAPISource.LEADER_ID
+      );
+
+      params['themeIds[]'] = timepadThemes;
     };
 
     type LeaderResponseType = {

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetEventListQueryDto {
   @ApiPropertyOptional({
@@ -32,4 +32,14 @@ export class GetEventListQueryDto {
   @IsString()
   @IsOptional()
   search?: string;
+
+  @ApiPropertyOptional({
+    description: 'Id тем мероприятий',
+    example: [1, 2, 3],
+  })
+  @Type(() => Number)
+  @IsInt({ each: true })
+  @IsArray()
+  @IsOptional()
+  themes?: number[]
 }

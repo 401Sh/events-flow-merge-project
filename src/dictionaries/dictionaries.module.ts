@@ -32,5 +32,6 @@ import { ExternalThemeRefEntity } from './entities/external-theme.entity';
       useClass: TimepadDictionaryRepository,
     },
   ],
+  exports: [DictionariesService],
 })
 export class DictionariesModule {}

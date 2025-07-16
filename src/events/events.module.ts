@@ -7,13 +7,20 @@ import { AbstractTimepadEventRepository } from './repositories/abstract-timepad-
 import { LeaderEventRepository } from './repositories/leader-event.repository';
 import { TimepadEventRepository } from './repositories/timepad-event.repository';
 import { HttpModule } from '@nestjs/axios';
+import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
 
 @Module({
-  imports: [ClientAuthModule, HttpModule],
+  imports: [
+    ClientAuthModule, 
+    HttpModule,
+    DictionariesModule,
+  ],
   controllers: [EventsController],
   providers: [
     EventsService,
-    { provide: AbstractLeaderEventRepository, useClass: LeaderEventRepository },
+    { provide: AbstractLeaderEventRepository, 
+      useClass: LeaderEventRepository,
+    },
     {
       provide: AbstractTimepadEventRepository,
       useClass: TimepadEventRepository,

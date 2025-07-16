@@ -7,6 +7,8 @@ import { mapTimepad } from '../api-utils/timepad-map';
 import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
+import { DictionariesService } from 'src/dictionaries/dictionaries.service';
+import { EventAPISource } from '../enums/event-source.enum';
 
 @Injectable()
 export class TimepadEventRepository extends AbstractTimepadEventRepository {
@@ -17,6 +19,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly authService: TimepadClientAuthService,
+    private readonly dictionariesService: DictionariesService,
   ) {
     super();
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
@@ -29,11 +32,22 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   ): Promise<TimepadDataDto[]> {
     const urlPart = '/events';
     const keywords = query.search?.split(' ');
+
     const params = {
       limit: limit,
       skip: skip,
       sort: 'starts_at',
       keywords: keywords,
+    };
+
+    if (query.themes) {
+      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
+        query.themes, 
+        EventAPISource.TIMEPAD
+      );
+
+      const themeParam = timepadThemes.join(',');
+      params['category_ids'] = themeParam;
     };
 
     const data = await this.fetchFromTimepadApi<{ values: any[] }>(
@@ -62,6 +76,19 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       keywords: keywords,
     };
 
+    if (query.themes) {
+      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
+        query.themes, 
+        EventAPISource.TIMEPAD
+      );
+
+      // TODO: Убрать вложенное ветвление
+      if (timepadThemes.length != 0) {
+        const themeParam = timepadThemes.join(',');
+        params['category_ids'] = themeParam;
+      };
+    };
+    
     const data = await this.fetchFromTimepadApi<{
       values: any[];
       total: number;

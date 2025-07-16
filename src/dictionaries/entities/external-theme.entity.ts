@@ -8,7 +8,7 @@ export class ExternalThemeRefEntity extends BaseEntity {
   id: number;
 
   @Column({ type: 'enum', enum: EventAPISource, nullable: false })
-  name: EventAPISource;
+  source: EventAPISource;
 
   @Column({ type: 'integer', nullable: false })
   sourceId: number;

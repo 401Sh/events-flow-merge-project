@@ -42,4 +42,15 @@ export class GetEventListQueryDto {
   @IsArray()
   @IsOptional()
   themes?: number[]
+
+  @ApiPropertyOptional({
+    description: 'Id города',
+    example: 1,
+    minimum: 1,
+  })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @Min(1, { message: 'Id cannot be less than 1' })
+  cityId?: number;
 }

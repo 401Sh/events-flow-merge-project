@@ -9,6 +9,7 @@ import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
+import { GeoService } from 'src/geo/geo.service';
 
 @Injectable()
 export class TimepadEventRepository extends AbstractTimepadEventRepository {
@@ -20,6 +21,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     private readonly httpService: HttpService,
     private readonly authService: TimepadClientAuthService,
     private readonly dictionariesService: DictionariesService,
+    private readonly geoService: GeoService,
   ) {
     super();
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
@@ -46,8 +48,20 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
         EventAPISource.TIMEPAD
       );
 
-      const themeParam = timepadThemes.join(',');
-      params['category_ids'] = themeParam;
+      // TODO: Убрать вложенное ветвление
+      if (timepadThemes.length != 0) {
+        const themeParam = timepadThemes.join(',');
+        params['category_ids'] = themeParam;
+      };
+    };
+
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+
+      // TODO: Убрать вложенное ветвление
+      if (city) {
+        params['cities'] = city.name;
+      };
     };
 
     const data = await this.fetchFromTimepadApi<{ values: any[] }>(
@@ -86,6 +100,15 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       if (timepadThemes.length != 0) {
         const themeParam = timepadThemes.join(',');
         params['category_ids'] = themeParam;
+      };
+    };
+
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+
+      // TODO: Убрать вложенное ветвление
+      if (city) {
+        params['cities'] = city.name;
       };
     };
     

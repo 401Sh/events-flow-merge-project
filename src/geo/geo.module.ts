@@ -9,6 +9,7 @@ import { CityEntity } from './entities/city.entity';
     TypeOrmModule.forFeature([CityEntity])
   ],
   controllers: [GeoController],
-  providers: [GeoService]
+  providers: [GeoService],
+  exports: [GeoService],
 })
 export class GeoModule {}

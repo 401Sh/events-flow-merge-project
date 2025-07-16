@@ -9,6 +9,7 @@ import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { LeaderDataDto } from '../dto/leader-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
+import { GeoService } from 'src/geo/geo.service';
 
 @Injectable()
 export class LeaderEventRepository extends AbstractLeaderEventRepository {
@@ -20,6 +21,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
     private readonly dictionariesService: DictionariesService,
+    private readonly geoService: GeoService,
   ) {
     super();
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL')
@@ -46,6 +48,25 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       );
 
       params['themeIds[]'] = timepadThemes;
+    };
+
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+
+      // TODO: Убрать вложенное ветвление
+      if (city) {
+        const leaderCities = await this.fetchFromLeaderApi<{ data: any }>(
+          '/cities/search',
+          {
+            q: city.name
+          },
+        );
+
+        // TODO: Срочно убрать вложенное ветвление
+        if (leaderCities.data.length != 0) {
+          params['cityId'] = leaderCities.data[0].id;
+        };
+      };
     };
 
     const data = await this.fetchFromLeaderApi<{ items: any[] }>(
@@ -79,6 +100,25 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       );
 
       params['themeIds[]'] = timepadThemes;
+    };
+
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+
+      // TODO: Убрать вложенное ветвление
+      if (city) {
+        const leaderCities = await this.fetchFromLeaderApi<{ data: any }>(
+          '/cities/search',
+          {
+            q: city.name
+          },
+        );
+
+        // TODO: Срочно убрать вложенное ветвление
+        if (leaderCities.data.length != 0) {
+          params['cityId'] = leaderCities.data[0].id;
+        };
+      };
     };
 
     type LeaderResponseType = {

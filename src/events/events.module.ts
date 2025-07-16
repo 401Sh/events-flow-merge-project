@@ -8,12 +8,14 @@ import { LeaderEventRepository } from './repositories/leader-event.repository';
 import { TimepadEventRepository } from './repositories/timepad-event.repository';
 import { HttpModule } from '@nestjs/axios';
 import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
+import { GeoModule } from 'src/geo/geo.module';
 
 @Module({
   imports: [
     ClientAuthModule, 
     HttpModule,
     DictionariesModule,
+    GeoModule,
   ],
   controllers: [EventsController],
   providers: [

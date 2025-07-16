@@ -60,6 +60,12 @@ export class EventsController {
     explode: true,
     style: 'form',
   })
+  @ApiQuery({
+    name: 'cityId',
+    required: false,
+    description: 'Фильтр по городу',
+    example: 2,
+  })
   @ApiResponse({
     status: 200,
     description: 'Список мероприятий от двух источников',
@@ -99,6 +105,22 @@ export class EventsController {
     required: false,
     description: 'Фильтр по названию',
     example: 'ФОТО экскурсия',
+  })
+  @ApiQuery({
+    name: 'themes',
+    required: false,
+    description: 'Фильтр по темам',
+    example: [3],
+    type: Number,
+    isArray: true,
+    explode: true,
+    style: 'form',
+  })
+  @ApiQuery({
+    name: 'cityId',
+    required: false,
+    description: 'Фильтр по городу',
+    example: 2,
   })
   @ApiResponse({
     status: 200,

@@ -12,6 +12,9 @@ export class EventThemeEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   tag: string;
 
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  posterUrl?: string;
+
   @Column({ default: true })
   isActive: boolean;
 

@@ -1,10 +1,11 @@
 import { DataSource } from 'typeorm';
 import * as citiesDataJson from './data/output.json';
-import { CityEntity } from 'src/geo/entities/city.entity';
+import { CityEntity } from '../../geo/entities/city.entity';
+import { slugify } from 'transliteration';
 
 type CitySeedItem = {
   properties: {
-    int_name: string;
+    int_name?: string;
     name: string;
   };
   geometry: {
@@ -27,9 +28,12 @@ export async function seedCities(dataSource: DataSource) {
       coordinates: coords, // [долгота, широта]
     };
 
+    const intName = props.int_name ? 
+      props.int_name : slugify(props.name, { lowercase: false });
+
     // сущность города
     const city = cityRepo.create({
-      intName: props.int_name,
+      intName: intName,
       name: props.name,
       location: location,
     });
@@ -38,5 +42,4 @@ export async function seedCities(dataSource: DataSource) {
   }
 
   console.log('Cities seed completed');
-  await dataSource.destroy();
 }

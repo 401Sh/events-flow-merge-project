@@ -66,9 +66,7 @@ export class EventsService {
 
     this.logger.debug('Finded events: ', sortedEvents);
     return {
-      data: {
-        events: sortedEvents,
-      },
+      data: sortedEvents,
       meta: {
         totalEventsAmount: leaderEventsAmount + timepadEventsAmount,
         totalPagesAmount: totalPagesAmount,

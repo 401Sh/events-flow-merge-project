@@ -13,12 +13,9 @@ import { ExternalThemeRefEntity } from './entities/external-theme.entity';
 
 @Module({
   imports: [
-    ClientAuthModule, 
+    ClientAuthModule,
     HttpModule,
-    TypeOrmModule.forFeature([
-      EventThemeEntity,
-      ExternalThemeRefEntity,
-    ])
+    TypeOrmModule.forFeature([EventThemeEntity, ExternalThemeRefEntity]),
   ],
   controllers: [DictionariesController],
   providers: [

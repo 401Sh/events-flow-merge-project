@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 // TODO: Заменить на passport jwt guard
 @Injectable()
@@ -9,7 +14,7 @@ export class RefreshTokenGuard implements CanActivate {
 
     if (!refreshToken) {
       throw new UnauthorizedException('refreshToken is missing');
-    };
+    }
 
     return true;
   }

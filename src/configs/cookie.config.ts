@@ -1,15 +1,15 @@
 type RefreshCookie = {
-  httpOnly: boolean,
-  secure: boolean,
-  sameSite: 'strict' | 'lax' | 'none',
-  path: string,
-  maxAge: number
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: 'strict' | 'lax' | 'none';
+  path: string;
+  maxAge: number;
 };
 
 export const refreshCookieOptions: RefreshCookie = {
   httpOnly: true,
   secure: true,
-  sameSite: "strict",
+  sameSite: 'strict',
   path: '/',
-  maxAge: 604800000
+  maxAge: 604800000,
 };

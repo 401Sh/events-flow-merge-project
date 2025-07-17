@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AbstractTimepadEventRepository } from './abstract-timepad-event.repository';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
@@ -38,7 +44,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       '/events',
       params,
     );
-  
+
     const rawEvents = response.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
 
@@ -47,7 +53,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     return mappedEvents;
   }
 
-  
+
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
     const skip = (page - 1) * limit;
@@ -87,7 +93,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       throw new NotFoundException(
         `Event with id ${id} not found in source timepad`,
       );
-    };
+    }
 
     const normalizedEvent = mapTimepad(rawEvent);
 
@@ -122,7 +128,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       sort: 'starts_at',
       keywords: query.search?.split(' ') || [],
     };
-  
+
     if (query.themes) {
       const themeIds = await this.dictionariesService.findExternalThemeIds(
         query.themes,
@@ -132,18 +138,18 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
         params['category_ids'] = themeIds.join(',');
       }
     }
-  
+
     if (query.cityId) {
       const city = await this.geoService.findCityById(query.cityId);
       if (city?.name) {
         params['cities'] = city.name;
       }
     }
-  
+
     return params;
-  }  
+  }
 
-
+  
   private async fetchFromTimepadApi<T>(
     urlPart: string,
     params?: object,

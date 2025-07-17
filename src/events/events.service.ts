@@ -32,7 +32,8 @@ export class EventsService {
   
   async getEventsList(query: GetEventListQueryDto) {
     // TODO: Добавить кэширование
-    const { leaderEventsAmount, timepadEventsAmount } = await this.getEventsAmount();
+    const { leaderEventsAmount, timepadEventsAmount } =
+      await this.getEventsAmount();
 
     const batchData = this.getBatchAtSkip(
       query.limit,
@@ -115,39 +116,35 @@ export class EventsService {
       this.leaderRepository.getAmount(),
       this.timepadRepository.getAmount(),
     ]);
-    
+
     return { leaderEventsAmount, timepadEventsAmount };
   }
 
-
-  private calculatePagination(
-    totalItems: number,
-    limit: number,
-  ) {
+  private calculatePagination(totalItems: number, limit: number) {
     const totalPagesAmount = Math.ceil(totalItems / limit);
     return totalPagesAmount;
   }
 
 
   private async fetchEvents(
-    batchData: { 
-      firstAmount: number; 
-      firstSkip: number; 
-      secondAmount: number; 
-      secondSkip: number; 
+    batchData: {
+      firstAmount: number;
+      firstSkip: number;
+      secondAmount: number;
+      secondSkip: number;
     },
     query: GetEventListQueryDto,
   ): Promise<UnifiedEventDto[]> {
     const [leaderEvents, timepadEvents] = await Promise.all([
       this.leaderRepository.getAll(
-        batchData.firstAmount, 
-        batchData.firstSkip, 
-        query
+        batchData.firstAmount,
+        batchData.firstSkip,
+        query,
       ),
       this.timepadRepository.getAll(
-        batchData.secondAmount, 
-        batchData.secondSkip, 
-        query
+        batchData.secondAmount,
+        batchData.secondSkip,
+        query,
       ),
     ]);
 

@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const dbPortNumber = process.env.DB_PORT ? +process.env.DB_PORT : 3306
+const dbPortNumber = process.env.DB_PORT ? +process.env.DB_PORT : 3306;
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',

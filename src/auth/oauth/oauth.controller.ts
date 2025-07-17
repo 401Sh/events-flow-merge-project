@@ -1,10 +1,26 @@
-import { Controller, Get, Param, ParseEnumPipe, Post, Query, Res, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseEnumPipe,
+  Post,
+  Query,
+  Res,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
 import { CallbackDto } from '../dto/callback.dto';
 import { refreshCookieOptions } from 'src/configs/cookie.config';
-import { ApiCookieAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiCookieAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { TokenResponseDto } from '../dto/token-response.dto';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
@@ -50,24 +66,22 @@ export class OAuthController {
     type: TokenResponseDto,
   })
   @Get('callback/leaderId')
-  async oauthLeaderCallback(
-    @Query() query: CallbackDto,
-    @Res() res: Response
-  ) {
+  async oauthLeaderCallback(@Query() query: CallbackDto, @Res() res: Response) {
     const result = await this.oAuthService.getLeaderAccessToken(query);
-    
+
     res.cookie('refreshToken', result.refresh_token, refreshCookieOptions);
 
-    return res.json({ 
+    return res.json({
       accessToken: result.access_token,
       source: 'leaderId',
     });
   }
 
-
+  
   @ApiOperation({
-    summary: 'Обновить токены доступа к leaderId. ' +
-    'Требуется наличие refresh токена в защищенных куки',
+    summary:
+      'Обновить токены доступа к leaderId. ' +
+      'Требуется наличие refresh токена в защищенных куки',
   })
   @ApiResponse({
     status: 200,
@@ -77,18 +91,15 @@ export class OAuthController {
   @ApiCookieAuth('refreshToken')
   @Post('refresh/leaderId')
   @UseGuards(RefreshTokenGuard)
-  async oauthLeaderRefresh(
-    @Request() req,
-    @Res() res: Response,
-  ) {
+  async oauthLeaderRefresh(@Request() req, @Res() res: Response) {
     const refreshToken = req.cookies['refreshToken'];
 
     const result = await this.oAuthService.refreshLeaderToken(refreshToken);
 
     res.cookie('refreshToken', result.refresh_token, refreshCookieOptions);
 
-    return res.json({ 
-      accessToken: result.access_token, 
+    return res.json({
+      accessToken: result.access_token,
       source: 'leaderId',
     });
   }

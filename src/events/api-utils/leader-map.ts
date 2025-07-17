@@ -54,7 +54,7 @@ export function mapLeader(raw: any): LeaderDataDto {
     url: `https://leader-id.ru/events/${raw.id}`,
     posterUrl: raw.photo || null,
     organizer: raw.organizers?.[0]?.name || null,
-    
+
     location,
     themes,
 
@@ -76,7 +76,7 @@ function parseFullInfo(fullInfoRaw: string | undefined): any | null {
     return JSON.parse(fullInfoRaw);
   } catch {
     return null;
-  };
+  }
 }
 
 

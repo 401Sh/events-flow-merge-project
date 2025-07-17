@@ -1,5 +1,11 @@
-import { Column, CreateDateColumn, Entity, Point, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Point,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('cities')
 export class CityEntity {

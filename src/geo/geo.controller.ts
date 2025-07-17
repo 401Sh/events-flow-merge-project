@@ -1,8 +1,22 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { GeoService } from './geo.service';
 import { CoordinatesDto } from './dto/coordinates.dto';
 import { GetNearestCitiesQueryDto } from './dto/get-nearest-cities-query.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { CititesListResultDto } from './dto/cities-list-result.dto';
 import { CititesListResultWithMetaDto } from './dto/cities-list-result-with-meta.dto';
 import { GetCitiesQueryDto } from './dto/get-cities-query.dto';
@@ -41,10 +55,8 @@ export class GeoController {
     type: CititesListResultWithMetaDto,
   })
   @Get()
-  async getCityList(
-    @Query() query: GetCitiesQueryDto,
-  ) {
-    return await this.geoService.findCityList(query); 
+  async getCityList(@Query() query: GetCitiesQueryDto) {
+    return await this.geoService.findCityList(query);
   }
 
 

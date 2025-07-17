@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AbstractLeaderEventRepository } from './abstract-leader-event.repository';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
@@ -24,7 +30,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     private readonly geoService: GeoService,
   ) {
     super();
-    this.baseUrl = this.configService.getOrThrow('LEADER_API_URL')
+    this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
 
   async getAll(
@@ -39,7 +45,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       '/events/search',
       params,
     );
-    
+
     const rawEvents = response.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
 
@@ -48,7 +54,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     return mappedEvents;
   }
 
-
+  
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
     const params = await this.buildSearchParams(query, page, limit);
@@ -92,16 +98,16 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     };
 
     const dataResponce = await this.fetchFromLeaderApi<{ items: any[] }>(
-      urlPart, 
-      params
+      urlPart,
+      params,
     );
-    
+
     if (!dataResponce.items || dataResponce.items.length == 0) {
       this.logger.log(`Leader event ${id} not found`);
       throw new NotFoundException(
         `Event with id ${id} not found in source leaderId`,
       );
-    };
+    }
 
     const normalizedEvent = mapLeader(dataResponce.items[0]);
 
@@ -126,9 +132,9 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
 
   private async buildSearchParams(
-    query: GetEventListQueryDto, 
-    page: number, 
-    limit: number
+    query: GetEventListQueryDto,
+    page: number,
+    limit: number,
   ): Promise<Record<string, any>> {
     const params: Record<string, any> = {
       paginationSize: limit,
@@ -136,7 +142,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       sort: 'date',
       query: query.search,
     };
-  
+
     if (query.themes) {
       const themeIds = await this.dictionariesService.findExternalThemeIds(
         query.themes,
@@ -144,26 +150,26 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       );
       params['themeIds[]'] = themeIds;
     }
-  
+
     if (query.cityId) {
       const city = await this.geoService.findCityById(query.cityId);
       if (!city) return params;
-  
+
       const leaderCities = await this.fetchFromLeaderApi<{ data: any[] }>(
         '/cities/search',
         { q: city.name },
       );
-  
+
       const leaderCity = leaderCities.data?.[0];
       if (leaderCity?.id) {
         params['cityId'] = leaderCity.id;
       }
     }
-  
+
     return params;
   }
 
-  
+
   private async fetchFromLeaderApi<T>(
     urlPart: string,
     params?: object,

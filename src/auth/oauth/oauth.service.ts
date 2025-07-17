@@ -11,7 +11,7 @@ export class OAuthService {
   private readonly appUrl: string;
   private readonly leaderOAuthUrl: string;
   private readonly leaderClientId: string;
-  
+
   private readonly timepadOAuthUrl: string;
   private readonly timepadClientId: string;
 
@@ -22,10 +22,11 @@ export class OAuthService {
     this.appUrl = this.configService.getOrThrow('APP_BASE_URL');
 
     this.leaderOAuthUrl = this.configService.getOrThrow('LEADER_OAUTH_URL');
-    this.leaderClientId = this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
+    this.leaderClientId =
+      this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
 
     this.timepadOAuthUrl = this.configService.getOrThrow('TIMEPAD_OAUTH_URL');
-    this.timepadClientId = this.configService.getOrThrow('TIMEPAD_CLIENT_ID')
+    this.timepadClientId = this.configService.getOrThrow('TIMEPAD_CLIENT_ID');
   }
 
   getRedircetUrl(source: EventAPISource) {
@@ -34,8 +35,8 @@ export class OAuthService {
 
     const urlParts = this.getSourceRedirectUrlParts(source);
 
-    const authUrl = 
-      `${urlParts.baseURL}/authorize?client_id=${urlParts.clientId}` + 
+    const authUrl =
+      `${urlParts.baseURL}/authorize?client_id=${urlParts.clientId}` +
       `&redirect_uri=${encodedRedirectUrl}&response_type=${urlParts.type}`;
 
     this.logger.debug(`${source} authorize redirect url: `, authUrl);
@@ -53,14 +54,14 @@ export class OAuthService {
   async refreshLeaderToken(refreshToken: string) {
     if (!refreshToken) {
       throw new UnauthorizedException('refresh token is missing');
-    };
+    }
 
     const data = await this.leaderRepository.refreshToken(refreshToken);
 
     return data;
   }
 
-
+  
   getSourceRedirectUrlParts(source: EventAPISource) {
     if (source == EventAPISource.LEADER_ID) {
       return {
@@ -69,7 +70,7 @@ export class OAuthService {
         type: 'code',
       };
     }
-    
+
     return {
       baseURL: this.timepadOAuthUrl,
       clientId: this.timepadClientId,

@@ -38,9 +38,8 @@ export function mapTimepad(raw: any): TimepadDataDto {
     startsAt: toIsoFromOffsetString(raw.starts_at),
     endsAt: toIsoFromOffsetString(raw.ends_at) || null,
     registrationStart: null,
-    registrationEnd: toIsoFromOffsetString(
-      raw.registration_data?.sale_ends_at
-    ) || null,
+    registrationEnd:
+      toIsoFromOffsetString(raw.registration_data?.sale_ends_at) || null,
     url: raw.url || null,
     posterUrl: raw.poster_image?.default_url || null,
     organizer: raw.organization?.name || null,
@@ -49,7 +48,7 @@ export function mapTimepad(raw: any): TimepadDataDto {
     themes,
 
     source: EventAPISource.TIMEPAD,
-    
+
     specificData: {
       isSendingFreeTickets: raw.is_sending_free_tickets ?? null,
     },

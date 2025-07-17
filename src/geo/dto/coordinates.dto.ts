@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsNumber } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNumber } from 'class-validator';
 
 // TODO: Добавить поле type и потом проверять его на 'Point'?
 export class CoordinatesDto {

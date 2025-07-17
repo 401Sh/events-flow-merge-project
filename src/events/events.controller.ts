@@ -76,7 +76,7 @@ export class EventsController {
     return await this.eventsService.getEventsList(query);
   }
 
-  
+
   @ApiOperation({
     summary: 'Получить список мероприятий из leaderId или timepad',
   })
@@ -135,7 +135,7 @@ export class EventsController {
     return await this.eventsService.getEventsListFromSource(source, query);
   }
 
-
+  
   @ApiOperation({ summary: 'Получить информации о мероприятии по id' })
   @ApiParam({
     name: 'source',

@@ -30,11 +30,11 @@ export class LeaderClientAuthService implements OnModuleInit {
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
     this.clientId = this.configService.getOrThrow<string>('LEADER_CLIENT_ID');
     this.clientSecret = this.configService.getOrThrow<string>(
-      'LEADER_CLIENT_SECRET'
+      'LEADER_CLIENT_SECRET',
     );
   }
 
-  
+
   getAccessToken(): string | undefined {
     if (!this.tokensData) {
       this.logger.warn('Leader access token is not available');
@@ -48,11 +48,14 @@ export class LeaderClientAuthService implements OnModuleInit {
   async authenticateClient(): Promise<LeaderTokenResponse> {
     try {
       const response = await firstValueFrom(
-        this.httpService.post<LeaderTokenResponse>(`${this.baseUrl}/oauth/token`, {
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          grant_type: 'client_credentials',
-        }),
+        this.httpService.post<LeaderTokenResponse>(
+          `${this.baseUrl}/oauth/token`,
+          {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            grant_type: 'client_credentials',
+          },
+        ),
       );
 
       this.setTokens(response.data);
@@ -97,12 +100,15 @@ export class LeaderClientAuthService implements OnModuleInit {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.post<LeaderTokenResponse>(`${this.baseUrl}/oauth/token`, {
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          grant_type: 'refresh_token',
-          refresh_token: this.tokensData.refresh_token,
-        }),
+        this.httpService.post<LeaderTokenResponse>(
+          `${this.baseUrl}/oauth/token`,
+          {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            grant_type: 'refresh_token',
+            refresh_token: this.tokensData.refresh_token,
+          },
+        ),
       );
 
       this.setTokens(response.data);
@@ -120,7 +126,7 @@ export class LeaderClientAuthService implements OnModuleInit {
     }
   }
 
-
+  
   async onModuleInit() {
     try {
       await this.authenticateClient();

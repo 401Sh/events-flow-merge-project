@@ -15,19 +15,19 @@ export class GeoService {
     private cityRepository: Repository<CityEntity>,
   ) {}
 
-  async getCityList(query: GetCitiesQueryDto) {
+  async findCityList(query: GetCitiesQueryDto) {
     const { limit, page, search } = query;
 
     const queryBuilder = this.cityRepository.createQueryBuilder('cities');
-   
+
     if (search) {
       queryBuilder.where(
         '(cities.name Like :search OR cities.intName LIKE :search)',
         {
-          search: `%${search}%`
+          search: `%${search}%`,
         },
       );
-    };
+    }
 
     queryBuilder.skip((page - 1) * limit).take(limit);
     // queryBuilder.addSelect([
@@ -40,13 +40,13 @@ export class GeoService {
     const totalPagesAmount = Math.ceil(citiesCount / query.limit);
 
     this.logger.debug('Get cities list: ', cities);
-    return { 
+    return {
       data: cities,
       meta: {
         totalCitiesCount: citiesCount,
-        totalPagesAmount: totalPagesAmount ,
+        totalPagesAmount: totalPagesAmount,
         currentPage: page,
-      }
+      },
     };
   }
 
@@ -62,7 +62,7 @@ export class GeoService {
     if (!city) {
       this.logger.debug(`City with id ${cityId} not found`);
       throw new NotFoundException('City not found');
-    };
+    }
 
     const nearest = await this.cityRepository
       .createQueryBuilder('cities')
@@ -73,7 +73,7 @@ export class GeoService {
       .setParameter('cityLocation', city.location)
       .limit(limit)
       .getMany();
-    
+
     this.logger.debug('Get cities list: ', nearest);
     return { data: nearest };
   }
@@ -84,9 +84,7 @@ export class GeoService {
 
     const city = await this.cityRepository
       .createQueryBuilder('cities')
-      .orderBy(
-        'cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)',
-      )
+      .orderBy('cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)')
       .setParameters({ lng: longitude, lat: latitude })
       // .addSelect([
       //   'cities.id',
@@ -95,11 +93,11 @@ export class GeoService {
       // ])
       .limit(1)
       .getOne();
-    
+
     if (!city) {
       this.logger.debug(`City not found by coords: `, coords);
       throw new NotFoundException('City not found');
-    };
+    }
 
     this.logger.debug('Get cities by coords: ', city);
     return city;
@@ -108,7 +106,7 @@ export class GeoService {
 
   async findCityById(cityId: number) {
     const city = await this.cityRepository.findOne({
-      where: { 
+      where: {
         id: cityId,
       },
     });

@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AbstractLeaderEventRepository } from './abstract-leader-event.repository';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
@@ -24,7 +30,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     private readonly geoService: GeoService,
   ) {
     super();
-    this.baseUrl = this.configService.getOrThrow('LEADER_API_URL')
+    this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
 
   async getAll(
@@ -33,47 +39,14 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     query: GetEventListQueryDto,
   ): Promise<LeaderDataDto[]> {
     const page = Math.floor(skip / limit) + 1;
-    const urlPart = '/events/search';
-    const params = {
-      paginationSize: limit,
-      paginationPage: page,
-      sort: 'date',
-      query: query.search,
-    };
+    const params = await this.buildSearchParams(query, page, limit);
 
-    if (query.themes) {
-      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
-        query.themes, 
-        EventAPISource.LEADER_ID
-      );
-
-      params['themeIds[]'] = timepadThemes;
-    };
-
-    if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-
-      // TODO: Убрать вложенное ветвление
-      if (city) {
-        const leaderCities = await this.fetchFromLeaderApi<{ data: any }>(
-          '/cities/search',
-          {
-            q: city.name
-          },
-        );
-
-        // TODO: Срочно убрать вложенное ветвление
-        if (leaderCities.data.length != 0) {
-          params['cityId'] = leaderCities.data[0].id;
-        };
-      };
-    };
-
-    const data = await this.fetchFromLeaderApi<{ items: any[] }>(
-      urlPart,
+    const response = await this.fetchFromLeaderApi<{ items: any[] }>(
+      '/events/search',
       params,
     );
-    const rawEvents = data.items || [];
+
+    const rawEvents = response.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
 
     this.logger.debug('Leader event list recieved successfully');
@@ -81,45 +54,10 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     return mappedEvents;
   }
 
-
+  
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
-
-    const urlPart = '/events/search';
-    const params = {
-      paginationSize: limit,
-      paginationPage: page,
-      sort: 'date',
-      query: query.search,
-    };
-
-    if (query.themes) {
-      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
-        query.themes, 
-        EventAPISource.LEADER_ID
-      );
-
-      params['themeIds[]'] = timepadThemes;
-    };
-
-    if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-
-      // TODO: Убрать вложенное ветвление
-      if (city) {
-        const leaderCities = await this.fetchFromLeaderApi<{ data: any }>(
-          '/cities/search',
-          {
-            q: city.name
-          },
-        );
-
-        // TODO: Срочно убрать вложенное ветвление
-        if (leaderCities.data.length != 0) {
-          params['cityId'] = leaderCities.data[0].id;
-        };
-      };
-    };
+    const params = await this.buildSearchParams(query, page, limit);
 
     type LeaderResponseType = {
       items: any[];
@@ -130,7 +68,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     };
 
     const data = await this.fetchFromLeaderApi<LeaderResponseType>(
-      urlPart,
+      '/events/search',
       params,
     );
     const rawEvents = data.items || [];
@@ -160,16 +98,16 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     };
 
     const dataResponce = await this.fetchFromLeaderApi<{ items: any[] }>(
-      urlPart, 
-      params
+      urlPart,
+      params,
     );
-    
+
     if (!dataResponce.items || dataResponce.items.length == 0) {
       this.logger.log(`Leader event ${id} not found`);
       throw new NotFoundException(
         `Event with id ${id} not found in source leaderId`,
       );
-    };
+    }
 
     const normalizedEvent = mapLeader(dataResponce.items[0]);
 
@@ -192,7 +130,46 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     return data.meta?.totalCount || 0;
   }
 
-  
+
+  private async buildSearchParams(
+    query: GetEventListQueryDto,
+    page: number,
+    limit: number,
+  ): Promise<Record<string, any>> {
+    const params: Record<string, any> = {
+      paginationSize: limit,
+      paginationPage: page,
+      sort: 'date',
+      query: query.search,
+    };
+
+    if (query.themes) {
+      const themeIds = await this.dictionariesService.findExternalThemeIds(
+        query.themes,
+        EventAPISource.LEADER_ID,
+      );
+      params['themeIds[]'] = themeIds;
+    }
+
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+      if (!city) return params;
+
+      const leaderCities = await this.fetchFromLeaderApi<{ data: any[] }>(
+        '/cities/search',
+        { q: city.name },
+      );
+
+      const leaderCity = leaderCities.data?.[0];
+      if (leaderCity?.id) {
+        params['cityId'] = leaderCity.id;
+      }
+    }
+
+    return params;
+  }
+
+
   private async fetchFromLeaderApi<T>(
     urlPart: string,
     params?: object,

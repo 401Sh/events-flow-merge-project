@@ -32,10 +32,8 @@ export class EventsService {
   
   async getEventsList(query: GetEventListQueryDto) {
     // TODO: Добавить кэширование
-    const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
-      this.leaderRepository.getAmount(),
-      this.timepadRepository.getAmount(),
-    ]);
+    const { leaderEventsAmount, timepadEventsAmount } =
+      await this.getEventsAmount();
 
     const batchData = this.getBatchAtSkip(
       query.limit,
@@ -59,24 +57,11 @@ export class EventsService {
       };
     }
 
-    const totalPagesAmount = Math.ceil(
-      (leaderEventsAmount + timepadEventsAmount) / query.limit,
-    );
+    const totalEvents = leaderEventsAmount + timepadEventsAmount;
+    const totalPagesAmount = this.calculatePagination(totalEvents, query.limit);
 
-    const [leaderEvents, timepadEvents] = await Promise.all([
-      this.leaderRepository.getAll(
-        batchData.firstAmount,
-        batchData.firstSkip,
-        query,
-      ),
-      this.timepadRepository.getAll(
-        batchData.secondAmount,
-        batchData.secondSkip,
-        query,
-      ),
-    ]);
+    const allEvents = await this.fetchEvents(batchData, query);
 
-    const allEvents: UnifiedEventDto[] = [...leaderEvents, ...timepadEvents];
     const sortedEvents = this.sortEvents(allEvents);
 
     this.logger.debug('Finded events: ', sortedEvents);
@@ -123,6 +108,47 @@ export class EventsService {
     });
 
     return sortedEvents;
+  }
+
+
+  private async getEventsAmount() {
+    const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
+      this.leaderRepository.getAmount(),
+      this.timepadRepository.getAmount(),
+    ]);
+
+    return { leaderEventsAmount, timepadEventsAmount };
+  }
+
+  private calculatePagination(totalItems: number, limit: number) {
+    const totalPagesAmount = Math.ceil(totalItems / limit);
+    return totalPagesAmount;
+  }
+
+
+  private async fetchEvents(
+    batchData: {
+      firstAmount: number;
+      firstSkip: number;
+      secondAmount: number;
+      secondSkip: number;
+    },
+    query: GetEventListQueryDto,
+  ): Promise<UnifiedEventDto[]> {
+    const [leaderEvents, timepadEvents] = await Promise.all([
+      this.leaderRepository.getAll(
+        batchData.firstAmount,
+        batchData.firstSkip,
+        query,
+      ),
+      this.timepadRepository.getAll(
+        batchData.secondAmount,
+        batchData.secondSkip,
+        query,
+      ),
+    ]);
+
+    return [...leaderEvents, ...timepadEvents];
   }
 
 

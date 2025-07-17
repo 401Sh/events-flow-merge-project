@@ -1,4 +1,12 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { EventThemeEntity } from './theme.entity';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
 
@@ -19,10 +27,9 @@ export class ExternalThemeRefEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(
-    () => EventThemeEntity, 
-    eventTheme => eventTheme.externalRefs,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => EventThemeEntity, (eventTheme) => eventTheme.externalRefs, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   eventTheme: EventThemeEntity;
 }

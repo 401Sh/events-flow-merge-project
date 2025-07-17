@@ -1,7 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsArray, ValidateNested } from "class-validator";
-import { CityDto } from "./city.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsArray, ValidateNested } from 'class-validator';
+import { CityDto } from './city.dto';
 
 export class CititesListResultDto {
   @ApiProperty({ isArray: true, type: () => CityDto })

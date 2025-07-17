@@ -29,63 +29,37 @@ export function toIso(dateStr: string, tzOffset: string): string {
 export function mapLeader(raw: any): LeaderDataDto {
   const tz = raw.timezone?.value || '+03:00';
 
-  // извлечь короткое описание из JSON
-  let shortDesc: string | null = null;
+  const fullInfo = parseFullInfo(raw.full_info);
+  const shortDesc = extractShortDescription(fullInfo);
 
-  let full_info: any = null;
-  try {
-    if (raw.full_info) {
-      full_info = JSON.parse(raw.full_info);
-    }
-  } catch (e) {
-    full_info = null;
-  }
-
-  // удаление HTML элементов после преобразования
-  if (full_info?.blocks?.length > 0) {
-    const firstText = full_info.blocks[0]?.data?.text ?? '';
-    const plainText = firstText.replace(/<[^>]*>/g, '').trim();
-    shortDesc = plainText ? plainText.slice(0, 200) : null;
-  }
-
-  const addr = raw.space?.address;
-  const location: EventLocation = {
-    country: addr?.titles?.country || null,
-    city: addr?.city || null,
-    address: addr
-      ? `${addr.street ?? ''} ${addr.house ?? ''}`.trim() || null
-      : null,
-  };
-
-  const themes: EventThemesDto[] = (raw.themes || []).map(
-    (t: EventThemesDto) => ({
-      id: t.id,
-      name: t.name,
-    }),
-  );
+  const location = mapLocation(raw.space?.address);
+  const themes = mapThemes(raw.themes);
 
   const leaderObj: LeaderData = {
     id: raw.id,
     title: raw.full_name,
     shortDescription: shortDesc,
-    // TODO: Привести к одному формату с timepad
     fullDescription: raw.full_info || null,
     startsAt: toIso(raw.date_start, tz),
     endsAt: raw.date_end ? toIso(raw.date_end, tz) : null,
+
     registrationStart: raw.registrationDateStart
       ? toIso(raw.registrationDateStart, tz)
       : null,
+
     registrationEnd: raw.registrationDateEnd
       ? toIso(raw.registrationDateEnd, tz)
       : null,
+
     url: `https://leader-id.ru/events/${raw.id}`,
     posterUrl: raw.photo || null,
     organizer: raw.organizers?.[0]?.name || null,
 
-    location: location,
-    themes: themes,
+    location,
+    themes,
 
     source: EventAPISource.LEADER_ID,
+
     specificData: {
       participantsCount: raw.stat?.participants?.count || 0,
       participants: raw.stat?.participants?.list || [],
@@ -93,4 +67,42 @@ export function mapLeader(raw: any): LeaderDataDto {
   };
 
   return plainToInstance(LeaderDataDto, leaderObj);
+}
+
+
+function parseFullInfo(fullInfoRaw: string | undefined): any | null {
+  if (!fullInfoRaw) return null;
+  try {
+    return JSON.parse(fullInfoRaw);
+  } catch {
+    return null;
+  }
+}
+
+
+function extractShortDescription(fullInfo: any): string | null {
+  if (!fullInfo?.blocks?.length) return null;
+
+  const firstText = fullInfo.blocks[0]?.data?.text ?? '';
+  const plainText = firstText.replace(/<[^>]*>/g, '').trim();
+  return plainText ? plainText.slice(0, 200) : null;
+}
+
+
+function mapLocation(addr: any): EventLocation {
+  return {
+    country: addr?.titles?.country || null,
+    city: addr?.city || null,
+    address: addr
+      ? `${addr.street ?? ''} ${addr.house ?? ''}`.trim() || null
+      : null,
+  };
+}
+
+
+function mapThemes(rawThemes: any[]): EventThemesDto[] {
+  return (rawThemes || []).map((t: EventThemesDto) => ({
+    id: t.id,
+    name: t.name,
+  }));
 }

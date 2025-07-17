@@ -11,18 +11,11 @@ import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
 import { GeoModule } from 'src/geo/geo.module';
 
 @Module({
-  imports: [
-    ClientAuthModule, 
-    HttpModule,
-    DictionariesModule,
-    GeoModule,
-  ],
+  imports: [ClientAuthModule, HttpModule, DictionariesModule, GeoModule],
   controllers: [EventsController],
   providers: [
     EventsService,
-    { provide: AbstractLeaderEventRepository, 
-      useClass: LeaderEventRepository,
-    },
+    { provide: AbstractLeaderEventRepository, useClass: LeaderEventRepository },
     {
       provide: AbstractTimepadEventRepository,
       useClass: TimepadEventRepository,

@@ -11,9 +11,9 @@ import { LeaderOAuthRepository } from './repositories/leader-oauth.repository';
   controllers: [OAuthController],
   providers: [
     OAuthService,
-    { 
-      provide: AbstractLeaderOAuthRepository, 
-      useClass: LeaderOAuthRepository 
+    {
+      provide: AbstractLeaderOAuthRepository,
+      useClass: LeaderOAuthRepository,
     },
   ],
 })

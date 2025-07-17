@@ -41,7 +41,7 @@ export class GetEventListQueryDto {
   @IsInt({ each: true })
   @IsArray()
   @IsOptional()
-  themes?: number[]
+  themes?: number[];
 
   @ApiPropertyOptional({
     description: 'Id города',

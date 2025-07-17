@@ -37,7 +37,15 @@ export class GetEventListQueryDto {
     description: 'Id тем мероприятий',
     example: [1, 2, 3],
   })
-  @Type(() => Number)
+  @Transform(({ value }) =>  {
+    if (Array.isArray(value)) {
+      return value.map(Number);
+    }
+    if (typeof value === 'string') {
+      return [Number(value)];
+    }
+    return value;
+  })
   @IsInt({ each: true })
   @IsArray()
   @IsOptional()

@@ -32,43 +32,14 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     skip: number,
     query: GetEventListQueryDto,
   ): Promise<TimepadDataDto[]> {
-    const urlPart = '/events';
-    const keywords = query.search?.split(' ');
+    const params = await this.buildSearchParams(query, limit, skip);
 
-    const params = {
-      limit: limit,
-      skip: skip,
-      sort: 'starts_at',
-      keywords: keywords,
-    };
-
-    if (query.themes) {
-      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
-        query.themes, 
-        EventAPISource.TIMEPAD
-      );
-
-      // TODO: Убрать вложенное ветвление
-      if (timepadThemes.length != 0) {
-        const themeParam = timepadThemes.join(',');
-        params['category_ids'] = themeParam;
-      };
-    };
-
-    if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-
-      // TODO: Убрать вложенное ветвление
-      if (city) {
-        params['cities'] = city.name;
-      };
-    };
-
-    const data = await this.fetchFromTimepadApi<{ values: any[] }>(
-      urlPart,
+    const response = await this.fetchFromTimepadApi<{ values: any[] }>(
+      '/events',
       params,
     );
-    const rawEvents = data.values || [];
+  
+    const rawEvents = response.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
 
     this.logger.debug('Timepad event list recieved successfully');
@@ -79,45 +50,16 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
-
     const skip = (page - 1) * limit;
-    const urlPart = '/events';
-    const keywords = query.search?.split(' ');
-    const params = {
-      limit: limit,
-      skip: skip,
-      sort: 'starts_at',
-      keywords: keywords,
-    };
 
-    if (query.themes) {
-      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
-        query.themes, 
-        EventAPISource.TIMEPAD
-      );
+    const params = await this.buildSearchParams(query, limit, skip);
 
-      // TODO: Убрать вложенное ветвление
-      if (timepadThemes.length != 0) {
-        const themeParam = timepadThemes.join(',');
-        params['category_ids'] = themeParam;
-      };
-    };
-
-    if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-
-      // TODO: Убрать вложенное ветвление
-      if (city) {
-        params['cities'] = city.name;
-      };
-    };
-    
-    const data = await this.fetchFromTimepadApi<{
+    const response = await this.fetchFromTimepadApi<{
       values: any[];
       total: number;
-    }>(urlPart, params);
+    }>('/events', params);
 
-    const rawEvents = data.values || [];
+    const rawEvents = response.values || [];
     const mappedEvents = rawEvents.map(mapTimepad);
 
     this.logger.debug('Timepad event list with meta recieved successfully');
@@ -125,8 +67,8 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     const dataWithMeta = {
       data: mappedEvents,
       meta: {
-        totalEventsAmount: data.total || 0,
-        totalPagesAmount: Math.ceil(data.total / limit) || 0,
+        totalEventsAmount: response.total || 0,
+        totalPagesAmount: Math.ceil(response.total / limit) || 0,
         currentPage: page,
       },
     };
@@ -167,6 +109,39 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     this.logger.debug('Timepad events amount recieved successfully');
     return data.total || 0;
   }
+
+
+  private async buildSearchParams(
+    query: GetEventListQueryDto,
+    limit: number,
+    skip: number,
+  ): Promise<Record<string, any>> {
+    const params: Record<string, any> = {
+      limit,
+      skip,
+      sort: 'starts_at',
+      keywords: query.search?.split(' ') || [],
+    };
+  
+    if (query.themes) {
+      const themeIds = await this.dictionariesService.getExternalThemeIds(
+        query.themes,
+        EventAPISource.TIMEPAD,
+      );
+      if (themeIds.length > 0) {
+        params['category_ids'] = themeIds.join(',');
+      }
+    }
+  
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+      if (city?.name) {
+        params['cities'] = city.name;
+      }
+    }
+  
+    return params;
+  }  
 
 
   private async fetchFromTimepadApi<T>(

@@ -33,47 +33,14 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     query: GetEventListQueryDto,
   ): Promise<LeaderDataDto[]> {
     const page = Math.floor(skip / limit) + 1;
-    const urlPart = '/events/search';
-    const params = {
-      paginationSize: limit,
-      paginationPage: page,
-      sort: 'date',
-      query: query.search,
-    };
+    const params = await this.buildSearchParams(query, page, limit);
 
-    if (query.themes) {
-      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
-        query.themes, 
-        EventAPISource.LEADER_ID
-      );
-
-      params['themeIds[]'] = timepadThemes;
-    };
-
-    if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-
-      // TODO: Убрать вложенное ветвление
-      if (city) {
-        const leaderCities = await this.fetchFromLeaderApi<{ data: any }>(
-          '/cities/search',
-          {
-            q: city.name
-          },
-        );
-
-        // TODO: Срочно убрать вложенное ветвление
-        if (leaderCities.data.length != 0) {
-          params['cityId'] = leaderCities.data[0].id;
-        };
-      };
-    };
-
-    const data = await this.fetchFromLeaderApi<{ items: any[] }>(
-      urlPart,
+    const response = await this.fetchFromLeaderApi<{ items: any[] }>(
+      '/events/search',
       params,
     );
-    const rawEvents = data.items || [];
+    
+    const rawEvents = response.items || [];
     const mappedEvents = rawEvents.map(mapLeader);
 
     this.logger.debug('Leader event list recieved successfully');
@@ -84,42 +51,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
-
-    const urlPart = '/events/search';
-    const params = {
-      paginationSize: limit,
-      paginationPage: page,
-      sort: 'date',
-      query: query.search,
-    };
-
-    if (query.themes) {
-      const timepadThemes = await this.dictionariesService.getExternalThemeIds(
-        query.themes, 
-        EventAPISource.LEADER_ID
-      );
-
-      params['themeIds[]'] = timepadThemes;
-    };
-
-    if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-
-      // TODO: Убрать вложенное ветвление
-      if (city) {
-        const leaderCities = await this.fetchFromLeaderApi<{ data: any }>(
-          '/cities/search',
-          {
-            q: city.name
-          },
-        );
-
-        // TODO: Срочно убрать вложенное ветвление
-        if (leaderCities.data.length != 0) {
-          params['cityId'] = leaderCities.data[0].id;
-        };
-      };
-    };
+    const params = await this.buildSearchParams(query, page, limit);
 
     type LeaderResponseType = {
       items: any[];
@@ -130,7 +62,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     };
 
     const data = await this.fetchFromLeaderApi<LeaderResponseType>(
-      urlPart,
+      '/events/search',
       params,
     );
     const rawEvents = data.items || [];
@@ -190,6 +122,45 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     this.logger.debug('Leader events amount recieved successfully');
 
     return data.meta?.totalCount || 0;
+  }
+
+
+  private async buildSearchParams(
+    query: GetEventListQueryDto, 
+    page: number, 
+    limit: number
+  ): Promise<Record<string, any>> {
+    const params: Record<string, any> = {
+      paginationSize: limit,
+      paginationPage: page,
+      sort: 'date',
+      query: query.search,
+    };
+  
+    if (query.themes) {
+      const themeIds = await this.dictionariesService.getExternalThemeIds(
+        query.themes,
+        EventAPISource.LEADER_ID,
+      );
+      params['themeIds[]'] = themeIds;
+    }
+  
+    if (query.cityId) {
+      const city = await this.geoService.findCityById(query.cityId);
+      if (!city) return params;
+  
+      const leaderCities = await this.fetchFromLeaderApi<{ data: any[] }>(
+        '/cities/search',
+        { q: city.name },
+      );
+  
+      const leaderCity = leaderCities.data?.[0];
+      if (leaderCity?.id) {
+        params['cityId'] = leaderCity.id;
+      }
+    }
+  
+    return params;
   }
 
   

@@ -30,11 +30,12 @@ export class GeoService {
     }
 
     queryBuilder.skip((page - 1) * limit).take(limit);
-    // queryBuilder.addSelect([
-    //   "cities.id",
-    //   "cities.name",
-    //   "cities.intName",
-    // ])
+    queryBuilder.select([
+      'cities.id',
+      'cities.name',
+      'cities.intName',
+      'cities.posterUrl',
+    ])
 
     const [cities, citiesCount] = await queryBuilder.getManyAndCount();
     const totalPagesAmount = Math.ceil(citiesCount / query.limit);
@@ -75,6 +76,13 @@ export class GeoService {
         'cities.location <-> ST_SetSRID(ST_GeomFromText(:cityLocation), 4326)',
       )
       .setParameter('cityLocation', wkt)
+      .select([
+        'cities.id',
+        'cities.name',
+        'cities.intName',
+        'cities.posterUrl',
+        'cities.location',
+      ])
       .limit(limit)
       .getMany();
 
@@ -90,11 +98,13 @@ export class GeoService {
       .createQueryBuilder('cities')
       .orderBy('cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)')
       .setParameters({ lng: longitude, lat: latitude })
-      // .addSelect([
-      //   'cities.id',
-      //   'cities.name',
-      //   'cities.intName',
-      // ])
+      .select([
+        'cities.id',
+        'cities.name',
+        'cities.intName',
+        'cities.posterUrl',
+        'cities.location',
+      ])
       .limit(1)
       .getOne();
 
@@ -113,6 +123,13 @@ export class GeoService {
       where: {
         id: cityId,
       },
+      select: [
+        'id',
+        'intName',
+        'name',
+        'posterUrl',
+        'location',
+      ],
     });
 
     return city;

@@ -27,42 +27,50 @@ export function toIsoFromOffsetString(dateStr?: string): string | null {
 
 
 export function mapTimepad(raw: any): TimepadDataDto {
-  const location: EventLocation = {
-    country: raw.location?.country || null,
-    city: raw.location?.city || null,
-    address: raw.location?.address || null,
-  };
-
-  const themes: EventThemesDto[] = (raw.categories || []).map(
-    (t: EventThemesDto) => ({
-      id: t.id,
-      name: t.name,
-    }),
-  );
+  const location = mapLocation(raw.location);
+  const themes = mapThemes(raw.categories);
 
   const timepadObj: TimepadData = {
     id: raw.id,
     title: raw.name,
     shortDescription: raw.description_short || null,
-    // TODO: Привести к одному формату с leader
     fullDescription: raw.description_html || null,
     startsAt: toIsoFromOffsetString(raw.starts_at),
     endsAt: toIsoFromOffsetString(raw.ends_at) || null,
     registrationStart: null,
-    registrationEnd:
-      toIsoFromOffsetString(raw.registration_data?.sale_ends_at) || null,
+    registrationEnd: toIsoFromOffsetString(
+      raw.registration_data?.sale_ends_at
+    ) || null,
     url: raw.url || null,
     posterUrl: raw.poster_image?.default_url || null,
     organizer: raw.organization?.name || null,
 
-    location: location,
-    themes: themes,
+    location,
+    themes,
 
     source: EventAPISource.TIMEPAD,
+    
     specificData: {
       isSendingFreeTickets: raw.is_sending_free_tickets ?? null,
     },
   };
 
   return plainToInstance(TimepadDataDto, timepadObj);
+}
+
+
+function mapLocation(rawLocation: any): EventLocation {
+  return {
+    country: rawLocation?.country || null,
+    city: rawLocation?.city || null,
+    address: rawLocation?.address || null,
+  };
+}
+
+
+function mapThemes(rawCategories: any[]): EventThemesDto[] {
+  return (rawCategories || []).map((t: EventThemesDto) => ({
+    id: t.id,
+    name: t.name,
+  }));
 }

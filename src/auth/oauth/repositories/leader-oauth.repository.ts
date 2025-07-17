@@ -16,7 +16,6 @@ export class LeaderOAuthRepository extends AbstractLeaderOAuthRepository {
     private readonly authService: LeaderClientAuthService,
   ) {
     super();
-    console.log(this.configService.get('TIMEPAD_TOKEN'))
   }
 
   

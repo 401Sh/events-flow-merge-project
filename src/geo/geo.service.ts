@@ -15,7 +15,7 @@ export class GeoService {
     private cityRepository: Repository<CityEntity>,
   ) {}
 
-  async getCityList(query: GetCitiesQueryDto) {
+  async findCityList(query: GetCitiesQueryDto) {
     const { limit, page, search } = query;
 
     const queryBuilder = this.cityRepository.createQueryBuilder('cities');

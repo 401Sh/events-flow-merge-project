@@ -138,7 +138,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     };
   
     if (query.themes) {
-      const themeIds = await this.dictionariesService.getExternalThemeIds(
+      const themeIds = await this.dictionariesService.findExternalThemeIds(
         query.themes,
         EventAPISource.LEADER_ID,
       );

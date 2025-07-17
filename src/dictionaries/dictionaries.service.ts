@@ -22,7 +22,7 @@ export class DictionariesService {
     private readonly timepadRepository: AbstractTimepadDictionaryRepository,
   ) {}
 
-  async getEventThemes() {
+  async findEventThemes() {
     const themes = await this.eventThemeRepository.find();
     
     this.logger.debug(`Finded themes`, themes);
@@ -30,7 +30,7 @@ export class DictionariesService {
   }
 
 
-  async getEventThemesBySource(source: EventAPISource) {
+  async findEventThemesBySource(source: EventAPISource) {
     let result: EventThemesDto[];
 
     if (source === EventAPISource.TIMEPAD) {
@@ -47,7 +47,7 @@ export class DictionariesService {
   }
 
 
-  async getExternalThemeIds(parentId: number[], source: EventAPISource) {
+  async findExternalThemeIds(parentId: number[], source: EventAPISource) {
     const themeIds = await this.externalThemeRefRepository.find({
       where: { 
         eventTheme: { 

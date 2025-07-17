@@ -19,7 +19,7 @@ export class DictionariesController {
   })
   @Get('themes')
   async getEventThemes() {
-    return await this.dictionariesService.getEventThemes();
+    return await this.dictionariesService.findEventThemes();
   }
 
 
@@ -41,6 +41,6 @@ export class DictionariesController {
   async getEventThemesBySource(
     @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,
   ) {
-    return await this.dictionariesService.getEventThemesBySource(source);
+    return await this.dictionariesService.findEventThemesBySource(source);
   }
 }

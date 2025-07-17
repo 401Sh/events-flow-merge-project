@@ -124,7 +124,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     };
   
     if (query.themes) {
-      const themeIds = await this.dictionariesService.getExternalThemeIds(
+      const themeIds = await this.dictionariesService.findExternalThemeIds(
         query.themes,
         EventAPISource.TIMEPAD,
       );

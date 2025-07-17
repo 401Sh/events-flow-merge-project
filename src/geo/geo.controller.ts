@@ -44,7 +44,7 @@ export class GeoController {
   async getCityList(
     @Query() query: GetCitiesQueryDto,
   ) {
-    return await this.geoService.getCityList(query); 
+    return await this.geoService.findCityList(query); 
   }
 
 

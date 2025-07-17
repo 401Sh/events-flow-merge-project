@@ -155,12 +155,12 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       const city = await this.geoService.findCityById(query.cityId);
       if (!city) return params;
 
-      const leaderCities = await this.fetchFromLeaderApi<{ data: any[] }>(
+      const leaderCities = await this.fetchFromLeaderApi<any[]>(
         '/cities/search',
         { q: city.name },
       );
 
-      const leaderCity = leaderCities.data?.[0];
+      const leaderCity = leaderCities[0];
       if (leaderCity?.id) {
         params['cityId'] = leaderCity.id;
       }

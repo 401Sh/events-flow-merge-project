@@ -64,13 +64,17 @@ export class GeoService {
       throw new NotFoundException('City not found');
     }
 
+    // приведение geojson формата координат к wkt
+    const { coordinates } = city.location;
+    const wkt = `POINT(${coordinates[0]} ${coordinates[1]})`;
+
     const nearest = await this.cityRepository
       .createQueryBuilder('cities')
       .where('cities.id != :cityId', { cityId })
       .orderBy(
-        'cities.location <-> ST_SetSRID(ST_GeomFromWKB(:cityLocation), 4326)',
+        'cities.location <-> ST_SetSRID(ST_GeomFromText(:cityLocation), 4326)',
       )
-      .setParameter('cityLocation', city.location)
+      .setParameter('cityLocation', wkt)
       .limit(limit)
       .getMany();
 

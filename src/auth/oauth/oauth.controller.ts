@@ -22,7 +22,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { TokenResponseDto } from '../dto/token-response.dto';
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { LeaderRefreshTokenGuard } from './guards/leader-refresh-token.guard';
 
 @Controller('oauth')
 export class OAuthController {
@@ -69,11 +69,11 @@ export class OAuthController {
   async oauthLeaderCallback(@Query() query: CallbackDto, @Res() res: Response) {
     const result = await this.oAuthService.getLeaderAccessToken(query);
 
-    res.cookie('refreshToken', result.refresh_token, refreshCookieOptions);
+    res.cookie('leaderIdRefreshToken', result.refresh_token, refreshCookieOptions);
 
     return res.json({
       accessToken: result.access_token,
-      source: 'leaderId',
+      source: EventAPISource.LEADER_ID,
     });
   }
 
@@ -90,17 +90,17 @@ export class OAuthController {
   })
   @ApiCookieAuth('refreshToken')
   @Post('refresh/leaderId')
-  @UseGuards(RefreshTokenGuard)
+  @UseGuards(LeaderRefreshTokenGuard)
   async oauthLeaderRefresh(@Request() req, @Res() res: Response) {
     const refreshToken = req.cookies['refreshToken'];
 
     const result = await this.oAuthService.refreshLeaderToken(refreshToken);
 
-    res.cookie('refreshToken', result.refresh_token, refreshCookieOptions);
+    res.cookie('leaderIdRefreshToken', result.refresh_token, refreshCookieOptions);
 
     return res.json({
       accessToken: result.access_token,
-      source: 'leaderId',
+      source: EventAPISource.LEADER_ID,
     });
   }
 }

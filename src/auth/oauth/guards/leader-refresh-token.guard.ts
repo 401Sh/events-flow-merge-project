@@ -7,13 +7,13 @@ import {
 
 // TODO: Заменить на passport jwt guard
 @Injectable()
-export class RefreshTokenGuard implements CanActivate {
+export class LeaderRefreshTokenGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest();
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.cookies?.leaderIdRefreshToken;
 
     if (!refreshToken) {
-      throw new UnauthorizedException('refreshToken is missing');
+      throw new UnauthorizedException('Leader ID refreshToken is missing');
     }
 
     return true;

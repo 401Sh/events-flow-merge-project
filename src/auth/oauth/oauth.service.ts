@@ -62,7 +62,7 @@ export class OAuthService {
   }
 
   
-  getSourceRedirectUrlParts(source: EventAPISource) {
+  private getSourceRedirectUrlParts(source: EventAPISource) {
     if (source == EventAPISource.LEADER_ID) {
       return {
         baseURL: this.leaderOAuthUrl,

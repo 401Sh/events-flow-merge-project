@@ -5,6 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
+import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 
 export class LeaderUserRepository extends AbstractLeaderUserRepository {
   private readonly logger = new Logger(LeaderUserRepository.name);
@@ -19,12 +20,47 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
   
-  getUserParticipations(): Promise<UnifiedEventDto> {
-    throw new Error("Method not implemented.");
+  async getUserParticipations(userId: number, query: GetParticipantsQueryDto) {
+    const { limit, page } = query;
+    const params = {
+      paginationSize: limit,
+      paginationPage: page,
+    };
+
+    type LeaderResponseType = {
+      items: any[];
+      meta: {
+        totalCount: number;
+        paginationPageCount: number;
+      };
+    };
+
+    const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+      `/users/${userId}/event-participations`,
+      params,
+    );
+    // const rawEvents = data.items || [];
+    // const mappedEvents = rawEvents.map(mapLeader);
+
+    this.logger.debug('Leader event list recieved successfully');
+
+    const dataWithMeta = {
+      data: data.items,
+      meta: {
+        totalEventsAmount: data.meta.totalCount,
+        totalPagesAmount: data.meta.paginationPageCount,
+        currentPage: page,
+      },
+    };
+
+    return dataWithMeta;
   }
 
 
-  private async fetchFromLeaderApi<T>(urlPart: string): Promise<T> {
+  private async fetchFromLeaderApi<T>(
+    urlPart: string,
+    params?: object,
+  ): Promise<T> {
     const url = `${this.baseUrl}${urlPart}`;
 
     const token = await this.authService.getAccessToken();
@@ -35,6 +71,7 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params: params,
         }),
       );
 

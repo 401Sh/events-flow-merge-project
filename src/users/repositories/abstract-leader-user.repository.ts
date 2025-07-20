@@ -1,5 +1,8 @@
-import { UnifiedEventDto } from "src/events/dto/unified-event.dto";
+import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 
 export abstract class AbstractLeaderUserRepository {
-  abstract getUserParticipations(): Promise<UnifiedEventDto>;
+  abstract getUserParticipations(
+    userId: number, 
+    query: GetParticipantsQueryDto
+  ): Promise<any>;
 }

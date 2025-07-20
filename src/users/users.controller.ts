@@ -1,5 +1,6 @@
-import { Controller, Get, Param, ParseIntPipe, Req } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -10,9 +11,7 @@ export class UsersController {
     @Req() req,
     @Param('userId', ParseIntPipe) userId: number,
   ) {
-    const token = req.userToken;
-
-    return await this.eventsService.getLeaderUser(userId, token);
+    return await this.eventsService.getLeaderUser(userId);
   }
 
 
@@ -20,9 +19,9 @@ export class UsersController {
   async getUserParticipations(
     @Req() req,
     @Param('userId', ParseIntPipe) userId: number,
+    @Query() query: GetParticipantsQueryDto,
   ) {
-    const token = req.userToken;
 
-    return await this.eventsService.getLeaderUserParticipations(userId, token);
+    return await this.eventsService.getLeaderUserParticipations(userId, query);
   }
 }

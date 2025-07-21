@@ -62,6 +62,10 @@ export class GetEventListQueryDto {
   @Min(1, { message: 'Id cannot be less than 1' })
   cityId?: number;
 
+  @ApiPropertyOptional({
+    description: 'Начало диапазона даты',
+    example: "2020-12-30",
+  })
   @IsString()
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {
@@ -69,6 +73,10 @@ export class GetEventListQueryDto {
   })
   dateFrom?: string;
 
+  @ApiPropertyOptional({
+    description: 'Конец диапазона даты',
+    example: "2020-12-31",
+  })
   @IsString()
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {

@@ -1,12 +1,13 @@
 import { UnifiedEventDto } from "src/events/dto/unified-event.dto";
 import { AbstractLeaderUserRepository } from "./abstract-leader-user.repository";
-import { HttpException, HttpStatus, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
 import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 
+@Injectable()
 export class LeaderUserRepository extends AbstractLeaderUserRepository {
   private readonly logger = new Logger(LeaderUserRepository.name);
   private readonly baseUrl: string;
@@ -21,9 +22,11 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
   }
 
   async getUser(userId: number): Promise<any> {
-    const data = await this.fetchFromLeaderApi<{ data: any }>(
+    const data = await this.fetchFromLeaderApi<any>(
       `/users/${userId}`,
     );
+
+    return data;
   }
   
   

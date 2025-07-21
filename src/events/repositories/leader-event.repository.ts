@@ -141,6 +141,8 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       paginationPage: page,
       sort: 'date',
       query: query.search,
+      dateFrom: query.dateFrom,
+      dateTo: query.dateTo,
     };
 
     if (query.themes) {

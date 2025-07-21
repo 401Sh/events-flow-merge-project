@@ -127,6 +127,8 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
       skip,
       sort: 'starts_at',
       keywords: query.search?.split(' ') || [],
+      starts_at_min: query.dateFrom,
+      starts_at_max: query.dateTo,
     };
 
     if (query.themes) {

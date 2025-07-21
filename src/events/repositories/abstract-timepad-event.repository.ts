@@ -12,5 +12,5 @@ export abstract class AbstractTimepadEventRepository {
     query: GetEventListQueryDto,
   ): Promise<EventsListResult<TimepadDataDto>>;
   abstract getOne(id: number): Promise<TimepadDataDto | null>;
-  abstract getAmount(): Promise<number>;
+  abstract getAmount(query: GetEventListQueryDto): Promise<number>;
 }

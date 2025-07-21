@@ -103,12 +103,11 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   }
 
 
-  async getAmount(): Promise<number> {
-    const urlPart = '/events';
-    const params = { limit: 1 };
+  async getAmount(query: GetEventListQueryDto) {
+    const params = await this.buildSearchParams(query, 1);
 
     const data = await this.fetchFromTimepadApi<{ total: number }>(
-      urlPart,
+      '/events',
       params,
     );
 
@@ -120,7 +119,7 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
   private async buildSearchParams(
     query: GetEventListQueryDto,
     limit: number,
-    skip: number,
+    skip?: number,
   ): Promise<Record<string, any>> {
     const params: Record<string, any> = {
       limit,

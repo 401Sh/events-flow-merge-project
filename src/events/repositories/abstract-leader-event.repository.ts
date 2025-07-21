@@ -12,5 +12,5 @@ export abstract class AbstractLeaderEventRepository {
     query: GetEventListQueryDto,
   ): Promise<EventsListResult<LeaderDataDto>>;
   abstract getOne(id: number): Promise<LeaderDataDto | null>;
-  abstract getAmount(): Promise<number>;
+  abstract getAmount(query: GetEventListQueryDto): Promise<number>;
 }

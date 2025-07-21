@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, Matches, Min } from 'class-validator';
 
 export class GetEventListQueryDto {
   @ApiPropertyOptional({
@@ -61,4 +61,26 @@ export class GetEventListQueryDto {
   @IsOptional()
   @Min(1, { message: 'Id cannot be less than 1' })
   cityId?: number;
+
+  @ApiPropertyOptional({
+    description: 'Начало диапазона даты',
+    example: "2020-12-30",
+  })
+  @IsString()
+  @IsOptional()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Date must be in the format YYYY-MM-DD',
+  })
+  dateFrom?: string;
+
+  @ApiPropertyOptional({
+    description: 'Конец диапазона даты',
+    example: "2020-12-31",
+  })
+  @IsString()
+  @IsOptional()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Date must be in the format YYYY-MM-DD',
+  })
+  dateTo?: string;
 }

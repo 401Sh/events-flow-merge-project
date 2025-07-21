@@ -66,6 +66,18 @@ export class EventsController {
     description: 'Фильтр по городу',
     example: 2,
   })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    description: 'Фильтрация мероприятий позднее указанной даты',
+    example: '2020-12-30'
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    description: 'Фильтрация мероприятий раньше указанной даты',
+    example: '2020-12-31'
+  })
   @ApiResponse({
     status: 200,
     description: 'Список мероприятий от двух источников',
@@ -121,6 +133,18 @@ export class EventsController {
     required: false,
     description: 'Фильтр по городу',
     example: 2,
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    description: 'Фильтрация мероприятий позднее указанной даты',
+    example: '2020-12-30'
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    description: 'Фильтрация мероприятий раньше указанной даты',
+    example: '2020-12-31'
   })
   @ApiResponse({
     status: 200,

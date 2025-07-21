@@ -39,7 +39,8 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     query: GetEventListQueryDto,
   ): Promise<LeaderDataDto[]> {
     const page = Math.floor(skip / limit) + 1;
-    const params = await this.buildSearchParams(query, page, limit);
+
+    const params = await this.buildSearchParams(query, limit, page);
 
     const response = await this.fetchFromLeaderApi<{ items: any[] }>(
       '/events/search',
@@ -57,7 +58,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
   
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
-    const params = await this.buildSearchParams(query, page, limit);
+    const params = await this.buildSearchParams(query, limit, page);
 
     type LeaderResponseType = {
       items: any[];
@@ -117,13 +118,15 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
   }
 
 
-  async getAmount(): Promise<number> {
-    const urlPart = '/events/search';
-    const params = { paginationSize: 2 };
-
+  async getAmount(query: GetEventListQueryDto): Promise<number> {
+    const params = await this.buildSearchParams(query, 2);
+    
     const data = await this.fetchFromLeaderApi<{
       meta: { totalCount: number };
-    }>(urlPart, params);
+    }>(
+      '/events/search', 
+      params
+    );
 
     this.logger.debug('Leader events amount recieved successfully');
 
@@ -133,14 +136,18 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
 
   private async buildSearchParams(
     query: GetEventListQueryDto,
-    page: number,
     limit: number,
+    page?: number,
   ): Promise<Record<string, any>> {
+    const apiLimit = limit > 2 ? limit : 2;
+
     const params: Record<string, any> = {
-      paginationSize: limit,
+      paginationSize: apiLimit,
       paginationPage: page,
       sort: 'date',
       query: query.search,
+      dateFrom: query.dateFrom,
+      dateTo: query.dateTo,
     };
 
     if (query.themes) {

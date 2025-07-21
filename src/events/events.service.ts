@@ -33,7 +33,7 @@ export class EventsService {
   async getEventsList(query: GetEventListQueryDto) {
     // TODO: Добавить кэширование
     const { leaderEventsAmount, timepadEventsAmount } =
-      await this.getEventsAmount();
+      await this.getEventsAmount(query);
 
     const batchData = this.getBatchAtSkip(
       query.limit,
@@ -109,10 +109,10 @@ export class EventsService {
   }
 
 
-  private async getEventsAmount() {
+  private async getEventsAmount(query: GetEventListQueryDto) {
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
-      this.leaderRepository.getAmount(),
-      this.timepadRepository.getAmount(),
+      this.leaderRepository.getAmount(query),
+      this.timepadRepository.getAmount(query),
     ]);
 
     return { leaderEventsAmount, timepadEventsAmount };
@@ -133,20 +133,32 @@ export class EventsService {
     },
     query: GetEventListQueryDto,
   ): Promise<UnifiedEventDto[]> {
-    const [leaderEvents, timepadEvents] = await Promise.all([
-      this.leaderRepository.getAll(
-        batchData.firstAmount,
-        batchData.firstSkip,
-        query,
-      ),
-      this.timepadRepository.getAll(
-        batchData.secondAmount,
-        batchData.secondSkip,
-        query,
-      ),
-    ]);
+    let promises: Promise<UnifiedEventDto[]>[] = [];
+    
+    // TODO: Отрефакторить
+    if (batchData.firstAmount != 0) {
+      promises.push(
+        this.leaderRepository.getAll(
+          batchData.firstAmount,
+          batchData.firstSkip,
+          query,
+        )
+      );
+    }
 
-    return [...leaderEvents, ...timepadEvents];
+    if (batchData.secondAmount != 0) {
+      promises.push(
+        this.timepadRepository.getAll(
+          batchData.secondAmount,
+          batchData.secondSkip,
+          query,
+        )
+      );
+    }
+
+    const result = await Promise.all(promises);
+
+    return result.flat();
   }
 
 

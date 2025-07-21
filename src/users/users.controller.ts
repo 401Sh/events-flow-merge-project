@@ -8,7 +8,6 @@ export class UsersController {
 
   @Get(':userId/leaderId')
   async getUser(
-    @Req() req,
     @Param('userId', ParseIntPipe) userId: number,
   ) {
     return await this.eventsService.getLeaderUser(userId);
@@ -17,7 +16,6 @@ export class UsersController {
 
   @Get(':userId/participations/leaderId')
   async getUserParticipations(
-    @Req() req,
     @Param('userId', ParseIntPipe) userId: number,
     @Query() query: GetParticipantsQueryDto,
   ) {

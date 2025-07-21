@@ -11,12 +11,17 @@ export class UsersService {
   ) {}
 
   async getLeaderUser(userId: number) {
-    throw new Error('Method not implemented.');
+    const result = await this.leaderRepository.getUser(userId);
+
+    if (!result || !result.data) {
+      throw new NotFoundException(`User data not found in source Leader ID`);
+    }
+
+    return result;
   }
 
   
   async getLeaderUserParticipations(userId: number, query: GetParticipantsQueryDto) {
-
     const result = await this.leaderRepository.getUserParticipations(userId, query);
 
     if (!result || !result.data) {

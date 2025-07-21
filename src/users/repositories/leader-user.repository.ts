@@ -19,6 +19,13 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
     super();
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
+
+  async getUser(userId: number): Promise<any> {
+    const data = await this.fetchFromLeaderApi<{ data: any }>(
+      `/users/${userId}`,
+    );
+  }
+  
   
   async getUserParticipations(userId: number, query: GetParticipantsQueryDto) {
     const { limit, page } = query;

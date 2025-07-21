@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsInt, IsOptional, IsString, Matches, Min } from 'class-validator';
+import { IsDateStringFormat } from '../decorators/is-date-string.decorator';
 
 export class GetEventListQueryDto {
   @ApiPropertyOptional({
@@ -68,8 +69,8 @@ export class GetEventListQueryDto {
   })
   @IsString()
   @IsOptional()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'Date must be in the format YYYY-MM-DD',
+  @IsDateStringFormat({ 
+    message: 'Date must be valid and in YYYY-MM-DD format' 
   })
   dateFrom?: string;
 
@@ -79,8 +80,8 @@ export class GetEventListQueryDto {
   })
   @IsString()
   @IsOptional()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'Date must be in the format YYYY-MM-DD',
+  @IsDateStringFormat({ 
+    message: 'Date must be valid and in YYYY-MM-DD format' 
   })
   dateTo?: string;
 }

@@ -65,6 +65,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       meta: {
         totalCount: number;
         paginationPageCount: number;
+        paginationPage: number;
       };
     };
 
@@ -82,7 +83,7 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
       meta: {
         totalEventsAmount: data.meta.totalCount,
         totalPagesAmount: data.meta.paginationPageCount,
-        currentPage: page,
+        currentPage: data.meta.paginationPage,
       },
     };
 

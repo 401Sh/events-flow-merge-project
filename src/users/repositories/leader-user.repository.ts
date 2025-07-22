@@ -6,6 +6,7 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
 import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
+import { mapLeaderVisited } from "../api-utils/visited-leader-map";
 
 @Injectable()
 export class LeaderUserRepository extends AbstractLeaderUserRepository {
@@ -49,13 +50,13 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
       `/users/${userId}/event-participations`,
       params,
     );
-    // const rawEvents = data.items || [];
-    // const mappedEvents = rawEvents.map(mapLeader);
+    const rawEvents = data.items || [];
+    const mappedEvents = rawEvents.map(mapLeaderVisited);
 
     this.logger.debug('Leader event list recieved successfully');
 
     const dataWithMeta = {
-      data: data.items,
+      data: mappedEvents,
       meta: {
         totalEventsAmount: data.meta.totalCount,
         totalPagesAmount: data.meta.paginationPageCount,

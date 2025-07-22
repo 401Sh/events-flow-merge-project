@@ -3,12 +3,12 @@ services:
     image: minio/minio
     container_name: minio
     environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
+      MINIO_ROOT_USER: ${S3_USER}
+      MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
     volumes:
       - minio-data:/data
     ports:
-      - "9000:9000"
+      - "${S3_PORT}:9000"
       - "9001:9001"
     command: server /data --console-address ":9001"
 

@@ -1,12 +1,13 @@
 import { UnifiedEventDto } from "src/events/dto/unified-event.dto";
 import { AbstractLeaderUserRepository } from "./abstract-leader-user.repository";
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
 import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 import { mapLeaderVisited } from "../api-utils/visited-leader-map";
+import { mapLeaderUser } from "../api-utils/user-profile-map";
 
 @Injectable()
 export class LeaderUserRepository extends AbstractLeaderUserRepository {
@@ -23,11 +24,24 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
   }
 
   async getUser(userId: number): Promise<any> {
-    const data = await this.fetchFromLeaderApi<any>(
+    const dataResponce = await this.fetchFromLeaderApi<{ data: any }>(
       `/users/${userId}`,
     );
+    console.dir(dataResponce)
+    console.dir(dataResponce.data, {depth: 5})
 
-    return data;
+    if (!dataResponce.data) {
+      this.logger.log(`Leader user profile ${userId} not found`);
+      throw new NotFoundException(
+        `User profile with id ${userId} not found in source leaderId`,
+      );
+    }
+
+    const normalizedUser = mapLeaderUser(dataResponce.data);
+
+    this.logger.debug('Leader user profile recieved successfully', normalizedUser);
+
+    return normalizedUser;
   }
   
   
@@ -50,6 +64,8 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
       `/users/${userId}/event-participations`,
       params,
     );
+    console.dir(data)
+    console.dir(data.items, {depth: 5})
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeaderVisited);
 

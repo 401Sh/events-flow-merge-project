@@ -11,13 +11,9 @@ export class UsersService {
   ) {}
 
   async getLeaderUser(userId: number) {
-    const result = await this.leaderRepository.getUser(userId);
+    const data = await this.leaderRepository.getUser(userId);
 
-    // if (!result || !result.data) {
-    //   throw new NotFoundException(`User data not found in source Leader ID`);
-    // }
-
-    return result;
+    return { data };
   }
 
   

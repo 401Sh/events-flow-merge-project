@@ -4,7 +4,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { EventAPISource } from "src/events/enums/event-source.enum";
 
 export class VisitedEventDto implements VisitedEvent {
-  id: number;
+  @ApiProperty({ type: String })
+  @IsString()
+  uuid: string;
   
   @ApiProperty({ type: Number })
   @IsNumber()
@@ -60,7 +62,7 @@ export class VisitedEventDto implements VisitedEvent {
   @IsOptional()
   @IsString()
   posterUrl: string | null;
-  
+
   @ApiProperty({ enum: EventAPISource })
   @IsEnum(EventAPISource)
   source: EventAPISource;

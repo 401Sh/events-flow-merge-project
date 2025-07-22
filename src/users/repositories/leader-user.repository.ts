@@ -23,21 +23,19 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
 
-  async getUser(userId: number): Promise<any> {
-    const dataResponce = await this.fetchFromLeaderApi<{ data: any }>(
+  async getUser(userId: number) {
+    const rawUser = await this.fetchFromLeaderApi<{ data: any }>(
       `/users/${userId}`,
     );
-    console.dir(dataResponce)
-    console.dir(dataResponce.data, {depth: 5})
 
-    if (!dataResponce.data) {
+    if (!rawUser) {
       this.logger.log(`Leader user profile ${userId} not found`);
       throw new NotFoundException(
         `User profile with id ${userId} not found in source leaderId`,
       );
     }
 
-    const normalizedUser = mapLeaderUser(dataResponce.data);
+    const normalizedUser = mapLeaderUser(rawUser);
 
     this.logger.debug('Leader user profile recieved successfully', normalizedUser);
 

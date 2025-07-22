@@ -40,7 +40,7 @@ export function mapLeader(raw: any): LeaderDataDto {
     title: raw.full_name,
     shortDescription: shortDesc,
     fullDescription: raw.full_info || null,
-    startsAt: toIso(raw.date_start, tz),
+    startsAt: raw.date_start ? toIso(raw.date_start, tz) : null,
     endsAt: raw.date_end ? toIso(raw.date_end, tz) : null,
 
     registrationStart: raw.registrationDateStart

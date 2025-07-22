@@ -31,7 +31,7 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
   const shortDesc = extractShortDescription(fullInfo);
 
   const leaderObj: VisitedEvent = {
-    id: raw.id,
+    uuid: raw.id,
 
     eventId: raw.eventId,
     completed: raw.completed,
@@ -40,7 +40,7 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
 
     title: raw.name,
     description: shortDesc,
-    startsAt: toIso(raw.dateStart, tz),
+    startsAt: raw.dateStart ? toIso(raw.dateStart, tz) : null,
     endsAt: raw.dateEnd ? toIso(raw.dateEnd, tz) : null,
 
     registrationStart: raw.registrationDateStart
@@ -52,7 +52,7 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
       : null,
 
     url: `https://leader-id.ru/events/${raw.eventId}`,
-    posterUrl: raw.photo.full || null,
+    posterUrl: raw.photo?.full || null,
 
     source: EventAPISource.LEADER_ID,
   };

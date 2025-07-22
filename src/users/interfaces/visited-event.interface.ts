@@ -1,7 +1,7 @@
 import { EventAPISource } from 'src/events/enums/event-source.enum';
 
 export interface VisitedEvent {
-  id: number;
+  uuid: string;
   eventId: number;
   completed: boolean;
   completedAt: string;

@@ -1,0 +1,42 @@
+services:
+  app:
+    build: .
+    container_name: nest-backend
+    environment:
+      - NODE_ENV=production
+
+      # db настройки
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+
+      # s3 настройки
+      - S3_HOST=${S3_HOST}
+      - S3_PORT=${S3_PORT}
+      - S3_USER=${S3_USER}
+      - S3_PASSWORD=${S3_PASSWORD}
+
+      # настройки проекта
+      - HOST=0.0.0.0
+      - PORT=${PORT}
+      - LOG_LEVEL=${LOG_LEVEL}
+
+      # настройки сайта
+      - APP_BASE_URL=${APP_BASE_URL}
+
+      # leader api url и токены
+      - LEADER_API_URL=${LEADER_API_URL}
+      - LEADER_OAUTH_URL=${LEADER_OAUTH_URL}
+      - LEADER_CLIENT_ID=${LEADER_CLIENT_ID}
+      - LEADER_CLIENT_SECRET=${LEADER_CLIENT_SECRET}
+
+      # timepad api url и токены
+      - TIMEPAD_API_URL=${TIMEPAD_API_URL}
+      - TIMEPAD_OAUTH_URL=${TIMEPAD_OAUTH_URL}
+      - TIMEPAD_TOKEN=${TIMEPAD_TOKEN}
+      - TIMEPAD_CLIENT_ID=${TIMEPAD_CLIENT_ID}
+    ports:
+      - "${PORT}:${PORT}"
+    restart: unless-stopped

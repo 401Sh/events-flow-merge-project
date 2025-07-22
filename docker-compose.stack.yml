@@ -1,0 +1,79 @@
+services:
+  app:
+    build: .
+    container_name: nest-backend
+    environment:
+      - NODE_ENV=production
+
+      # db настройки
+      - DB_HOST=postgis-db
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+
+      # s3 настройки
+      - S3_HOST=minio-s3
+      - S3_PORT=9000
+      - S3_USER=${S3_USER}
+      - S3_PASSWORD=${S3_PASSWORD}
+
+      # настройки проекта
+      - HOST=0.0.0.0
+      - PORT=${PORT}
+      - LOG_LEVEL=${LOG_LEVEL}
+
+      # настройки сайта
+      - APP_BASE_URL=${APP_BASE_URL}
+
+      # leader api url и токены
+      - LEADER_API_URL=${LEADER_API_URL}
+      - LEADER_OAUTH_URL=${LEADER_OAUTH_URL}
+      - LEADER_CLIENT_ID=${LEADER_CLIENT_ID}
+      - LEADER_CLIENT_SECRET=${LEADER_CLIENT_SECRET}
+
+      # timepad api url и токены
+      - TIMEPAD_API_URL=${TIMEPAD_API_URL}
+      - TIMEPAD_OAUTH_URL=${TIMEPAD_OAUTH_URL}
+      - TIMEPAD_TOKEN=${TIMEPAD_TOKEN}
+      - TIMEPAD_CLIENT_ID=${TIMEPAD_CLIENT_ID}
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - db
+      - s3
+    restart: unless-stopped
+
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: postgis-db
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    container_name: adminer-db-ui
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  s3:
+    image: minio/minio
+    container_name: minio-s3
+    environment:
+      MINIO_ROOT_USER: ${S3_USER}
+      MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
+    ports:
+      - "${S3_PORT}:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+
+volumes:
+  postgres_data:

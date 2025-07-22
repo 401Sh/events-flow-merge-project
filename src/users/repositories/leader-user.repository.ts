@@ -55,6 +55,7 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
       meta: {
         totalCount: number;
         paginationPageCount: number;
+        paginationPage: number;
       };
     };
 
@@ -74,7 +75,7 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
       meta: {
         totalEventsAmount: data.meta.totalCount,
         totalPagesAmount: data.meta.paginationPageCount,
-        currentPage: page,
+        currentPage: data.meta.paginationPage,
       },
     };
 

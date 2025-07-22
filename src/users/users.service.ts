@@ -20,10 +20,6 @@ export class UsersService {
   async getLeaderUserParticipations(userId: number, query: GetParticipantsQueryDto) {
     const result = await this.leaderRepository.getUserParticipations(userId, query);
 
-    if (!result || !result.data) {
-      throw new NotFoundException(`Events participations not found in source Leader ID`);
-    }
-
     return result;
   }
 }

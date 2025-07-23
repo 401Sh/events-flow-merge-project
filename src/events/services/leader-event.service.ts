@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { AbstractLeaderEventRepository } from './abstract-leader-event.repository';
+import { APIEventInterface } from './api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
 import { firstValueFrom } from 'rxjs';
@@ -18,8 +18,8 @@ import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 
 @Injectable()
-export class LeaderEventRepository extends AbstractLeaderEventRepository {
-  private readonly logger = new Logger(LeaderEventRepository.name);
+export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
+  private readonly logger = new Logger(LeaderEventService.name);
   private readonly baseUrl: string;
 
   constructor(
@@ -29,7 +29,6 @@ export class LeaderEventRepository extends AbstractLeaderEventRepository {
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
   ) {
-    super();
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
 

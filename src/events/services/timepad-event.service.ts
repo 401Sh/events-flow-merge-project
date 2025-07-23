@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { AbstractTimepadEventRepository } from './abstract-timepad-event.repository';
+import { APIEventInterface } from './api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
 import { firstValueFrom } from 'rxjs';
@@ -18,8 +18,8 @@ import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 
 @Injectable()
-export class TimepadEventRepository extends AbstractTimepadEventRepository {
-  private readonly logger = new Logger(TimepadEventRepository.name);
+export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
+  private readonly logger = new Logger(TimepadEventService.name);
   private readonly baseUrl: string;
 
   constructor(
@@ -29,7 +29,6 @@ export class TimepadEventRepository extends AbstractTimepadEventRepository {
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
   ) {
-    super();
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
 

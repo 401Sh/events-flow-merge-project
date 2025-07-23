@@ -1,29 +1,29 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AbstractLeaderEventRepository } from './repositories/abstract-leader-event.repository';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
-import { AbstractTimepadEventRepository } from './repositories/abstract-timepad-event.repository';
 import { EventsListResult } from './interfaces/events-list-result.interface';
 import { EventAPISource } from './enums/event-source.enum';
 import { UnifiedEventDto } from './dto/unified-event.dto';
 import { LeaderDataDto } from './dto/leader-data.dto';
 import { TimepadDataDto } from './dto/timepad-data.dto';
+import { LeaderEventService } from './services/leader-event.service';
+import { TimepadEventService } from './services/timepad-event.service';
 
 @Injectable()
 export class EventsService {
   private readonly logger = new Logger(EventsService.name);
 
   constructor(
-    private readonly leaderRepository: AbstractLeaderEventRepository,
-    private readonly timepadRepository: AbstractTimepadEventRepository,
+    private readonly leaderService: LeaderEventService,
+    private readonly timepadService: TimepadEventService,
   ) {}
 
   async getFromSourceById(source: EventAPISource, id: number) {
     let data: LeaderDataDto | TimepadDataDto | null = null;
 
     if (source === EventAPISource.TIMEPAD) {
-      data = await this.timepadRepository.getOne(id);
+      data = await this.timepadService.getOne(id);
     } else {
-      data = await this.leaderRepository.getOne(id);
+      data = await this.leaderService.getOne(id);
     }
 
     return { data };
@@ -85,9 +85,9 @@ export class EventsService {
       | EventsListResult<TimepadDataDto>;
 
     if (source === EventAPISource.TIMEPAD) {
-      result = await this.timepadRepository.getAllWithMeta(query);
+      result = await this.timepadService.getAllWithMeta(query);
     } else {
-      result = await this.leaderRepository.getAllWithMeta(query);
+      result = await this.leaderService.getAllWithMeta(query);
     }
 
     if (!result || !result.data) {
@@ -111,8 +111,8 @@ export class EventsService {
 
   private async getEventsAmount(query: GetEventListQueryDto) {
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
-      this.leaderRepository.getAmount(query),
-      this.timepadRepository.getAmount(query),
+      this.leaderService.getAmount(query),
+      this.timepadService.getAmount(query),
     ]);
 
     return { leaderEventsAmount, timepadEventsAmount };
@@ -138,7 +138,7 @@ export class EventsService {
     // TODO: Отрефакторить
     if (batchData.firstAmount != 0) {
       promises.push(
-        this.leaderRepository.getAll(
+        this.leaderService.getAll(
           batchData.firstAmount,
           batchData.firstSkip,
           query,
@@ -148,7 +148,7 @@ export class EventsService {
 
     if (batchData.secondAmount != 0) {
       promises.push(
-        this.timepadRepository.getAll(
+        this.timepadService.getAll(
           batchData.secondAmount,
           batchData.secondSkip,
           query,

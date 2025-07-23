@@ -1,5 +1,5 @@
+import { EventsListResultDto } from '../dto/events-list-result.dto';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
-import { EventsListResult } from '../interfaces/events-list-result.interface';
 
 export interface APIEventInterface<T> {
   getAll(
@@ -9,7 +9,7 @@ export interface APIEventInterface<T> {
   ): Promise<T[]>;
   getAllWithMeta(
     query: GetEventListQueryDto,
-  ): Promise<EventsListResult<T>>;
+  ): Promise<EventsListResultDto>;
   getOne(id: number): Promise<T | null>;
   getAmount(query: GetEventListQueryDto): Promise<number>;
 }

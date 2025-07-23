@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { AbstractLeaderDictionaryRepository } from './abstract-leader-dictionary.repository';
+import { APIDictionaryInterface } from './api-dictionary.service.interface';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -7,8 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { EventThemesDto } from '../dto/event-themes.dto';
 
 @Injectable()
-export class LeaderDictionaryRepository extends AbstractLeaderDictionaryRepository {
-  private readonly logger = new Logger(LeaderDictionaryRepository.name);
+export class LeaderDictionaryService implements APIDictionaryInterface {
+  private readonly logger = new Logger(LeaderDictionaryService.name);
   private readonly baseUrl: string;
 
   constructor(
@@ -16,7 +16,6 @@ export class LeaderDictionaryRepository extends AbstractLeaderDictionaryReposito
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
   ) {
-    super();
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
 

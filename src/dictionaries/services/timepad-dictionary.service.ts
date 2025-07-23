@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { AbstractTimepadDictionaryRepository } from './abstract-timepad-dictionary.repository';
+import { APIDictionaryInterface } from './api-dictionary.service.interface';
 import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -7,8 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { EventThemesDto } from '../dto/event-themes.dto';
 
 @Injectable()
-export class TimepadDictionaryRepository extends AbstractTimepadDictionaryRepository {
-  private readonly logger = new Logger(TimepadDictionaryRepository.name);
+export class TimepadDictionaryService implements APIDictionaryInterface {
+  private readonly logger = new Logger(TimepadDictionaryService.name);
   private readonly baseUrl: string;
 
   constructor(
@@ -16,7 +16,6 @@ export class TimepadDictionaryRepository extends AbstractTimepadDictionaryReposi
     private readonly httpService: HttpService,
     private readonly authService: TimepadClientAuthService,
   ) {
-    super();
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
 

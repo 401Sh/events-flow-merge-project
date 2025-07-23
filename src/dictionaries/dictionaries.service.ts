@@ -1,12 +1,12 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
-import { AbstractLeaderDictionaryRepository } from './repositories/abstract-leader-dictionary.repository';
-import { AbstractTimepadDictionaryRepository } from './repositories/abstract-timepad-dictionary.repository';
 import { EventThemesDto } from './dto/event-themes.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventThemeEntity } from './entities/theme.entity';
 import { In, Repository } from 'typeorm';
 import { ExternalThemeRefEntity } from './entities/external-theme.entity';
+import { TimepadDictionaryService } from './services/timepad-dictionary.service';
+import { LeaderDictionaryService } from './services/leader-dictionary.service';
 
 @Injectable()
 export class DictionariesService {
@@ -18,8 +18,8 @@ export class DictionariesService {
     @InjectRepository(ExternalThemeRefEntity)
     private externalThemeRefRepository: Repository<ExternalThemeRefEntity>,
 
-    private readonly leaderRepository: AbstractLeaderDictionaryRepository,
-    private readonly timepadRepository: AbstractTimepadDictionaryRepository,
+    private readonly leaderService: LeaderDictionaryService,
+    private readonly timepadService: TimepadDictionaryService,
   ) {}
 
   async findEventThemes() {
@@ -34,9 +34,9 @@ export class DictionariesService {
     let result: EventThemesDto[];
 
     if (source === EventAPISource.TIMEPAD) {
-      result = await this.timepadRepository.getAllThemes();
+      result = await this.timepadService.getAllThemes();
     } else {
-      result = await this.leaderRepository.getAllThemes();
+      result = await this.leaderService.getAllThemes();
     }
 
     if (!result) {

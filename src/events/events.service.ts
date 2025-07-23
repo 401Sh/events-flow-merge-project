@@ -168,39 +168,44 @@ export class EventsService {
     api1Total: number,
     api2Total: number,
   ) {
-    let rest1 = api1Total;
-    let rest2 = api2Total;
+    const half = Math.ceil(limit / 2);
+    const totalItemsBefore = (page - 1) * limit;
+  
     let firstSkip = 0;
     let secondSkip = 0;
-
-    for (let i = 0; i < page - 1; i++) {
+  
+    let tempRest1 = api1Total;
+    let tempRest2 = api2Total;
+    let skipped = 0;
+  
+    while (skipped < totalItemsBefore && (tempRest1 > 0 || tempRest2 > 0)) {
       let need = limit;
-
-      let take1 = Math.min(Math.ceil(limit / 2), rest1);
+  
+      let take1 = Math.min(half, tempRest1);
       need -= take1;
-
-      let take2 = Math.min(need, rest2);
+  
+      let take2 = Math.min(need, tempRest2);
       need -= take2;
-
-      // добор недостающих
-      if (need > 0 && rest1 - take1 > 0) {
-        const extra = Math.min(need, rest1 - take1);
+  
+      if (need > 0 && tempRest1 - take1 > 0) {
+        const extra = Math.min(need, tempRest1 - take1);
         take1 += extra;
         need -= extra;
-      } else if (need > 0 && rest2 - take2 > 0) {
-        const extra = Math.min(need, rest2 - take2);
+      } else if (need > 0 && tempRest2 - take2 > 0) {
+        const extra = Math.min(need, tempRest2 - take2);
         take2 += extra;
         need -= extra;
       }
-
-      rest1 -= take1;
-      rest2 -= take2;
+  
+      tempRest1 -= take1;
+      tempRest2 -= take2;
       firstSkip += take1;
       secondSkip += take2;
+      skipped += take1 + take2;
     }
-
-    // на случай, если элементы кончились
-    if (rest1 === 0 && rest2 === 0) {
+  
+    // проверка остатка данных
+    if (tempRest1 === 0 && tempRest2 === 0) {
       return {
         firstSkip,
         firstAmount: 0,
@@ -209,26 +214,25 @@ export class EventsService {
         isEmpty: true,
       };
     }
-
-    // рассчет страницы
+  
     let need = limit;
-
-    let take1 = Math.min(Math.ceil(limit / 2), rest1);
+  
+    let take1 = Math.min(half, tempRest1);
     need -= take1;
-
-    let take2 = Math.min(need, rest2);
+  
+    let take2 = Math.min(need, tempRest2);
     need -= take2;
-
-    if (need > 0 && rest1 - take1 > 0) {
-      const extra = Math.min(need, rest1 - take1);
+  
+    if (need > 0 && tempRest1 - take1 > 0) {
+      const extra = Math.min(need, tempRest1 - take1);
       take1 += extra;
       need -= extra;
-    } else if (need > 0 && rest2 - take2 > 0) {
-      const extra = Math.min(need, rest2 - take2);
+    } else if (need > 0 && tempRest2 - take2 > 0) {
+      const extra = Math.min(need, tempRest2 - take2);
       take2 += extra;
       need -= extra;
     }
-
+  
     return {
       firstSkip,
       firstAmount: take1,

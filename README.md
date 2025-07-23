@@ -12,7 +12,7 @@
 - [X] Просмотр информации о мероприятии
 - [ ] Вход по OAuth Timepad
 - [X] Вход по OAuth Leader-ID
-- [ ] Список посещенных пользователем мероприятий
+- [X] Список посещенных пользователем мероприятий
 - [ ] Список мероприятий на которые записался пользователь
 
 ## Технологии
@@ -62,15 +62,18 @@ src/
 │
 │── auth/               # Модули аунтентификации и авторизации
 │   ├── client-auth/    # Модуль получения токенов доступа к API
+│   ├── dto/
 │   ├── interfaces/
 │   ├── oauth/          # Модуль пользовательской аутентификации
+│       ├── guards/
+│       ├── repositories/
 │
 │── configs/
 │── constants/
 │
 │── dictionaries/       # Модуль словарей
 │   ├── dto/
-│   ├── interfaces/
+│   ├── entities/       # Сущности БД
 │   ├── repositories/   # Абстракции и реализации запросов dictionaries со сторонних API
 │
 │── events/             # Модуль мероприятий
@@ -81,8 +84,15 @@ src/
 │   ├── repositories/   # Абстракции и реализации запросов events со сторонних API
 │
 │── geo/                # Модуль городов и местоположения
+│   ├── dto/
+│   ├── entities/       # Сущности БД
 │
 │── users/              # Модуль пользователей
+│   ├── api-utils/      # Мапперы для приведения данных к visited events
+│   ├── dto/
+│   ├── guards/
+│   ├── repositories/   # Абстракции и реализации запросов users со сторонних API
+│
 .env
 tsconfig.json
 package.json
@@ -106,6 +116,17 @@ package.json
 - **GET    /geo**                                 - Получение списка городов
 - **GET    /geo/:cityId/nearest**                 - Получение списка ближайших городов к конкретному городу
 - **GET    /geo/coords**                          - Получение id ближайшего города по координатам
+
+### Модуль users
+
+- **GET    /users/:userId/leaderId**                      - Получение данных пользователя
+- **GET    /users/:userId/participations/leaderId**       - Получения посещенных пользователем мероприятий
+
+### Модуль oauth
+
+- **GET    /oauth/redirect/:source**                - Редирект на авторизацию в источнике
+- **GET    /oauth/callback/leaderId**               - Обмен кода leaderId на токены доступа
+- **POST   /oauth/refresh/leaderId**                - Обновление токенов доступа leaderId по refresh токену
 
 ## Статус проекта
 

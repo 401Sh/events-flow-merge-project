@@ -66,7 +66,7 @@ src/
 │   ├── interfaces/
 │   ├── oauth/          # Модуль пользовательской аутентификации
 │       ├── guards/
-│       ├── repositories/
+│       ├── services/   # Сервисы логики запросов данных со сторонних API
 │
 │── configs/
 │── constants/
@@ -74,14 +74,14 @@ src/
 │── dictionaries/       # Модуль словарей
 │   ├── dto/
 │   ├── entities/       # Сущности БД
-│   ├── repositories/   # Абстракции и реализации запросов dictionaries со сторонних API
+│   ├── services/       # Сервисы логики запросов данных со сторонних API
 │
 │── events/             # Модуль мероприятий
 │   ├── api-utils/      # Мапперы для приведения events к одному виду
 │   ├── dto/
 │   ├── enums/
 │   ├── interfaces/
-│   ├── repositories/   # Абстракции и реализации запросов events со сторонних API
+│   ├── services/       # Сервисы логики запросов данных со сторонних API
 │
 │── geo/                # Модуль городов и местоположения
 │   ├── dto/
@@ -91,7 +91,7 @@ src/
 │   ├── api-utils/      # Мапперы для приведения данных к visited events
 │   ├── dto/
 │   ├── guards/
-│   ├── repositories/   # Абстракции и реализации запросов users со сторонних API
+│   ├── services/       # Сервисы логики запросов данных со сторонних API
 │
 .env
 tsconfig.json

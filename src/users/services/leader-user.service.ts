@@ -1,5 +1,4 @@
-import { UnifiedEventDto } from "src/events/dto/unified-event.dto";
-import { AbstractLeaderUserRepository } from "./abstract-leader-user.repository";
+import { APIUserInterface } from "./api-user.service.interface";
 import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
@@ -10,8 +9,8 @@ import { mapLeaderVisited } from "../api-utils/visited-leader-map";
 import { mapLeaderUser } from "../api-utils/user-profile-map";
 
 @Injectable()
-export class LeaderUserRepository extends AbstractLeaderUserRepository {
-  private readonly logger = new Logger(LeaderUserRepository.name);
+export class LeaderUserService implements APIUserInterface {
+  private readonly logger = new Logger(LeaderUserService.name);
   private readonly baseUrl: string;
 
   constructor(
@@ -19,7 +18,6 @@ export class LeaderUserRepository extends AbstractLeaderUserRepository {
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
   ) {
-    super();
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
 

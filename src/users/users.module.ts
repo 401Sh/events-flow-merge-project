@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { LeaderUserRepository } from './repositories/leader-user.repository';
-import { AbstractLeaderUserRepository } from './repositories/abstract-leader-user.repository';
+import { LeaderUserService } from './services/leader-user.service';
 import { ClientAuthModule } from 'src/auth/client-auth/client-auth.module';
 import { HttpModule } from '@nestjs/axios';
 
@@ -14,10 +13,7 @@ import { HttpModule } from '@nestjs/axios';
   controllers: [UsersController],
   providers: [
     UsersService,
-    {
-      provide: AbstractLeaderUserRepository,
-      useClass: LeaderUserRepository,
-    },
+    LeaderUserService,
   ],
 })
 export class UsersModule {}

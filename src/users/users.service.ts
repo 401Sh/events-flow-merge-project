@@ -1,24 +1,24 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AbstractLeaderUserRepository } from './repositories/abstract-leader-user.repository';
+import { Injectable, Logger } from '@nestjs/common';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
+import { LeaderUserService } from './services/leader-user.service';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(
-    private readonly leaderRepository: AbstractLeaderUserRepository,
+    private readonly leaderService: LeaderUserService,
   ) {}
 
   async getLeaderUser(userId: number) {
-    const data = await this.leaderRepository.getUser(userId);
+    const data = await this.leaderService.getUser(userId);
 
     return { data };
   }
 
   
   async getLeaderUserParticipations(userId: number, query: GetParticipantsQueryDto) {
-    const result = await this.leaderRepository.getUserParticipations(userId, query);
+    const result = await this.leaderService.getUserParticipations(userId, query);
 
     return result;
   }

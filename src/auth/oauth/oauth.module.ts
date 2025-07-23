@@ -3,18 +3,14 @@ import { OAuthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
 import { HttpModule } from '@nestjs/axios';
 import { ClientAuthModule } from '../client-auth/client-auth.module';
-import { AbstractLeaderOAuthRepository } from './repositories/abstract-leader-oauth.repository';
-import { LeaderOAuthRepository } from './repositories/leader-oauth.repository';
+import { LeaderOAuthService } from './services/leader-oauth.service';
 
 @Module({
   imports: [ClientAuthModule, HttpModule],
   controllers: [OAuthController],
   providers: [
     OAuthService,
-    {
-      provide: AbstractLeaderOAuthRepository,
-      useClass: LeaderOAuthRepository,
-    },
+    LeaderOAuthService,
   ],
 })
 export class OauthModule {}

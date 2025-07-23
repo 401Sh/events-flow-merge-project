@@ -10,19 +10,17 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { CallbackResultDto } from 'src/auth/dto/callback-result.dto';
-import { AbstractLeaderOAuthRepository } from './abstract-leader-oauth.repository';
+import { APIOAuthInterface } from './api-oauth.service.interface';
 
 @Injectable()
-export class LeaderOAuthRepository extends AbstractLeaderOAuthRepository {
-  private readonly logger = new Logger(LeaderOAuthRepository.name);
+export class LeaderOAuthService implements APIOAuthInterface {
+  private readonly logger = new Logger(LeaderOAuthService.name);
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
-  ) {
-    super();
-  }
+  ) {}
 
 
   async exchangeСode(code: string): Promise<CallbackResultDto> {

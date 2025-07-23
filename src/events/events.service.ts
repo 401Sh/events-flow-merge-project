@@ -161,7 +161,7 @@ export class EventsService {
     return result.flat();
   }
 
-
+  
   private getBatchAtSkip(
     limit: number,
     page: number,
@@ -179,32 +179,17 @@ export class EventsService {
     let skipped = 0;
   
     while (skipped < totalItemsBefore && (tempRest1 > 0 || tempRest2 > 0)) {
-      let need = limit;
-  
-      let take1 = Math.min(half, tempRest1);
-      need -= take1;
-  
-      let take2 = Math.min(need, tempRest2);
-      need -= take2;
-  
-      if (need > 0 && tempRest1 - take1 > 0) {
-        const extra = Math.min(need, tempRest1 - take1);
-        take1 += extra;
-        need -= extra;
-      } else if (need > 0 && tempRest2 - take2 > 0) {
-        const extra = Math.min(need, tempRest2 - take2);
-        take2 += extra;
-        need -= extra;
-      }
+      const { take1, take2 } = this.distributeItems(limit, half, tempRest1, tempRest2);
   
       tempRest1 -= take1;
       tempRest2 -= take2;
       firstSkip += take1;
       secondSkip += take2;
       skipped += take1 + take2;
+  
+      if (take1 + take2 === 0) break;
     }
   
-    // проверка остатка данных
     if (tempRest1 === 0 && tempRest2 === 0) {
       return {
         firstSkip,
@@ -215,23 +200,7 @@ export class EventsService {
       };
     }
   
-    let need = limit;
-  
-    let take1 = Math.min(half, tempRest1);
-    need -= take1;
-  
-    let take2 = Math.min(need, tempRest2);
-    need -= take2;
-  
-    if (need > 0 && tempRest1 - take1 > 0) {
-      const extra = Math.min(need, tempRest1 - take1);
-      take1 += extra;
-      need -= extra;
-    } else if (need > 0 && tempRest2 - take2 > 0) {
-      const extra = Math.min(need, tempRest2 - take2);
-      take2 += extra;
-      need -= extra;
-    }
+    const { take1, take2 } = this.distributeItems(limit, half, tempRest1, tempRest2);
   
     return {
       firstSkip,
@@ -240,5 +209,33 @@ export class EventsService {
       secondAmount: take2,
       isEmpty: take1 + take2 === 0,
     };
+  }
+
+
+  private distributeItems(
+    limit: number,
+    half: number,
+    rest1: number,
+    rest2: number,
+  ) {
+    let need = limit;
+  
+    let take1 = Math.min(half, rest1);
+    need -= take1;
+  
+    let take2 = Math.min(need, rest2);
+    need -= take2;
+  
+    if (need > 0 && rest1 - take1 > 0) {
+      const extra = Math.min(need, rest1 - take1);
+      take1 += extra;
+      need -= extra;
+    } else if (need > 0 && rest2 - take2 > 0) {
+      const extra = Math.min(need, rest2 - take2);
+      take2 += extra;
+      need -= extra;
+    }
+  
+    return { take1, take2 };
   }
 }

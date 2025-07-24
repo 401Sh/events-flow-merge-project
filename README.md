@@ -55,6 +55,32 @@ npm run start
 
 После запуска проект будет доступен по адресу {HOST}:{PORT}/api/v1, а Swagger по адресу {HOST}:{PORT}/api/v1/docs
 
+## Миграции БД
+
+1. Создание миграции
+
+```bash
+# Автоматическая генерация схемы миграции с изменениями
+npm run migration:generate
+
+# Генерация шаблона миграции для ручного ввода изменений
+npm run migration:create
+```
+
+2. Применение миграции
+
+```bash
+npm run migration:run
+```
+
+3. Отмена миграции
+
+```bash
+npm run migration:revert
+```
+
+Миграции доступны по пути /src/database/migrations/
+
 ## Структура проекта
 
 ```
@@ -70,6 +96,8 @@ src/
 │
 │── configs/
 │── constants/
+│
+│── database/           # Вспомогательный функционал для БД (сиды и миграции)
 │
 │── dictionaries/       # Модуль словарей
 │   ├── dto/

@@ -15,8 +15,12 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
  * @returns a string in UTC ISO format: "2024-05-27T21:10:43Z"
  */
 export function toIso(dateStr: string, tzOffset: string): string {
+  console.log('dateStr', dateStr)
+  console.log('tzOffset', tzOffset)
   // парсинг строки как локальное время (без временной зоны)
   const localDate = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
+
+  if (tzOffset == '00:00') tzOffset = '+00:00'
   // localeDate в UTC
   const utcDate = fromZonedTime(localDate, tzOffset);
   // UTC в ISO 8601 с Z (UTC)

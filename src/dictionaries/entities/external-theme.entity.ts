@@ -18,6 +18,9 @@ export class ExternalThemeRefEntity extends BaseEntity {
   @Column({ type: 'enum', enum: EventAPISource, nullable: false })
   source: EventAPISource;
 
+  @Column({ type: 'enum', enum: EventAPISource, nullable: true })
+  source2: EventAPISource;
+
   @Column({ type: 'integer', nullable: false })
   sourceId: number;
 

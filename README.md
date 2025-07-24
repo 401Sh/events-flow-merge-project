@@ -4,7 +4,7 @@
 
 Разработать бэкенд, который будет агрегировать и предоставлять данные о мероприятиях с двух независимых API: Leader-id и Timepad.
 
-## Задачи
+### Задачи
 
 - [X] Получение списка мероприятий
 - [X] Фильтрация мероприятий по городу пользователя
@@ -15,7 +15,7 @@
 - [X] Список посещенных пользователем мероприятий
 - [ ] Список мероприятий на которые записался пользователь
 
-## Технологии
+### Технологии
 
 - **TypeScript** - статическая типизация для повышения надежности кода.
 - **Class-Validator** - валидация клиентских запросов.
@@ -36,24 +36,66 @@ git clone https://gitverse.ru/studentlabs/our_events_backend
 cd our_events_backend
 ```
 
-3. Устновите зависимости
+## Локальный запуск
+
+1. Установите зависимости
 
 ```bash
 npm install
 ```
 
-## Запуск
-
-Для запуска проекта потребуется создать файл .env в корне каталога и настроить его. Пример конфигурации - example.env файл.
-В данный момент проект не может работать без предоставления токена доступа к API timepad и client_id с secret_id от API leader-id.
-- Получить токен доступа timepad можно ссылке: https://dev.timepad.ru/api/oauth/
-- Получить client_id и secret_id от leader-id можно по ссылке: https://leader-id.ru/en/developers
+2. Запустите проект.
 
 ```bash
 npm run start
 ```
 
+Для запуска проекта потребуется создать файл .env в корне каталога и настроить его. Пример конфигурации - example.env файл.
+В данный момент проект не может работать без предоставления токена доступа к API timepad и client_id с secret_id от API leader-id, а также без Postgis базы данных.
+- Получить токен доступа timepad можно ссылке: https://dev.timepad.ru/api/oauth/
+- Получить client_id и secret_id от leader-id можно по ссылке: https://leader-id.ru/en/developers
+
 После запуска проект будет доступен по адресу {HOST}:{PORT}/api/v1, а Swagger по адресу {HOST}:{PORT}/api/v1/docs
+
+## Запуск в Docker контейнере
+
+### Полный стек
+
+1. Запустите docker-compose
+
+```bash
+docker-compose -f docker-compose.stack.yml up -d
+```
+
+Для запуска проекта потребуется создать файл .env в корне каталога и настроить его. Пример конфигурации - example.env файл.
+После запуска проект будет доступен по адресу {HOST}:{PORT}/api/v1, а Swagger по адресу {HOST}:{PORT}/api/v1/docs
+
+### Отдельный запуск
+
+1. Запустите docker-compose
+
+```bash
+docker-compose up -d
+```
+
+Для запуска проекта потребуется создать файл .env в корне каталога и настроить его. Пример конфигурации - example.env файл.
+После запуска проект будет доступен по адресу {HOST}:{PORT}/api/v1, а Swagger по адресу {HOST}:{PORT}/api/v1/docs
+
+---
+
+При необходимости можно развернуть контейнеры Postgis или Minio для локального запуска БД или s3 соотвественно:
+
+- Запуск Postgis БД контейнера
+  
+```bash
+docker-compose -f docker-compose.postgis.yml up -d
+```
+
+- Запуск Minio S3 контейнера
+  
+```bash
+docker-compose -f docker-compose.minio.yml up -d
+```
 
 ## Миграции БД
 
@@ -81,7 +123,7 @@ npm run migration:revert
 
 Миграции доступны по пути /src/database/migrations/
 
-## Структура проекта
+### Структура проекта
 
 ```
 src/
@@ -96,7 +138,6 @@ src/
 │
 │── configs/
 │── constants/
-│
 │── database/           # Вспомогательный функционал для БД (сиды и миграции)
 │
 │── dictionaries/       # Модуль словарей
@@ -131,7 +172,6 @@ package.json
 ### Модуль dictionaries
 
 - **GET    /dictionaries/themes**                    - Получение списка общих категорий/тем для фильтрации
-- **GET    /dictionaries/themes/:source**            - Получение списка категорий/тем от источника
 
 ### Модуль events
 

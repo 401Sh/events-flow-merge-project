@@ -6,8 +6,6 @@ import { ClientAuthModule } from 'src/auth/client-auth/client-auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventThemeEntity } from './entities/theme.entity';
 import { ExternalThemeRefEntity } from './entities/external-theme.entity';
-import { LeaderDictionaryService } from './services/leader-dictionary.service';
-import { TimepadDictionaryService } from './services/timepad-dictionary.service';
 
 @Module({
   imports: [
@@ -16,11 +14,7 @@ import { TimepadDictionaryService } from './services/timepad-dictionary.service'
     TypeOrmModule.forFeature([EventThemeEntity, ExternalThemeRefEntity]),
   ],
   controllers: [DictionariesController],
-  providers: [
-    DictionariesService,
-    LeaderDictionaryService,
-    TimepadDictionaryService,
-  ],
+  providers: [DictionariesService],
   exports: [DictionariesService],
 })
 export class DictionariesModule {}

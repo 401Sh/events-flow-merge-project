@@ -5,8 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EventThemeEntity } from './entities/theme.entity';
 import { In, Repository } from 'typeorm';
 import { ExternalThemeRefEntity } from './entities/external-theme.entity';
-import { TimepadDictionaryService } from './services/timepad-dictionary.service';
-import { LeaderDictionaryService } from './services/leader-dictionary.service';
 
 @Injectable()
 export class DictionariesService {
@@ -17,9 +15,6 @@ export class DictionariesService {
     private eventThemeRepository: Repository<EventThemeEntity>,
     @InjectRepository(ExternalThemeRefEntity)
     private externalThemeRefRepository: Repository<ExternalThemeRefEntity>,
-
-    private readonly leaderService: LeaderDictionaryService,
-    private readonly timepadService: TimepadDictionaryService,
   ) {}
 
   async findEventThemes() {
@@ -27,23 +22,6 @@ export class DictionariesService {
 
     this.logger.debug(`Finded themes`, themes);
     return { data: themes };
-  }
-
-  
-  async findEventThemesBySource(source: EventAPISource) {
-    let result: EventThemesDto[];
-
-    if (source === EventAPISource.TIMEPAD) {
-      result = await this.timepadService.getAllThemes();
-    } else {
-      result = await this.leaderService.getAllThemes();
-    }
-
-    if (!result) {
-      throw new NotFoundException(`Themes not found in source ${source}`);
-    }
-
-    return { data: result };
   }
 
 

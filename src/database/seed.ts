@@ -1,22 +1,8 @@
-// src/database/seed.ts
-import { dataSourceOptions } from '../configs/typeorm.config';
-import { DataSource } from 'typeorm';
 import { seedThemes } from './seeds/theme.seed';
 import { seedCities } from './seeds/city.seed';
-import { ExternalThemeRefEntity } from '../dictionaries/entities/external-theme.entity';
-import { EventThemeEntity } from '../dictionaries/entities/theme.entity';
-import { CityEntity } from '../geo/entities/city.entity';
+import { dataSource } from './data-source';
 
 async function seed() {
-  const dataSource = new DataSource({
-    ...dataSourceOptions,
-    entities: [
-      EventThemeEntity,
-      ExternalThemeRefEntity,
-      CityEntity,
-    ],
-  });
-
   await dataSource.initialize();
 
   try {

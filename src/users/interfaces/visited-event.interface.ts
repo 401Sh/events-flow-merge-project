@@ -4,7 +4,7 @@ export interface VisitedEvent {
   uuid: string;
   eventId: number;
   completed: boolean;
-  completedAt: string;
+  completedAt: string | null;
   signedUpAt: string;
   title: string;
   description: string | null;

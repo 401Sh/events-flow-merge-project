@@ -15,6 +15,8 @@ import { EventAPISource } from 'src/events/enums/event-source.enum';
 export function toIso(dateStr: string, tzOffset: string): string {
   // парсинг строки как локальное время (без временной зоны)
   const localDate = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
+  
+  if (tzOffset == '00:00') tzOffset = '+00:00'
   // localeDate в UTC
   const utcDate = fromZonedTime(localDate, tzOffset);
   // UTC в ISO 8601 с Z (UTC)
@@ -27,7 +29,7 @@ export function toIso(dateStr: string, tzOffset: string): string {
 export function mapLeaderVisited(raw: any): VisitedEventDto {
   const tz = raw.timezone?.value || '+03:00';
 
-  const fullInfo = parseFullInfo(raw.info);
+  const fullInfo = parseFullInfo(raw.event?.info);
   const shortDesc = extractShortDescription(fullInfo);
 
   const leaderObj: VisitedEvent = {
@@ -35,24 +37,24 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
 
     eventId: raw.eventId,
     completed: raw.completed,
-    completedAt: raw.completedAt,
+    completedAt: raw.completedAt || null,
     signedUpAt: raw.createdAt,
 
-    title: raw.name,
+    title: raw.event?.name,
     description: shortDesc,
-    startsAt: raw.dateStart ? toIso(raw.dateStart, tz) : null,
-    endsAt: raw.dateEnd ? toIso(raw.dateEnd, tz) : null,
+    startsAt: raw.event?.dateStart ? toIso(raw.event!.dateStart, tz) : null,
+    endsAt: raw.event?.dateEnd ? toIso(raw.event!.dateEnd, tz) : null,
 
-    registrationStart: raw.registrationDateStart
-      ? toIso(raw.registrationDateStart, tz)
+    registrationStart: raw.event?.registrationDateStart
+      ? toIso(raw.event!.registrationDateStart, tz)
       : null,
 
-    registrationEnd: raw.registrationDateEnd
-      ? toIso(raw.registrationDateEnd, tz)
+    registrationEnd: raw.event?.registrationDateEnd
+      ? toIso(raw.event!.registrationDateEnd, tz)
       : null,
 
     url: `https://leader-id.ru/events/${raw.eventId}`,
-    posterUrl: raw.photo?.full || null,
+    posterUrl: raw.event?.photo?.full || null,
 
     source: EventAPISource.LEADER_ID,
   };

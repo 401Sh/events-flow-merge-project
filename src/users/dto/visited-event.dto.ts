@@ -16,7 +16,8 @@ export class VisitedEventDto implements VisitedEvent {
   @IsBoolean()
   completed: boolean;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ nullable: true, type: String, required: false })
+  @IsOptional()
   @IsString()
   completedAt: string;
 

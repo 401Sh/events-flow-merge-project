@@ -22,4 +22,11 @@ export class UsersService {
 
     return result;
   }
+
+
+  async getLeaderUserEventHistory(userId: number, completed: boolean) {
+    const result = await this.leaderService.getUserEventHistory(userId, completed);
+
+    return { data: result };
+  }
 }

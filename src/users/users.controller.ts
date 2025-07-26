@@ -1,10 +1,11 @@
-import { Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Query, Req } from '@nestjs/common';
+import { Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Query, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { VisitedEventsListResultDto } from './dto/visited-event-list-result.dto';
 import { UserProfileResultDto } from './dto/user-profile-result.dto';
 import { VisitedEventsListWithMetaResultDto } from './dto/visited-event-list-with-meta-result.dto';
+import { SimpleAuthGuard } from './guards/simple-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -32,6 +33,7 @@ export class UsersController {
   }
 
 
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Получить список посещенных и предстоящих мероприятий из leaderId',
   })
@@ -60,16 +62,24 @@ export class UsersController {
     description: 'Список посещенных и предстоящих мероприятий в leaderId',
     type: VisitedEventsListWithMetaResultDto,
   })
+  @UseGuards(SimpleAuthGuard)
   @Get(':userId/participations/leaderId')
   async getLeaderUserParticipations(
     @Param('userId', ParseIntPipe) userId: number,
     @Query() query: GetParticipantsQueryDto,
+    @Request() req,
   ) {
+    const token = req.userToken;
 
-    return await this.eventsService.getLeaderUserParticipations(userId, query);
+    return await this.eventsService.getLeaderUserParticipations(
+      token,
+      userId, 
+      query,
+    );
   }
 
 
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Получить список посещенных/предстоящих мероприятий из leaderId',
   })
@@ -84,14 +94,19 @@ export class UsersController {
     description: 'Список посещенных/предстоящих мероприятий в leaderId',
     type: VisitedEventsListResultDto,
   })
+  @UseGuards(SimpleAuthGuard)
   @Get(':userId/participations/leaderId/:completed')
   async getLeaderUserEventsHistory(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('completed', ParseBoolPipe) completed: boolean,
+    @Request() req,
   ) {
+    const token = req.userToken;
+
     return await this.eventsService.getLeaderUserEventHistory(
+      token,
       userId, 
-      completed
+      completed,
     );
   }
 }

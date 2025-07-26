@@ -6,11 +6,13 @@ import { VisitedEventDto } from "../dto/visited-event.dto";
 export interface APIUserInterface {
   getUser(userId: number): Promise<UserProfileDto>;
   getUserParticipations(
+    token: string,
     userId: number, 
-    query: GetParticipantsQueryDto
+    query: GetParticipantsQueryDto,
   ): Promise<VisitedEventsListResultDto>;
   getUserEventHistory(
+    token: string,
     userId: number, 
-    completed: boolean
+    completed: boolean,
   ): Promise<VisitedEventDto[]>
 }

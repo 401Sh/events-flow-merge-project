@@ -45,7 +45,11 @@ export class LeaderUserService implements APIUserInterface {
   }
   
   
-  async getUserParticipations(userId: number, query: GetParticipantsQueryDto) {
+  async getUserParticipations(
+    token: string, 
+    userId: number, 
+    query: GetParticipantsQueryDto,
+  ) {
     const { limit, page } = query;
     const params = {
       paginationSize: limit,
@@ -63,6 +67,7 @@ export class LeaderUserService implements APIUserInterface {
 
     const data = await this.fetchFromLeaderApi<LeaderResponseType>(
       `/users/${userId}/event-participations`,
+      token,
       params,
     );
     console.dir(data)
@@ -87,16 +92,20 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  async getUserEventHistory(userId: number, completed: boolean) {
+  async getUserEventHistory(
+    token: string, 
+    userId: number, 
+    completed: boolean,
+  ) {
     if (completed) {
-      return await this.getVisitedUserEvents(userId);
+      return await this.getVisitedUserEvents(token, userId);
     }
 
-    return await this.getFutureUserEvents(userId);
+    return await this.getFutureUserEvents(token, userId);
   }
 
 
-  private async getFutureUserEvents(userId: number) {
+  private async getFutureUserEvents(token: string, userId: number) {
     const limit = 100;
     let page = 1;
     let allEvents: any[] = [];
@@ -119,7 +128,8 @@ export class LeaderUserService implements APIUserInterface {
   
       const data = await this.fetchFromLeaderApi<LeaderResponseType>(
         `/users/${userId}/event-participations`, 
-        params
+        token,
+        params,
       );
   
       const rawEvents = data.items || [];
@@ -138,7 +148,7 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  private async getVisitedUserEvents(userId: number) {
+  private async getVisitedUserEvents(token: string, userId: number) {
     const limit = 100;
     let page = 1;
     let allEvents: any[] = [];
@@ -162,7 +172,8 @@ export class LeaderUserService implements APIUserInterface {
   
       const data = await this.fetchFromLeaderApi<LeaderResponseType>(
         `/users/${userId}/event-participations`, 
-        params
+        token,
+        params,
       );
   
       const rawEvents = data.items || [];
@@ -191,17 +202,18 @@ export class LeaderUserService implements APIUserInterface {
 
   private async fetchFromLeaderApi<T>(
     urlPart: string,
+    token?: string,
     params?: object,
   ): Promise<T> {
     const url = `${this.baseUrl}${urlPart}`;
 
-    const token = await this.authService.getAccessToken();
+    const safeToken = token ? token : await this.authService.getAccessToken();
 
     try {
       const response = await firstValueFrom(
         this.httpService.get<T>(url, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${safeToken}`,
           },
           params: params,
         }),

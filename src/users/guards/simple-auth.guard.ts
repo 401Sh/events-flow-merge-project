@@ -12,7 +12,7 @@ export class SimpleAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     
     const authHeader = req.headers['authorization'];
-    if (authHeader) {
+    if (!authHeader) {
       throw new UnauthorizedException('Authorization header is missing');
     }
 

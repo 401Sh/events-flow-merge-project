@@ -17,15 +17,27 @@ export class UsersService {
   }
 
   
-  async getLeaderUserParticipations(userId: number, query: GetParticipantsQueryDto) {
-    const result = await this.leaderService.getUserParticipations(userId, query);
+  async getLeaderUserParticipations(
+    token: string, 
+    userId: number, 
+    query: GetParticipantsQueryDto,
+  ) {
+    const result = await this.leaderService.getUserParticipations(
+      token, 
+      userId, 
+      query,
+    );
 
     return result;
   }
 
 
-  async getLeaderUserEventHistory(userId: number, completed: boolean) {
-    const result = await this.leaderService.getUserEventHistory(userId, completed);
+  async getLeaderUserEventHistory(token: string, userId: number, completed: boolean) {
+    const result = await this.leaderService.getUserEventHistory(
+      token, 
+      userId, 
+      completed,
+    );
 
     return { data: result };
   }

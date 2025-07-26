@@ -4,6 +4,7 @@ import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { VisitedEventsListResultDto } from './dto/visited-event-list-result.dto';
 import { UserProfileResultDto } from './dto/user-profile-result.dto';
+import { VisitedEventsListWithMetaResultDto } from './dto/visited-event-list-with-meta-result.dto';
 
 @Controller('users')
 export class UsersController {
@@ -57,7 +58,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Список посещенных и предстоящих мероприятий в leaderId',
-    type: VisitedEventsListResultDto,
+    type: VisitedEventsListWithMetaResultDto,
   })
   @Get(':userId/participations/leaderId')
   async getLeaderUserParticipations(

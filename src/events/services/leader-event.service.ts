@@ -16,11 +16,15 @@ import { LeaderDataDto } from '../dto/leader-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
+// TODO: Сделать типизацию для библиотеки
+import EditorJSParser from 'editorjs-parser';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   private readonly logger = new Logger(LeaderEventService.name);
   private readonly baseUrl: string;
+
+  private readonly editorJsParser = new EditorJSParser();
 
   constructor(
     private readonly configService: ConfigService,
@@ -47,7 +51,9 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     );
 
     const rawEvents = response.items || [];
-    const mappedEvents = rawEvents.map(mapLeader);
+    const mappedEvents = rawEvents.map((e) => 
+      mapLeader(e, this.editorJsParser)
+    );
 
     this.logger.debug('Leader event list recieved successfully');
 
@@ -73,7 +79,9 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
       params,
     );
     const rawEvents = data.items || [];
-    const mappedEvents = rawEvents.map(mapLeader);
+    const mappedEvents = rawEvents.map((e) => 
+      mapLeader(e, this.editorJsParser)
+    );
 
     this.logger.debug('Leader event list recieved successfully');
 
@@ -110,7 +118,10 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
       );
     }
 
-    const normalizedEvent = mapLeader(dataResponce.items[0]);
+    const normalizedEvent = mapLeader(
+      dataResponce.items[0], 
+      this.editorJsParser
+    );
 
     this.logger.debug('Leader event recieved successfully');
 

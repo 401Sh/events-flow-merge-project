@@ -24,12 +24,7 @@ export class UnifiedEventDto implements UnifiedEvent {
   @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()
-  shortDescription: string | null;
-
-  @ApiProperty({ nullable: true, type: String, required: false })
-  @IsOptional()
-  @IsString()
-  fullDescription: string | null;
+  description: string | null;
 
   @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()

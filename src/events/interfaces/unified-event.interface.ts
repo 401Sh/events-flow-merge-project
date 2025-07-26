@@ -5,8 +5,7 @@ import { EventLocation } from './event-location.interface';
 export interface UnifiedEvent {
   id: number;
   title: string;
-  shortDescription: string | null;
-  fullDescription: string | null;
+  description: string | null;
   startsAt: string | null;
   endsAt: string | null;
   registrationStart: string | null;

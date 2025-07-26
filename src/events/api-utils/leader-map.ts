@@ -6,6 +6,8 @@ import { LeaderData } from '../interfaces/leader-data.interface';
 import { plainToInstance } from 'class-transformer';
 import { LeaderDataDto } from '../dto/leader-data.dto';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
+// TODO: Сделать типизацию для библиотеки
+import EditorJSParser from 'editorjs-parser';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.
@@ -30,11 +32,10 @@ export function toIso(dateStr: string, tzOffset: string): string {
 }
 
 
-export function mapLeader(raw: any): LeaderDataDto {
+export function mapLeader(raw: any, parser: EditorJSParser): LeaderDataDto {
   const tz = raw.timezone?.value || '+03:00';
 
-  const fullInfo = parseFullInfo(raw.full_info);
-  const shortDesc = extractShortDescription(fullInfo);
+  const description = extractDescription(raw.full_info, parser);
 
   const location = mapLocation(raw.space?.address);
   const themes = mapThemes(raw.themes);
@@ -42,8 +43,7 @@ export function mapLeader(raw: any): LeaderDataDto {
   const leaderObj: LeaderData = {
     id: raw.id,
     title: raw.full_name,
-    shortDescription: shortDesc,
-    fullDescription: raw.full_info || null,
+    description: description,
     startsAt: raw.date_start ? toIso(raw.date_start, tz) : null,
     endsAt: raw.date_end ? toIso(raw.date_end, tz) : null,
 
@@ -74,22 +74,16 @@ export function mapLeader(raw: any): LeaderDataDto {
 }
 
 
-function parseFullInfo(fullInfoRaw: string | undefined): any | null {
+function extractDescription(
+  fullInfoRaw: string | undefined, 
+  parser: EditorJSParser
+): any | null {
   if (!fullInfoRaw) return null;
-  try {
-    return JSON.parse(fullInfoRaw);
-  } catch {
-    return null;
-  }
-}
+  
+  const parsed = parser.parse(JSON.parse(fullInfoRaw));
+  const description = parsed.text.join('\n');
 
-
-function extractShortDescription(fullInfo: any): string | null {
-  if (!fullInfo?.blocks?.length) return null;
-
-  const firstText = fullInfo.blocks[0]?.data?.text ?? '';
-  const plainText = firstText.replace(/<[^>]*>/g, '').trim();
-  return plainText ? plainText.slice(0, 200) : null;
+  return description;
 }
 
 

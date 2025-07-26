@@ -5,7 +5,7 @@ import { TimepadData } from '../interfaces/timepad-data.interface';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { plainToInstance } from 'class-transformer';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
-// import { htmlToText } from 'html-to-text'; для преобразования html
+import he from 'he';
 
 /**
  * Converts a date string that includes a timezone offset (e.g. "+0300")
@@ -29,12 +29,15 @@ export function toIsoFromOffsetString(dateStr?: string): string | null {
 export function mapTimepad(raw: any): TimepadDataDto {
   const location = mapLocation(raw.location);
   const themes = mapThemes(raw.categories);
+  const description = mergeDescriptionsKeepAll(
+    raw.description_short, 
+    raw.description_html
+  );
 
   const timepadObj: TimepadData = {
     id: raw.id,
     title: raw.name,
-    shortDescription: raw.description_short || null,
-    fullDescription: raw.description_html || null,
+    description: description,
     startsAt: toIsoFromOffsetString(raw.starts_at),
     endsAt: toIsoFromOffsetString(raw.ends_at) || null,
     registrationStart: null,
@@ -56,6 +59,33 @@ export function mapTimepad(raw: any): TimepadDataDto {
 
   return plainToInstance(TimepadDataDto, timepadObj);
 }
+
+
+function mergeDescriptionsKeepAll(
+  shortDesc?: string, 
+  htmlDesc?: string
+): string | null {
+  if (!shortDesc && !htmlDesc) {
+    return null;
+  }
+
+  const safeShort = shortDesc ? shortDesc.trim() : '';
+  const safeHtml = htmlDesc ?? '';
+
+  const noTags = safeHtml.replace(/<[^>]+>/g, '');
+
+  const cleanFull = he.decode(noTags).trim();
+
+  if (cleanFull.startsWith(safeShort) && safeShort.length > 0) {
+    return cleanFull;
+  }
+
+  if (!safeShort) return cleanFull;
+  if (!cleanFull) return safeShort;
+
+  return `${safeShort}\n\n${cleanFull}`;
+}
+
 
 
 function mapLocation(rawLocation: any): EventLocation {

@@ -7,11 +7,15 @@ import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth
 import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 import { mapLeaderVisited } from "../api-utils/visited-leader-map";
 import { mapLeaderUser } from "../api-utils/user-profile-map";
+// TODO: Сделать типизацию для библиотеки
+import EditorJSParser from 'editorjs-parser';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
   private readonly logger = new Logger(LeaderUserService.name);
   private readonly baseUrl: string;
+
+  private readonly editorJsParser = new EditorJSParser();
 
   constructor(
     private readonly configService: ConfigService,
@@ -64,7 +68,9 @@ export class LeaderUserService implements APIUserInterface {
     console.dir(data)
     console.dir(data.items, {depth: 5})
     const rawEvents = data.items || [];
-    const mappedEvents = rawEvents.map(mapLeaderVisited);
+    const mappedEvents = rawEvents.map((e) => 
+      mapLeaderVisited(e, this.editorJsParser)
+    );
 
     this.logger.debug('Leader event list recieved successfully');
 

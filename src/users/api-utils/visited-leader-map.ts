@@ -4,8 +4,6 @@ import { plainToInstance } from 'class-transformer';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 import { VisitedEvent } from '../interfaces/visited-event.interface';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
-// TODO: Сделать типизацию для библиотеки
-import EditorJSParser from 'editorjs-parser';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.
@@ -28,10 +26,10 @@ export function toIso(dateStr: string, tzOffset: string): string {
 }
 
 
-export function mapLeaderVisited(raw: any, parser: EditorJSParser): VisitedEventDto {
+export function mapLeaderVisited(raw: any): VisitedEventDto {
   const tz = raw.timezone?.value || '+03:00';
 
-  const description = extractDescription(raw.event?.info, parser);
+  const description = extractDescription(raw.event?.info);
 
   const leaderObj: VisitedEvent = {
     uuid: raw.id,
@@ -64,14 +62,18 @@ export function mapLeaderVisited(raw: any, parser: EditorJSParser): VisitedEvent
 }
 
 
-function extractDescription(
-  fullInfoRaw: string | undefined, 
-  parser: EditorJSParser
-): any | null {
+function extractDescription(fullInfoRaw: string | undefined): any | null {
   if (!fullInfoRaw) return null;
-  
-  const parsed = parser.parse(JSON.parse(fullInfoRaw));
-  const description = parsed.text.join('\n');
 
-  return description;
+  const parsedJson = JSON.parse(fullInfoRaw);
+
+  if (!parsedJson.blocks || !Array.isArray(parsedJson.blocks)) return null;
+
+  const text = parsedJson.blocks
+    .map(block => block.data?.text ?? '')
+    .filter(text => text.trim().length > 0);
+
+  if (text.length == 0) return null;
+
+  return text.join('\n');
 }

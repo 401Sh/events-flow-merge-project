@@ -6,8 +6,6 @@ import { LeaderData } from '../interfaces/leader-data.interface';
 import { plainToInstance } from 'class-transformer';
 import { LeaderDataDto } from '../dto/leader-data.dto';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
-// TODO: Сделать типизацию для библиотеки
-import EditorJSParser from 'editorjs-parser';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.
@@ -17,8 +15,6 @@ import EditorJSParser from 'editorjs-parser';
  * @returns a string in UTC ISO format: "2024-05-27T21:10:43Z"
  */
 export function toIso(dateStr: string, tzOffset: string): string {
-  console.log('dateStr', dateStr)
-  console.log('tzOffset', tzOffset)
   // парсинг строки как локальное время (без временной зоны)
   const localDate = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
 
@@ -32,10 +28,10 @@ export function toIso(dateStr: string, tzOffset: string): string {
 }
 
 
-export function mapLeader(raw: any, parser: EditorJSParser): LeaderDataDto {
+export function mapLeader(raw: any): LeaderDataDto {
   const tz = raw.timezone?.value || '+03:00';
 
-  const description = extractDescription(raw.full_info, parser);
+  const description = extractDescription(raw.full_info);
 
   const location = mapLocation(raw.space?.address);
   const themes = mapThemes(raw.themes);
@@ -74,16 +70,20 @@ export function mapLeader(raw: any, parser: EditorJSParser): LeaderDataDto {
 }
 
 
-function extractDescription(
-  fullInfoRaw: string | undefined, 
-  parser: EditorJSParser
-): any | null {
+function extractDescription(fullInfoRaw: string | undefined): any | null {
   if (!fullInfoRaw) return null;
-  
-  const parsed = parser.parse(JSON.parse(fullInfoRaw));
-  const description = parsed.text.join('\n');
 
-  return description;
+  const parsedJson = JSON.parse(fullInfoRaw);
+
+  if (!parsedJson.blocks || !Array.isArray(parsedJson.blocks)) return null;
+
+  const text = parsedJson.blocks
+    .map(block => block.data?.text ?? '')
+    .filter(text => text.trim().length > 0);
+
+  if (text.length == 0) return null;
+
+  return text.join('\n');
 }
 
 

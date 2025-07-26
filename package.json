@@ -39,7 +39,6 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.0.0",
-    "editorjs-parser": "^1.5.3",
     "he": "^1.2.0",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",

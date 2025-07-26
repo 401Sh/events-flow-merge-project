@@ -4,6 +4,8 @@ import { plainToInstance } from 'class-transformer';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 import { VisitedEvent } from '../interfaces/visited-event.interface';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
+// TODO: Сделать типизацию для библиотеки
+import EditorJSParser from 'editorjs-parser';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.
@@ -24,11 +26,10 @@ export function toIso(dateStr: string, tzOffset: string): string {
 }
 
 
-export function mapLeaderVisited(raw: any): VisitedEventDto {
+export function mapLeaderVisited(raw: any, parser: EditorJSParser): VisitedEventDto {
   const tz = raw.timezone?.value || '+03:00';
 
-  const fullInfo = parseFullInfo(raw.info);
-  const shortDesc = extractShortDescription(fullInfo);
+  const description = extractDescription(raw.full_info, parser);
 
   const leaderObj: VisitedEvent = {
     uuid: raw.id,
@@ -39,7 +40,7 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
     signedUpAt: raw.createdAt,
 
     title: raw.name,
-    description: shortDesc,
+    description: description,
     startsAt: raw.dateStart ? toIso(raw.dateStart, tz) : null,
     endsAt: raw.dateEnd ? toIso(raw.dateEnd, tz) : null,
 
@@ -61,20 +62,14 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
 }
 
 
-function parseFullInfo(fullInfoRaw: string | undefined): any | null {
+function extractDescription(
+  fullInfoRaw: string | undefined, 
+  parser: EditorJSParser
+): any | null {
   if (!fullInfoRaw) return null;
-  try {
-    return JSON.parse(fullInfoRaw);
-  } catch {
-    return null;
-  }
-}
+  
+  const parsed = parser.parse(JSON.parse(fullInfoRaw));
+  const description = parsed.text.join('\n');
 
-
-function extractShortDescription(fullInfo: any): string | null {
-  if (!fullInfo?.blocks?.length) return null;
-
-  const firstText = fullInfo.blocks[0]?.data?.text ?? '';
-  const plainText = firstText.replace(/<[^>]*>/g, '').trim();
-  return plainText ? plainText.slice(0, 200) : null;
+  return description;
 }

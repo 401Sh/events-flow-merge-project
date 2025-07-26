@@ -81,6 +81,108 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
+  async getUserEventHistory(userId: number, completed: boolean) {
+    if (completed) {
+      return await this.getVisitedUserEvents(userId);
+    }
+
+    return await this.getFutureUserEvents(userId);
+  }
+
+
+  private async getFutureUserEvents(userId: number) {
+    const limit = 100;
+    let page = 1;
+    let allEvents: any[] = [];
+    let keepFetching = true;
+
+    type LeaderResponseType = {
+      items: any[];
+      meta: {
+        totalCount: number;
+        paginationPageCount: number;
+        paginationPage: number;
+      };
+    };
+  
+    while (keepFetching) {
+      const params = {
+        paginationSize: limit,
+        paginationPage: page,
+      };
+  
+      const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+        `/users/${userId}/event-participations`, 
+        params
+      );
+  
+      const rawEvents = data.items || [];
+      if (rawEvents.length === 0) break;
+  
+      const futureEvents = rawEvents.filter(e => e.completed === false);
+      allEvents.push(...futureEvents);
+  
+      if (rawEvents.some(e => e.completed === true)) break;
+      if (rawEvents.length < limit) break;
+  
+      page++;
+    }
+  
+    return allEvents.map(mapLeaderVisited);
+  }
+
+
+  private async getVisitedUserEvents(userId: number) {
+    const limit = 100;
+    let page = 1;
+    let allEvents: any[] = [];
+    let foundVisited = false;
+    let keepFetching = true;
+
+    type LeaderResponseType = {
+      items: any[];
+      meta: {
+        totalCount: number;
+        paginationPageCount: number;
+        paginationPage: number;
+      };
+    };
+  
+    while (keepFetching) {
+      const params = {
+        paginationSize: limit,
+        paginationPage: page,
+      };
+  
+      const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+        `/users/${userId}/event-participations`, 
+        params
+      );
+  
+      const rawEvents = data.items || [];
+      if (rawEvents.length === 0) break;
+  
+      if (!foundVisited) {
+        const visitedEvents = rawEvents.filter(e => e.completed === true);
+        if (visitedEvents.length > 0) {
+          foundVisited = true;
+          allEvents.push(...visitedEvents);
+        }
+      } else {
+        allEvents.push(...rawEvents);
+      }
+  
+      if (rawEvents.length < limit) break;
+  
+      page++;
+    }
+  
+    allEvents = allEvents.filter(e => e.completed === true);
+  
+    return allEvents.map(mapLeaderVisited);
+  }
+
+
   private async fetchFromLeaderApi<T>(
     urlPart: string,
     params?: object,

@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
 
-export class SubscribeParticipationResultDto {
+export class SubscribeLeaderEventDto {
   @ApiProperty({ type: Boolean })
   @IsBoolean()
   disableNotifications: boolean;
@@ -10,11 +10,12 @@ export class SubscribeParticipationResultDto {
   @IsNumber()
   eventId: number;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ nullable: true, type: String, required: false })
+  @IsOptional()
   @IsString()
-  quizAnswerId: string;
+  quizAnswerId?: string;
 
   @ApiProperty({ type: Number })
   @IsNumber()
-  numberParticipantst: number;
+  numberParticipantst: number = 1;
 }

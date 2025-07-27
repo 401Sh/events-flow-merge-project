@@ -8,7 +8,8 @@ import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 import { mapLeaderVisited } from "../api-utils/visited-leader-map";
 import { mapLeaderUser } from "../api-utils/user-profile-map";
 import { RESTMethod } from "../enums/rest-method.enum";
-import { SubscribeParticipationResultDto } from "../dto/subscribe-participation-result.dto";
+import { VisitedEventDto } from "../dto/visited-event.dto";
+import { SubscribeLeaderEventDto } from "../dto/subscribe-leader-event.dto";
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -102,16 +103,23 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  async subscribeToEvent(token: any, userId: number) {
-    const result = await this.requestLeaderApi<
-      SubscribeParticipationResultDto
-    >(
+  async subscribeToEvent(
+    token: any, 
+    userId: number, 
+    body: SubscribeLeaderEventDto,
+  ) {
+    const rawEvent = await this.requestLeaderApi<VisitedEventDto>(
       RESTMethod.POST,
       `/users/${userId}/event-participations`,
       token,
+      undefined,
+      body,
     );
 
-    return result;
+    this.logger.debug('Leader event subscribed successfully');
+    const mappedEvent = mapLeaderVisited(rawEvent);
+
+    return mappedEvent;
   }
 
 
@@ -121,6 +129,8 @@ export class LeaderUserService implements APIUserInterface {
       `/users/${userId}/event-participations/${uuid}`,
       token,
     );
+
+    this.logger.debug('Leader event unsubscribed successfully');
 
     return result;
   }

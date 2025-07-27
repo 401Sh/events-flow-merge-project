@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, ParseUUIDPipe, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, ParseUUIDPipe, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import { VisitedEventsListResultDto } from './dto/visited-event-list-result.dto'
 import { UserProfileResultDto } from './dto/user-profile-result.dto';
 import { VisitedEventsListWithMetaResultDto } from './dto/visited-event-list-with-meta-result.dto';
 import { SimpleAuthGuard } from './guards/simple-auth.guard';
+import { SubscribeLeaderEventDto } from './dto/subscribe-leader-event.dto';
 
 @Controller('users')
 export class UsersController {
@@ -118,9 +119,13 @@ export class UsersController {
     );
   }
 
+
+  @ApiBearerAuth()
+  @UseGuards(SimpleAuthGuard)
   @Post(':userId/leaderId/participations')
   async subscribeToLeaderEvent(
     @Param('userId', ParseIntPipe) userId: number,
+    @Body() subscribeLeaderEventDto: SubscribeLeaderEventDto,
     @Request() req,
   ) {
     const token = req.userToken;
@@ -128,10 +133,13 @@ export class UsersController {
     return await this.eventsService.subscribeToLeaderEvent(
       token,
       userId,
+      subscribeLeaderEventDto,
     );
   }
 
 
+  @ApiBearerAuth()
+  @UseGuards(SimpleAuthGuard)
   @Delete(':userId/leaderId/participations/:uuid')
   async unsubscribeToLeaderEvent(
     @Param('userId', ParseIntPipe) userId: number,

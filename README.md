@@ -187,9 +187,11 @@ package.json
 
 ### Модуль users
 
-- **GET    /users/:userId/leaderId**                                - Получение данных пользователя
-- **GET    /users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя
-- **GET    /users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя
+- **GET    /users/:userId/leaderId**                                - Получение данных пользователя leaderId
+- **GET    /users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя leaderId
+- **GET    /users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя leaderId
+- **POST   /users/:userId/leaderId/participations**                 - Запись на мероприятие leaderId
+- **DELETE /users/:userId/leaderId/participations/:uuid**           - Отмена записи на мероприятие leaderId
 
 ### Модуль oauth
 

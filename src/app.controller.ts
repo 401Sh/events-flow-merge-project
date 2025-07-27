@@ -18,7 +18,7 @@ export class AppController {
     status: 200,
     description: 'API работает'
   })
-  @Get()
+  @Get('ping')
   ping() {
     return {
       status: 'ok',

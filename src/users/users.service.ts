@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import { LeaderUserService } from './services/leader-user.service';
+import { SubscribeLeaderEventDto } from './dto/subscribe-leader-event.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,13 +33,43 @@ export class UsersService {
   }
 
 
-  async getLeaderUserEventHistory(token: string, userId: number, completed: boolean) {
+  async getLeaderUserEventHistory(
+    token: string, 
+    userId: number, 
+    isCompleted: boolean
+  ) {
     const result = await this.leaderService.getUserEventHistory(
       token, 
       userId, 
-      completed,
+      isCompleted,
     );
 
     return { data: result };
+  }
+
+
+  async subscribeToLeaderEvent(
+    token: any, 
+    userId: number,
+    body: SubscribeLeaderEventDto,
+  ) {
+    const result = await this.leaderService.subscribeToEvent(
+      token, 
+      userId,
+      body,
+    );
+
+    return result;
+  }
+
+
+  async unsubscribeToLeaderEvent(token: any, userId: number, uuid: string) {
+    const result = await this.leaderService.unsubscribeToEvent(
+      token, 
+      userId, 
+      uuid,
+    );
+
+    return result;
   }
 }

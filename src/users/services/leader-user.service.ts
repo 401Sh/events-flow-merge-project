@@ -7,6 +7,9 @@ import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth
 import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
 import { mapLeaderVisited } from "../api-utils/visited-leader-map";
 import { mapLeaderUser } from "../api-utils/user-profile-map";
+import { RESTMethod } from "../enums/rest-method.enum";
+import { VisitedEventDto } from "../dto/visited-event.dto";
+import { SubscribeLeaderEventDto } from "../dto/subscribe-leader-event.dto";
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -22,7 +25,8 @@ export class LeaderUserService implements APIUserInterface {
   }
 
   async getUser(userId: number) {
-    const rawUser = await this.fetchFromLeaderApi<{ data: any }>(
+    const rawUser = await this.requestLeaderApi<{ data: any }>(
+      RESTMethod.GET,
       `/users/${userId}`,
     );
 
@@ -61,7 +65,8 @@ export class LeaderUserService implements APIUserInterface {
       };
     };
 
-    const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+    const data = await this.requestLeaderApi<LeaderResponseType>(
+      RESTMethod.GET,
       `/users/${userId}/event-participations`,
       token,
       params,
@@ -88,13 +93,46 @@ export class LeaderUserService implements APIUserInterface {
   async getUserEventHistory(
     token: string, 
     userId: number, 
-    completed: boolean,
+    isCompleted: boolean,
   ) {
-    if (completed) {
+    if (isCompleted) {
       return await this.getVisitedUserEvents(token, userId);
     }
 
     return await this.getFutureUserEvents(token, userId);
+  }
+
+
+  async subscribeToEvent(
+    token: any, 
+    userId: number, 
+    body: SubscribeLeaderEventDto,
+  ) {
+    const rawEvent = await this.requestLeaderApi<VisitedEventDto>(
+      RESTMethod.POST,
+      `/users/${userId}/event-participations`,
+      token,
+      undefined,
+      body,
+    );
+
+    this.logger.debug('Leader event subscribed successfully');
+    const mappedEvent = mapLeaderVisited(rawEvent);
+
+    return mappedEvent;
+  }
+
+
+  async unsubscribeToEvent(token: any, userId: number, uuid: string) {
+    const result = await this.requestLeaderApi<any>(
+      RESTMethod.DELETE,
+      `/users/${userId}/event-participations/${uuid}`,
+      token,
+    );
+
+    this.logger.debug('Leader event unsubscribed successfully');
+
+    return result;
   }
 
 
@@ -119,7 +157,8 @@ export class LeaderUserService implements APIUserInterface {
         paginationPage: page,
       };
   
-      const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+      const data = await this.requestLeaderApi<LeaderResponseType>(
+        RESTMethod.GET,
         `/users/${userId}/event-participations`, 
         token,
         params,
@@ -163,7 +202,8 @@ export class LeaderUserService implements APIUserInterface {
         paginationPage: page,
       };
   
-      const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+      const data = await this.requestLeaderApi<LeaderResponseType>(
+        RESTMethod.GET,
         `/users/${userId}/event-participations`, 
         token,
         params,
@@ -193,44 +233,47 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  private async fetchFromLeaderApi<T>(
+  private async requestLeaderApi<T>(
+    method: RESTMethod,
     urlPart: string,
     token?: string,
     params?: object,
+    data?: any,
   ): Promise<T> {
     const url = `${this.baseUrl}${urlPart}`;
-
-    const safeToken = token ? token : await this.authService.getAccessToken();
-
+    const safeToken = token ?? await this.authService.getAccessToken();
+  
     try {
       const response = await firstValueFrom(
-        this.httpService.get<T>(url, {
+        this.httpService.request<T>({
+          method,
+          url,
           headers: {
             Authorization: `Bearer ${safeToken}`,
           },
           params: params,
+          data: data,
         }),
       );
-
-      this.logger.debug(`Leader API request to ${url} succeeded`);
-
+  
+      this.logger.debug(`Leader API ${method} request to ${url} succeeded`);
       return response.data;
     } catch (error) {
       this.logger.warn(
-        `Failed to fetch from Leader API URL: ${url}`,
+        `Failed to ${method} Leader API request to URL: ${url}`,
         error?.response?.data || error.message,
       );
-
+  
       const status =
         error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
+  
       throw new HttpException(
         {
-          message: `Leader API request failed for URL: ${url}`,
+          message: `Leader API ${method} request failed for URL: ${url}`,
           details: error?.response?.data || error.message,
         },
         status,
       );
     }
-  }
+  }  
 }

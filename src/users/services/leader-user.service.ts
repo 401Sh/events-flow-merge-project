@@ -98,6 +98,16 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
+  async subscribeToEvent(token: any, userId: number) {
+    throw new Error("Method not implemented.");
+  }
+
+
+  async unsubscribeToEvent(token: any, userId: number, uuid: string) {
+    throw new Error("Method not implemented.");
+  }
+
+
   private async getFutureUserEvents(token: string, userId: number) {
     const limit = 100;
     let page = 1;

@@ -32,7 +32,11 @@ export class UsersService {
   }
 
 
-  async getLeaderUserEventHistory(token: string, userId: number, isCompleted: boolean) {
+  async getLeaderUserEventHistory(
+    token: string, 
+    userId: number, 
+    isCompleted: boolean
+  ) {
     const result = await this.leaderService.getUserEventHistory(
       token, 
       userId, 
@@ -43,12 +47,23 @@ export class UsersService {
   }
 
 
-  subscribeToLeaderEvent(token: any, userId: number) {
-    throw new Error('Method not implemented.');
+  async subscribeToLeaderEvent(token: any, userId: number) {
+    const result = await this.leaderService.subscribeToEvent(
+      token, 
+      userId
+    );
+
+    return result;
   }
 
 
-  unsubscribeToLeaderEvent(token: any, userId: number, uuid: string) {
-    throw new Error('Method not implemented.');
+  async unsubscribeToLeaderEvent(token: any, userId: number, uuid: string) {
+    const result = await this.leaderService.unsubscribeToEvent(
+      token, 
+      userId, 
+      uuid
+    );
+
+    return result;
   }
 }

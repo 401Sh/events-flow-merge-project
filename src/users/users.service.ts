@@ -41,4 +41,14 @@ export class UsersService {
 
     return { data: result };
   }
+
+
+  subscribeToLeaderEvent(token: any, userId: number) {
+    throw new Error('Method not implemented.');
+  }
+
+
+  unsubscribeToLeaderEvent(token: any, userId: number, uuid: string) {
+    throw new Error('Method not implemented.');
+  }
 }

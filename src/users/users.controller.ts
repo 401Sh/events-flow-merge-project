@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Query, Request, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, ParseUUIDPipe, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
@@ -115,6 +115,35 @@ export class UsersController {
       token,
       userId, 
       isCompleted,
+    );
+  }
+
+  @Post(':userId/leaderId/participations')
+  async subscribeToLeaderEvent(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Request() req,
+  ) {
+    const token = req.userToken;
+
+    return await this.eventsService.subscribeToLeaderEvent(
+      token,
+      userId,
+    );
+  }
+
+
+  @Delete(':userId/leaderId/participations/:uuid')
+  async unsubscribeToLeaderEvent(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Request() req,
+  ) {
+    const token = req.userToken;
+
+    return await this.eventsService.unsubscribeToLeaderEvent(
+      token,
+      userId,
+      uuid,
     );
   }
 }

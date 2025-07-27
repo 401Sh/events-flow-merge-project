@@ -1,21 +1,34 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsNumber } from "class-validator";
 
 export class SubscribeLeaderEventDto {
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({
+    description: 'Отключение уведомлений (без дополнительных прав доступен только false)',
+    example: false,
+    default: false,
+    type: Boolean 
+  })
   @IsBoolean()
   disableNotifications: boolean;
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({
+    description: 'Id мероприятия на которое нужно произвести запись',
+    example: 563429,
+    type: Number 
+  })
   @IsNumber()
   eventId: number;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
-  @IsOptional()
-  @IsString()
-  quizAnswerId?: string;
+  // @ApiProperty({ nullable: true, type: String, required: false })
+  // @IsOptional()
+  // @IsString()
+  // quizAnswerId?: string;
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({
+    example: 2,
+    default: 1,
+    type: Number 
+  })
   @IsNumber()
   numberParticipantst: number = 1;
 }

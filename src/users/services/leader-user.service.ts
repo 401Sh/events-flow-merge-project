@@ -88,9 +88,9 @@ export class LeaderUserService implements APIUserInterface {
   async getUserEventHistory(
     token: string, 
     userId: number, 
-    completed: boolean,
+    isCompleted: boolean,
   ) {
-    if (completed) {
+    if (isCompleted) {
       return await this.getVisitedUserEvents(token, userId);
     }
 

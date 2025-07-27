@@ -32,11 +32,11 @@ export class UsersService {
   }
 
 
-  async getLeaderUserEventHistory(token: string, userId: number, completed: boolean) {
+  async getLeaderUserEventHistory(token: string, userId: number, isCompleted: boolean) {
     const result = await this.leaderService.getUserEventHistory(
       token, 
       userId, 
-      completed,
+      isCompleted,
     );
 
     return { data: result };

@@ -13,6 +13,6 @@ export interface APIUserInterface {
   getUserEventHistory(
     token: string,
     userId: number, 
-    completed: boolean,
+    isCompleted: boolean,
   ): Promise<VisitedEventDto[]>
 }

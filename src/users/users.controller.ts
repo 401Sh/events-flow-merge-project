@@ -63,7 +63,7 @@ export class UsersController {
     type: VisitedEventsListWithMetaResultDto,
   })
   @UseGuards(SimpleAuthGuard)
-  @Get(':userId/participations/leaderId')
+  @Get(':userId/leaderId/participations')
   async getLeaderUserParticipations(
     @Param('userId', ParseIntPipe) userId: number,
     @Query() query: GetParticipantsQueryDto,
@@ -89,16 +89,24 @@ export class UsersController {
     description: 'Id Пользователя',
     example: 6893310,
   })
+  @ApiParam({
+    name: 'isCompleted',
+    required: true,
+    description: 'Фильтрация посещенных или предстоящих мероприятий пользователя.\n' +
+      'Если true - в ответе будут посещенные мероприятия.\n' +
+      'Если false - в ответе будут предстоящие мероприятия.',
+    example: false,
+  })
   @ApiResponse({
     status: 200,
     description: 'Список посещенных/предстоящих мероприятий в leaderId',
     type: VisitedEventsListResultDto,
   })
   @UseGuards(SimpleAuthGuard)
-  @Get(':userId/participations/leaderId/:completed')
+  @Get(':userId/leaderId/participations/:isCompleted')
   async getLeaderUserEventsHistory(
     @Param('userId', ParseIntPipe) userId: number,
-    @Param('completed', ParseBoolPipe) completed: boolean,
+    @Param('isCompleted', ParseBoolPipe) isCompleted: boolean,
     @Request() req,
   ) {
     const token = req.userToken;
@@ -106,7 +114,7 @@ export class UsersController {
     return await this.eventsService.getLeaderUserEventHistory(
       token,
       userId, 
-      completed,
+      isCompleted,
     );
   }
 }

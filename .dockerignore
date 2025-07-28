@@ -1,0 +1,17 @@
+.env
+.vscode
+
+node_modules
+
+dist
+build
+
+coverage
+test
+tests
+
+.DS_Store
+Thumbs.db
+
+.git
+.gitignore

@@ -17,6 +17,13 @@ export class DictionariesService {
     private externalThemeRefRepository: Repository<ExternalThemeRefEntity>,
   ) {}
 
+  /**
+   * Retrieves all event themes from the repository.
+   *
+   * @async
+   * @returns {Promise<{ data: EventThemeEntity[] }>} An object 
+   * containing an array of event themes.
+   */
   async findEventThemes() {
     const themes = await this.eventThemeRepository.find();
 
@@ -25,6 +32,16 @@ export class DictionariesService {
   }
 
 
+  /**
+   * Finds external theme IDs for the given parent theme IDs 
+   * and event API source.
+   *
+   * @async
+   * @param {number[]} parentId - Array of parent event theme IDs.
+   * @param {EventAPISource} source - The source of the event API.
+   * @returns {Promise<number[]>} An array of external theme IDs 
+   * corresponding to the given parent IDs and source.
+   */
   async findExternalThemeIds(parentId: number[], source: EventAPISource) {
     const themeIds = await this.externalThemeRefRepository.find({
       where: {

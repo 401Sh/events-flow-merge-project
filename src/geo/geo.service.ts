@@ -15,6 +15,21 @@ export class GeoService {
     private cityRepository: Repository<CityEntity>,
   ) {}
 
+  /**
+   * Retrieves a paginated list of cities filtered by an 
+   * optional search term.
+   *
+   * @async
+   * @param {GetCitiesQueryDto} query - The query parameters 
+   * including limit, page, and optional search term.
+   * @returns {Promise<{ 
+   * data: CityEntity[], 
+   * meta: { 
+   *  totalCitiesCount: number; 
+   *  totalPagesAmount: number; 
+   *  currentPage: number } }>}
+   * An object containing the list of cities and pagination metadata.
+   */
   async findCityList(query: GetCitiesQueryDto) {
     const { limit, page, search } = query;
 
@@ -52,6 +67,21 @@ export class GeoService {
   }
 
 
+  /**
+   * Finds the nearest cities to a given city, excluding 
+   * the city itself.
+   *
+   * @async
+   * @param {number} cityId - The ID of the city to find 
+   * neighbors for.
+   * @param {GetNearestCitiesQueryDto} query - Query params 
+   * containing the limit of results to return.
+   * @returns {Promise<{ data: CityEntity[] }>} An object with 
+   * an array of nearest city entities.
+   *
+   * @throws {NotFoundException} When the city with the provided 
+   * ID does not exist.
+   */
   async findNearestCities(cityId: number, query: GetNearestCitiesQueryDto) {
     const { limit } = query;
 
@@ -91,6 +121,20 @@ export class GeoService {
   }
 
 
+  /**
+   * Finds the nearest city based on given geographic coordinates.
+   *
+   * @param {CoordinatesDto} coords - An object containing 
+   * longitude and latitude.
+   * @param {number} coords.longitude - The longitude of 
+   * the location.
+   * @param {number} coords.latitude - The latitude of 
+   * the location.
+   * @returns {Promise<Object>} A promise that resolves to 
+   * the city object containing id, name, intName, posterUrl, and location.
+   * @throws {NotFoundException} Throws an error if no city 
+   * is found near the given coordinates.
+   */
   async findCityByCoords(coords: CoordinatesDto) {
     const { longitude, latitude } = coords;
 
@@ -118,6 +162,13 @@ export class GeoService {
   }
 
 
+  /**
+   * Finds a city by its unique identifier.
+   *
+   * @param {number} cityId - The unique ID of the city to find.
+   * @returns {Promise<Object|null>} A promise that resolves 
+   * to the city object with selected fields, or null if not found.
+   */
   async findCityById(cityId: number) {
     const city = await this.cityRepository.findOne({
       where: {

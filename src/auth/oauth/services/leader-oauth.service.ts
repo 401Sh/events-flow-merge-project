@@ -9,8 +9,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
-import { CallbackResultDto } from 'src/auth/dto/callback-result.dto';
 import { APIOAuthInterface } from './api-oauth.service.interface';
+import { LeaderCallbackResponse } from 'src/auth/interfaces/leader-callback-response.interface';
 
 @Injectable()
 export class LeaderOAuthService implements APIOAuthInterface {
@@ -23,7 +23,7 @@ export class LeaderOAuthService implements APIOAuthInterface {
   ) {}
 
 
-  async exchangeСode(code: string): Promise<CallbackResultDto> {
+  async exchangeСode(code: string) {
     const urlPart = '/oauth/token';
 
     const body = {
@@ -33,7 +33,7 @@ export class LeaderOAuthService implements APIOAuthInterface {
       code: code,
     };
 
-    const data = await this.leaderApiPostRequest<CallbackResultDto>(
+    const data = await this.leaderApiPostRequest<LeaderCallbackResponse>(
       urlPart,
       body,
     );
@@ -59,7 +59,7 @@ export class LeaderOAuthService implements APIOAuthInterface {
       refresh_token: refreshToken,
     };
 
-    const data = await this.leaderApiPostRequest<CallbackResultDto>(
+    const data = await this.leaderApiPostRequest<LeaderCallbackResponse>(
       urlPart,
       body,
     );

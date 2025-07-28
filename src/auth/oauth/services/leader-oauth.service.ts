@@ -23,6 +23,20 @@ export class LeaderOAuthService implements APIOAuthInterface {
   ) {}
 
 
+  /**
+   * Exchanges an authorization code for an access token and
+   *  user data.
+   *
+   * Sends a POST request to the leader API token endpoint with 
+   * the authorization code.
+   *
+   * @async
+   * @param {string} code - The authorization code to exchange.
+   * @returns {Promise<CallbackResultDto>} The result data 
+   * including access token and user validation info.
+   * @throws {UnauthorizedException} Throws if the user is not 
+   * validated.
+   */
   async exchangeСode(code: string): Promise<CallbackResultDto> {
     const urlPart = '/oauth/token';
 
@@ -49,6 +63,21 @@ export class LeaderOAuthService implements APIOAuthInterface {
   }
 
 
+  /**
+   * Refreshes the access token using the provided refresh 
+   * token.
+   *
+   * Sends a POST request to the leader API token endpoint 
+   * with the refresh token.
+   *
+   * @async
+   * @param {string} refreshToken - The refresh token used 
+   * to obtain a new access token.
+   * @returns {Promise<CallbackResultDto>} The result data 
+   * including new tokens and user validation info.
+   * @throws {UnauthorizedException} Throws if the user is 
+   * not validated.
+   */
   async refreshToken(refreshToken: string) {
     const urlPart = '/oauth/token';
 
@@ -75,6 +104,18 @@ export class LeaderOAuthService implements APIOAuthInterface {
   }
 
   
+  /**
+   * Sends a POST request to the Leader API with the specified 
+   * URL path and optional body.
+   *
+   * @template T - The expected response data type.
+   * @param {string} urlPart - The URL path to append to the 
+   * base Leader API URL.
+   * @param {object} [body] - Optional request payload to send.
+   * @returns {Promise<T>} The response data from the Leader API.
+   * @throws {HttpException} Throws if the HTTP request fails.
+   * @private
+   */
   private async leaderApiPostRequest<T>(
     urlPart: string,
     body?: object,

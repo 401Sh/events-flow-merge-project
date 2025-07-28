@@ -35,6 +35,12 @@ export class LeaderClientAuthService implements OnModuleInit {
   }
 
 
+  /**
+   * Retrieves the leader's access token.
+   *
+   * @returns {string|undefined} The access token if available, 
+   * otherwise undefined.
+   */
   getAccessToken(): string | undefined {
     if (!this.tokensData) {
       this.logger.warn('Leader access token is not available');
@@ -45,6 +51,18 @@ export class LeaderClientAuthService implements OnModuleInit {
   }
 
 
+  /**
+   * Authenticates the client using client credentials grant and 
+   * obtains leader tokens.
+   *
+   * Sends a POST request to the OAuth token endpoint with client 
+   * ID and secret, then stores the received tokens.
+   *
+   * @async
+   * @returns {Promise<LeaderTokenResponse>} Resolves with the 
+   * token response data.
+   * @throws {UnauthorizedException} Throws if authentication fails.
+   */
   async authenticateClient(): Promise<LeaderTokenResponse> {
     try {
       const response = await firstValueFrom(
@@ -79,6 +97,13 @@ export class LeaderClientAuthService implements OnModuleInit {
   }
 
 
+  /**
+   * Stores the leader token data and sets up a timeout 
+   * to refresh the access token before it expires.
+   *
+   * @param {LeaderTokenResponse} data - The token response data to be stored.
+   * @private
+   */
   private setTokens(data: LeaderTokenResponse) {
     this.tokensData = data;
 
@@ -92,6 +117,16 @@ export class LeaderClientAuthService implements OnModuleInit {
   }
 
 
+  /**
+   * Refreshes the access token using the refresh token.
+   * 
+   * If no refresh token is available, falls back to authenticating 
+   * the client again.
+   *
+   * @async
+   * @returns {Promise<LeaderTokenResponse>} Resolves with the new 
+   * token response data.
+   */
   async refreshAccessToken(): Promise<LeaderTokenResponse> {
     if (!this.tokensData?.refresh_token) {
       this.logger.warn('No refresh token available');
@@ -127,6 +162,16 @@ export class LeaderClientAuthService implements OnModuleInit {
   }
 
   
+  /**
+   * Initializes the module by authenticating the client and 
+   * retrieving the leader token.
+   *
+   * This method is called during the module initialization phase.
+   *
+   * @async
+   * @throws {InternalServerErrorException} Throws if authentication 
+   * fails during initialization.
+   */
   async onModuleInit() {
     try {
       await this.authenticateClient();

@@ -5,6 +5,7 @@ import { In, Repository } from 'typeorm';
 import { CoordinatesDto } from './dto/coordinates.dto';
 import { GetCitiesQueryDto } from './dto/get-cities-query.dto';
 import { GetNearestCitiesQueryDto } from './dto/get-nearest-cities-query.dto';
+import { DEFAULT_SRID } from 'src/constants/geospatial.constant';
 
 @Injectable()
 export class GeoService {
@@ -73,7 +74,7 @@ export class GeoService {
       .createQueryBuilder('cities')
       .where('cities.id != :cityId', { cityId })
       .orderBy(
-        'cities.location <-> ST_SetSRID(ST_GeomFromText(:cityLocation), 4326)',
+        `cities.location <-> ST_SetSRID(ST_GeomFromText(:cityLocation), ${DEFAULT_SRID})`,
       )
       .setParameter('cityLocation', wkt)
       .select([
@@ -96,7 +97,7 @@ export class GeoService {
 
     const city = await this.cityRepository
       .createQueryBuilder('cities')
-      .orderBy('cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)')
+      .orderBy(`cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), ${DEFAULT_SRID})`)
       .setParameters({ lng: longitude, lat: latitude })
       .select([
         'cities.id',

@@ -1,3 +1,4 @@
+import { DEFAULT_SRID } from 'src/constants/geospatial.constant';
 import {
   Column,
   CreateDateColumn,
@@ -24,7 +25,7 @@ export class CityEntity {
   @Column({
     type: 'geometry',
     spatialFeatureType: 'Point',
-    srid: 4326,
+    srid: DEFAULT_SRID,
   })
   location: Point;
 

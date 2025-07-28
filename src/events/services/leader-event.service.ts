@@ -32,6 +32,20 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
 
+  /**
+   * Retrieves a list of Leader events based on the specified 
+   * pagination and query parameters.
+   *
+   * @async
+   * @param {number} limit - The maximum number of events to 
+   * retrieve.
+   * @param {number} skip - The number of events to skip 
+   * (used to calculate the page).
+   * @param {GetEventListQueryDto} query - The event list query 
+   * parameters.
+   * @returns {Promise<LeaderDataDto[]>} A promise that resolves 
+   * to an array of LeaderDataDto events.
+   */
   async getAll(
     limit: number,
     skip: number,
@@ -54,7 +68,22 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     return mappedEvents;
   }
 
-  
+
+  /**
+   * Retrieves a paginated list of Leader events along with metadata.
+   *
+   * @async
+   * @param {GetEventListQueryDto} query - The event list query 
+   * parameters including pagination.
+   * @returns {Promise<{
+   *   data: LeaderDataDto[];
+   *   meta: {
+   *     totalEventsAmount: number;
+   *     totalPagesAmount: number;
+   *     currentPage: number;
+   *   };
+   * }>} An object containing the list of events and pagination metadata.
+   */
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
     const params = await this.buildSearchParams(query, limit, page);
@@ -90,6 +119,16 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
+  /**
+   * Retrieves a single Leader event by its ID.
+   *
+   * @async
+   * @param {number} id - The ID of the event to retrieve.
+   * @returns {Promise<LeaderDataDto | null>} A promise that 
+   * resolves to the normalized Leader event data, or throws if not found.
+   * @throws {NotFoundException} Throws if the event with the 
+   * specified ID is not found.
+   */
   async getOne(id: number): Promise<LeaderDataDto | null> {
     const urlPart = `/events/search`;
     const params = {
@@ -118,6 +157,16 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
+  /**
+   * Retrieves the total number of Leader events matching the 
+   * given query.
+   *
+   * @async
+   * @param {GetEventListQueryDto} query - The query parameters 
+   * to filter events.
+   * @returns {Promise<number>} A promise that resolves to the 
+   * total count of matching Leader events.
+   */
   async getAmount(query: GetEventListQueryDto): Promise<number> {
     const params = await this.buildSearchParams(query, 2);
     
@@ -134,6 +183,21 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
+  /**
+   * Builds search parameters for Leader API requests based on 
+   * the provided query.
+   *
+   * @private
+   * @async
+   * @param {GetEventListQueryDto} query - The query object 
+   * containing filters and search criteria.
+   * @param {number} limit - The maximum number of results to 
+   * return per page.
+   * @param {number} [page] - The page number for pagination 
+   * (optional).
+   * @returns {Promise<Record<string, any>>} A promise that resolves 
+   * to an object with the formatted search parameters.
+   */
   private async buildSearchParams(
     query: GetEventListQueryDto,
     limit: number,
@@ -177,6 +241,24 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
+  /**
+   * Sends a GET request to the Leader API with the given URL 
+   * path and query parameters.
+   * Automatically attaches the Bearer access token to the 
+   * request headers.
+   *
+   * @private
+   * @async
+   * @template T
+   * @param {string} urlPart - The endpoint path to append to 
+   * the base URL.
+   * @param {object} [params] - Optional query parameters to 
+   * include in the request.
+   * @returns {Promise<T>} A promise resolving to the response 
+   * data of type T.
+   * @throws {HttpException} Throws an HTTP exception if the 
+   * request fails.
+   */
   private async fetchFromLeaderApi<T>(
     urlPart: string,
     params?: object,

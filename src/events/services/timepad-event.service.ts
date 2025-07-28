@@ -32,6 +32,18 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
 
+  /**
+   * Retrieves a list of Timepad events based on query parameters 
+   * with pagination.
+   *
+   * @async
+   * @param {number} limit - The maximum number of events to retrieve.
+   * @param {number} skip - The number of events to skip (offset).
+   * @param {GetEventListQueryDto} query - The query parameters 
+   * to filter the events.
+   * @returns {Promise<TimepadDataDto[]>} A promise that resolves 
+   * to an array of Timepad event data transfer objects.
+   */
   async getAll(
     limit: number,
     skip: number,
@@ -53,6 +65,21 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
 
+  /**
+   * Retrieves a paginated list of Timepad events along with metadata.
+   *
+   * @async
+   * @param {GetEventListQueryDto} query - The query parameters 
+   * including pagination and filters.
+   * @returns {Promise<{
+   *   data: TimepadDataDto[];
+   *   meta: {
+   *     totalEventsAmount: number;
+   *     totalPagesAmount: number;
+   *     currentPage: number;
+   *   };
+   * }>} An object containing the list of events and pagination metadata.
+   */
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
     const skip = (page - 1) * limit;
@@ -82,6 +109,14 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
 
+  /**
+   * Retrieves a single Timepad event by its ID.
+   *
+   * @async
+   * @param {number} id - The ID of the Timepad event to retrieve.
+   * @returns {Promise<TimepadDataDto>} The normalized Timepad event data.
+   * @throws {NotFoundException} If the event with the given ID is not found.
+   */
   async getOne(id: number): Promise<TimepadDataDto | null> {
     const urlPart = `/events/${id}`;
 
@@ -102,6 +137,16 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
 
+  /**
+   * Retrieves the total number of Timepad events matching the 
+   * given query.
+   *
+   * @async
+   * @param {GetEventListQueryDto} query - The query parameters 
+   * to filter the events.
+   * @returns {Promise<number>} The total count of events matching 
+   * the query.
+   */
   async getAmount(query: GetEventListQueryDto) {
     const params = await this.buildSearchParams(query, 1);
 
@@ -115,6 +160,20 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
 
+  /**
+   * Builds search parameters for querying the Timepad API based 
+   * on the provided query object.
+   *
+   * @private
+   * @async
+   * @param {GetEventListQueryDto} query - The event list query 
+   * parameters.
+   * @param {number} limit - The maximum number of results to return.
+   * @param {number} [skip] - The number of results to skip 
+   * (for pagination).
+   * @returns {Promise<Record<string, any>>} A promise resolving 
+   * to an object representing the search parameters.
+   */
   private async buildSearchParams(
     query: GetEventListQueryDto,
     limit: number,
@@ -150,6 +209,21 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
   
+  /**
+   * Sends a GET request to the Timepad API with optional query 
+   * parameters.
+   *
+   * @private
+   * @async
+   * @template T
+   * @param {string} urlPart - The endpoint path to append to 
+   * the base URL.
+   * @param {object} [params] - Optional query parameters to 
+   * include in the request.
+   * @returns {Promise<T>} The response data of type T from 
+   * the Timepad API.
+   * @throws {HttpException} When the API request fails.
+   */
   private async fetchFromTimepadApi<T>(
     urlPart: string,
     params?: object,

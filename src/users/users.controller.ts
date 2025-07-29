@@ -1,7 +1,28 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseBoolPipe, ParseIntPipe, ParseUUIDPipe, Post, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseBoolPipe,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { VisitedEventsListResultDto } from './dto/visited-event-list-result.dto';
 import { UserProfileResultDto } from './dto/user-profile-result.dto';
 import { VisitedEventsListWithMetaResultDto } from './dto/visited-event-list-with-meta-result.dto';
@@ -28,9 +49,7 @@ export class UsersController {
     type: UserProfileResultDto,
   })
   @Get(':userId/leaderId')
-  async getUser(
-    @Param('userId', ParseIntPipe) userId: number,
-  ) {
+  async getUser(@Param('userId', ParseIntPipe) userId: number) {
     return await this.eventsService.getLeaderUser(userId);
   }
 
@@ -75,7 +94,7 @@ export class UsersController {
 
     return await this.eventsService.getLeaderUserParticipations(
       token,
-      userId, 
+      userId,
       query,
     );
   }
@@ -94,7 +113,8 @@ export class UsersController {
   @ApiParam({
     name: 'isCompleted',
     required: true,
-    description: 'Фильтрация посещенных или предстоящих мероприятий пользователя.\n' +
+    description:
+      'Фильтрация посещенных или предстоящих мероприятий пользователя.\n' +
       'Если true - в ответе будут посещенные мероприятия.\n' +
       'Если false - в ответе будут предстоящие мероприятия.',
     example: false,
@@ -115,7 +135,7 @@ export class UsersController {
 
     return await this.eventsService.getLeaderUserEventHistory(
       token,
-      userId, 
+      userId,
       isCompleted,
     );
   }
@@ -187,10 +207,6 @@ export class UsersController {
   ) {
     const token = req.userToken;
 
-    await this.eventsService.unsubscribeToLeaderEvent(
-      token,
-      userId,
-      uuid,
-    );
+    await this.eventsService.unsubscribeToLeaderEvent(token, userId, uuid);
   }
 }

@@ -12,7 +12,9 @@ import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth
 import { APIOAuthInterface } from './api-oauth.service.interface';
 
 @Injectable()
-export class LeaderOAuthService implements APIOAuthInterface<LeaderTokenResponse> {
+export class LeaderOAuthService
+  implements APIOAuthInterface<LeaderTokenResponse>
+{
   private readonly logger = new Logger(LeaderOAuthService.name);
 
   constructor(
@@ -73,9 +75,9 @@ export class LeaderOAuthService implements APIOAuthInterface<LeaderTokenResponse
     return data;
   }
 
-  
+
   /**
-   * Sends a POST request to the Leader API with the specified URL path and 
+   * Sends a POST request to the Leader API with the specified URL path and
    * optional body.
    *
    * @template T - The expected response data type.

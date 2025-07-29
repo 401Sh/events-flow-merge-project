@@ -1,13 +1,19 @@
-import { VisitedEvent } from "../interfaces/visited-event.interface";
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
-import { EventAPISource } from "src/events/enums/event-source.enum";
+import { VisitedEvent } from '../interfaces/visited-event.interface';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { EventAPISource } from 'src/events/enums/event-source.enum';
 
 export class VisitedEventDto implements VisitedEvent {
   @ApiProperty({ type: String })
   @IsString()
   uuid: string;
-  
+
   @ApiProperty({ type: Number })
   @IsNumber()
   eventId: number;

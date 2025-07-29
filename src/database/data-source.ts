@@ -1,5 +1,5 @@
-import { dataSourceOptions } from "../configs/typeorm.config";
-import { DataSource } from "typeorm";
+import { dataSourceOptions } from '../configs/typeorm.config';
+import { DataSource } from 'typeorm';
 
 const overrideOptions = {
   entities: ['src/**/*.entity.ts'],

@@ -11,10 +11,6 @@ import { GeoModule } from 'src/geo/geo.module';
 @Module({
   imports: [ClientAuthModule, HttpModule, DictionariesModule, GeoModule],
   controllers: [EventsController],
-  providers: [
-    EventsService,
-    LeaderEventService,
-    TimepadEventService,
-  ],
+  providers: [EventsService, LeaderEventService, TimepadEventService],
 })
 export class EventsModule {}

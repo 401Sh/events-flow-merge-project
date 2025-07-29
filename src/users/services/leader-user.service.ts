@@ -1,15 +1,21 @@
-import { APIUserInterface } from "./api-user.service.interface";
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { HttpService } from "@nestjs/axios";
-import { firstValueFrom } from "rxjs";
-import { LeaderClientAuthService } from "src/auth/client-auth/leader-client-auth.service";
-import { GetParticipantsQueryDto } from "../dto/get-participants-query.dto";
-import { mapLeaderVisited } from "../api-utils/visited-leader-map";
-import { mapLeaderUser } from "../api-utils/user-profile-map";
-import { RESTMethod } from "../enums/rest-method.enum";
-import { VisitedEventDto } from "../dto/visited-event.dto";
-import { SubscribeLeaderEventDto } from "../dto/subscribe-leader-event.dto";
+import { APIUserInterface } from './api-user.service.interface';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
+import { GetParticipantsQueryDto } from '../dto/get-participants-query.dto';
+import { mapLeaderVisited } from '../api-utils/visited-leader-map';
+import { mapLeaderUser } from '../api-utils/user-profile-map';
+import { RESTMethod } from '../enums/rest-method.enum';
+import { VisitedEventDto } from '../dto/visited-event.dto';
+import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -39,15 +45,18 @@ export class LeaderUserService implements APIUserInterface {
 
     const normalizedUser = mapLeaderUser(rawUser);
 
-    this.logger.debug('Leader user profile recieved successfully', normalizedUser);
+    this.logger.debug(
+      'Leader user profile recieved successfully',
+      normalizedUser,
+    );
 
     return normalizedUser;
   }
-  
-  
+
+
   async getUserParticipations(
-    token: string, 
-    userId: number, 
+    token: string,
+    userId: number,
     query: GetParticipantsQueryDto,
   ) {
     const { limit, page } = query;
@@ -71,7 +80,7 @@ export class LeaderUserService implements APIUserInterface {
       token,
       params,
     );
-    
+
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeaderVisited);
 
@@ -91,8 +100,8 @@ export class LeaderUserService implements APIUserInterface {
 
 
   async getUserEventHistory(
-    token: string, 
-    userId: number, 
+    token: string,
+    userId: number,
     isCompleted: boolean,
   ) {
     if (isCompleted) {
@@ -104,8 +113,8 @@ export class LeaderUserService implements APIUserInterface {
 
 
   async subscribeToEvent(
-    token: string, 
-    userId: number, 
+    token: string,
+    userId: number,
     body: SubscribeLeaderEventDto,
   ) {
     const rawEvent = await this.requestLeaderApi<VisitedEventDto>(
@@ -123,11 +132,7 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  async unsubscribeToEvent(
-    token: string, 
-    userId: number, 
-    uuid: string
-  ) {
+  async unsubscribeToEvent(token: string, userId: number, uuid: string) {
     const result = await this.requestLeaderApi<any>(
       RESTMethod.DELETE,
       `/users/${userId}/event-participations/${uuid}`,
@@ -141,26 +146,26 @@ export class LeaderUserService implements APIUserInterface {
 
 
   /**
-   * Fetches all future (not completed) event participations for a user from 
+   * Fetches all future (not completed) event participations for a user from
    * the leader API.
-   * 
-   * This method paginates through results until no more future events remain 
+   *
+   * This method paginates through results until no more future events remain
    * or all pages are fetched.
    *
    * @async
-   * @param {string} token - Authorization token used to authenticate the 
+   * @param {string} token - Authorization token used to authenticate the
    * request.
-   * @param {number} userId - The ID of the user whose future events are being 
+   * @param {number} userId - The ID of the user whose future events are being
    * fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array 
+   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array
    * of future event participations, normalized.
    * @private
    */
   private async getFutureUserEvents(token: string, userId: number) {
     const limit = 100;
     let page = 1;
-    let allEvents: any[] = [];
-    let keepFetching = true;
+    const allEvents: any[] = [];
+    const keepFetching = true;
 
     type LeaderResponseType = {
       items: any[];
@@ -170,56 +175,56 @@ export class LeaderUserService implements APIUserInterface {
         paginationPage: number;
       };
     };
-  
+
     while (keepFetching) {
       const params = {
         paginationSize: limit,
         paginationPage: page,
       };
-  
+
       const data = await this.requestLeaderApi<LeaderResponseType>(
         RESTMethod.GET,
-        `/users/${userId}/event-participations`, 
+        `/users/${userId}/event-participations`,
         token,
         params,
       );
-  
+
       const rawEvents = data.items || [];
       if (rawEvents.length === 0) break;
-  
-      const futureEvents = rawEvents.filter(e => e.completed === false);
+
+      const futureEvents = rawEvents.filter((e) => e.completed === false);
       allEvents.push(...futureEvents);
-  
-      if (rawEvents.some(e => e.completed === true)) break;
+
+      if (rawEvents.some((e) => e.completed === true)) break;
       if (rawEvents.length < limit) break;
-  
+
       page++;
     }
-  
+
     return allEvents.map(mapLeaderVisited);
   }
 
 
   /**
-   * Fetches all completed (visited) event participations for a user from the 
+   * Fetches all completed (visited) event participations for a user from the
    * leader API.
    * It paginates through results and collects events marked as completed.
    *
    * @async
-   * @param {string} token - Authorization token used to authenticate the 
+   * @param {string} token - Authorization token used to authenticate the
    * request.
-   * @param {number} userId - The ID of the user whose visited events are being 
+   * @param {number} userId - The ID of the user whose visited events are being
    * fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array 
+   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array
    * of completed event participations, normalized.
    * @private
-  */
+   */
   private async getVisitedUserEvents(token: string, userId: number) {
     const limit = 100;
     let page = 1;
     let allEvents: any[] = [];
     let foundVisited = false;
-    let keepFetching = true;
+    const keepFetching = true;
 
     type LeaderResponseType = {
       items: any[];
@@ -229,25 +234,25 @@ export class LeaderUserService implements APIUserInterface {
         paginationPage: number;
       };
     };
-  
+
     while (keepFetching) {
       const params = {
         paginationSize: limit,
         paginationPage: page,
       };
-  
+
       const data = await this.requestLeaderApi<LeaderResponseType>(
         RESTMethod.GET,
-        `/users/${userId}/event-participations`, 
+        `/users/${userId}/event-participations`,
         token,
         params,
       );
-  
+
       const rawEvents = data.items || [];
       if (rawEvents.length === 0) break;
-  
+
       if (!foundVisited) {
-        const visitedEvents = rawEvents.filter(e => e.completed === true);
+        const visitedEvents = rawEvents.filter((e) => e.completed === true);
         if (visitedEvents.length > 0) {
           foundVisited = true;
           allEvents.push(...visitedEvents);
@@ -255,40 +260,40 @@ export class LeaderUserService implements APIUserInterface {
       } else {
         allEvents.push(...rawEvents);
       }
-  
+
       if (rawEvents.length < limit) break;
-  
+
       page++;
     }
-  
-    allEvents = allEvents.filter(e => e.completed === true);
-  
+
+    allEvents = allEvents.filter((e) => e.completed === true);
+
     return allEvents.map(mapLeaderVisited);
   }
 
 
   /**
-   * Sends an HTTP request to the leader API with the specified method, URL, 
+   * Sends an HTTP request to the leader API with the specified method, URL,
    * and optional parameters.
-   * 
-   * Automatically attaches the authorization token, either from the provided 
+   *
+   * Automatically attaches the authorization token, either from the provided
    * token or via the auth service.
-   * 
+   *
    * Handles errors by logging and throwing an appropriate HTTP exception.
    *
    * @async
    * @template T - The expected response data type.
-   * @param {RESTMethod} method - The HTTP method to use for the request 
+   * @param {RESTMethod} method - The HTTP method to use for the request
    * (GET, POST, DELETE, etc.).
-   * @param {string} urlPart - The URL path appended to the base URL for the 
+   * @param {string} urlPart - The URL path appended to the base URL for the
    * leader API.
-   * @param {string} [token] - Optional authorization token; if omitted, 
+   * @param {string} [token] - Optional authorization token; if omitted,
    * fetches token from auth service.
-   * @param {object} [params] - Optional query parameters to include in the 
+   * @param {object} [params] - Optional query parameters to include in the
    * request.
    * @param {*} [data] - Optional request body data, for POST, PUT, etc.
    * @returns {Promise<T>} A promise resolving to the response data of type `T`.
-   * @throws {HttpException} Throws if the HTTP request fails, with the error 
+   * @throws {HttpException} Throws if the HTTP request fails, with the error
    * details and status code.
    * @private
    */
@@ -300,8 +305,8 @@ export class LeaderUserService implements APIUserInterface {
     data?: any,
   ): Promise<T> {
     const url = `${this.baseUrl}${urlPart}`;
-    const safeToken = token ?? await this.authService.getAccessToken();
-  
+    const safeToken = token ?? (await this.authService.getAccessToken());
+
     try {
       const response = await firstValueFrom(
         this.httpService.request<T>({
@@ -314,7 +319,7 @@ export class LeaderUserService implements APIUserInterface {
           data: data,
         }),
       );
-  
+
       this.logger.debug(`Leader API ${method} request to ${url} succeeded`);
       return response.data;
     } catch (error) {
@@ -322,10 +327,10 @@ export class LeaderUserService implements APIUserInterface {
         `Failed to ${method} Leader API request to URL: ${url}`,
         error?.response?.data || error.message,
       );
-  
+
       const status =
         error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-  
+
       throw new HttpException(
         {
           message: `Leader API ${method} request failed for URL: ${url}`,

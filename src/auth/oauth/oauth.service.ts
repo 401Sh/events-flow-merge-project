@@ -30,10 +30,10 @@ export class OAuthService {
   }
 
   /**
-   * Constructs the OAuth authorization redirect URL for a given event API 
+   * Constructs the OAuth authorization redirect URL for a given event API
    * source.
    *
-   * @param {EventAPISource} source - The source for which to generate the 
+   * @param {EventAPISource} source - The source for which to generate the
    * redirect URL.
    * @returns {string} The constructed OAuth authorization redirect URL.
    */
@@ -56,9 +56,9 @@ export class OAuthService {
    * Exchanges an authorization code for a leader access token.
    *
    * @async
-   * @param {CallbackDto} query - The callback query containing the 
+   * @param {CallbackDto} query - The callback query containing the
    * authorization code.
-   * @returns {Promise<CallbackResultDto>} A promise that resolves to data 
+   * @returns {Promise<CallbackResultDto>} A promise that resolves to data
    * containing the leader access token.
    */
   async getLeaderAccessToken(query: CallbackDto) {
@@ -72,10 +72,10 @@ export class OAuthService {
    * Refreshes the leader access token using the provided refresh token.
    *
    * @async
-   * @param {string} refreshToken - The refresh token used to obtain a new 
+   * @param {string} refreshToken - The refresh token used to obtain a new
    * access token.
    * @throws {UnauthorizedException} Throws if the refresh token is missing.
-   * @returns {Promise<CallbackResultDto>} A promise that resolves to new token 
+   * @returns {Promise<CallbackResultDto>} A promise that resolves to new token
    * data returned from the leader service.
    */
   async refreshLeaderToken(refreshToken: string) {
@@ -88,14 +88,14 @@ export class OAuthService {
     return data;
   }
 
-  
+
   /**
-   * Returns the OAuth redirect URL components based on the given event API 
+   * Returns the OAuth redirect URL components based on the given event API
    * source.
    *
-   * @param {EventAPISource} source - The event API source to determine URL 
+   * @param {EventAPISource} source - The event API source to determine URL
    * parts for.
-   * @returns {{ baseURL: string; clientId: string; type: string }} An object 
+   * @returns {{ baseURL: string; clientId: string; type: string }} An object
    * containing the base URL, client ID, and response type for the OAuth flow.
    * @private
    */

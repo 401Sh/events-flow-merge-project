@@ -23,9 +23,9 @@ export class EventsService {
    * @async
    * @param {EventAPISource} source - The source from which to fetch the data.
    * @param {number} id - The ID of the item to retrieve.
-   * @returns {Promise<{ 
-   *  data: LeaderDataDto | TimepadDataDto | null 
-   * }>} A promise that resolves to data object fetched from the source, or 
+   * @returns {Promise<{
+   *  data: LeaderDataDto | TimepadDataDto | null
+   * }>} A promise that resolves to data object fetched from the source, or
    * null if not found.
    */
   async getFromSourceById(source: EventAPISource, id: number) {
@@ -40,14 +40,14 @@ export class EventsService {
     return { data };
   }
 
-  
+
   /**
    * Retrieves a paginated list of events from Leader and Timepad sources.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters including 
+   * @param {GetEventListQueryDto} query - The query parameters including
    * pagination and filters.
-   * @returns {Promise<object>} A promise that resolves to an object containing 
+   * @returns {Promise<object>} A promise that resolves to an object containing
    * event data and pagination metadata.
    */
   async getEventsList(query: GetEventListQueryDto) {
@@ -101,11 +101,11 @@ export class EventsService {
    *
    * @async
    * @param {EventAPISource} source - The source from which to fetch the events.
-   * @param {GetEventListQueryDto} query - The query parameters for filtering 
+   * @param {GetEventListQueryDto} query - The query parameters for filtering
    * and pagination.
-   * @returns {Promise<EventsListResultDto>} A promise that resolves to events 
+   * @returns {Promise<EventsListResultDto>} A promise that resolves to events
    * data along with pagination metadata.
-   * @throws {NotFoundException} Throws if no events are found for the given 
+   * @throws {NotFoundException} Throws if no events are found for the given
    * source.
    */
   async getEventsListFromSource(
@@ -147,15 +147,15 @@ export class EventsService {
 
 
   /**
-   * Retrieves the total number of events from both Leader and Timepad sources 
+   * Retrieves the total number of events from both Leader and Timepad sources
    * based on the query.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters used to filter 
+   * @param {GetEventListQueryDto} query - The query parameters used to filter
    * events.
-   * @returns {Promise<{ 
-   * leaderEventsAmount: number; timepadEventsAmount: number 
-   * }>} A promise that resolves to an object containing event counts from both 
+   * @returns {Promise<{
+   * leaderEventsAmount: number; timepadEventsAmount: number
+   * }>} A promise that resolves to an object containing event counts from both
    * sources.
    * @private
    */
@@ -170,7 +170,7 @@ export class EventsService {
 
 
   /**
-   * Calculates the total number of pages based on total items and items per 
+   * Calculates the total number of pages based on total items and items per
    * page limit.
    *
    * @param {number} totalItems - The total number of items.
@@ -185,7 +185,7 @@ export class EventsService {
 
 
   /**
-   * Fetches events from Leader and Timepad services based on batch data and 
+   * Fetches events from Leader and Timepad services based on batch data and
    * query parameters.
    *
    * @async
@@ -195,9 +195,9 @@ export class EventsService {
    *   secondAmount: number;
    *   secondSkip: number;
    * }} batchData - Object containing amounts and offsets for both sources.
-   * @param {GetEventListQueryDto} query - The query parameters for filtering 
+   * @param {GetEventListQueryDto} query - The query parameters for filtering
    * and pagination.
-   * @returns {Promise<UnifiedEventDto[]>} A promise that resolves to a 
+   * @returns {Promise<UnifiedEventDto[]>} A promise that resolves to a
    * flattened array of events fetched from both sources.
    * @private
    */
@@ -210,8 +210,8 @@ export class EventsService {
     },
     query: GetEventListQueryDto,
   ): Promise<UnifiedEventDto[]> {
-    let promises: Promise<UnifiedEventDto[]>[] = [];
-    
+    const promises: Promise<UnifiedEventDto[]>[] = [];
+
     // TODO: Отрефакторить
     if (batchData.firstAmount != 0) {
       promises.push(
@@ -219,7 +219,7 @@ export class EventsService {
           batchData.firstAmount,
           batchData.firstSkip,
           query,
-        )
+        ),
       );
     }
 
@@ -229,7 +229,7 @@ export class EventsService {
           batchData.secondAmount,
           batchData.secondSkip,
           query,
-        )
+        ),
       );
     }
 
@@ -238,9 +238,9 @@ export class EventsService {
     return result.flat();
   }
 
-  
+
   /**
-   * Calculates how many items to take and skip from two APIs for pagination, 
+   * Calculates how many items to take and skip from two APIs for pagination,
    * balancing the distribution.
    *
    * @param {number} limit - The number of items per page.
@@ -253,7 +253,7 @@ export class EventsService {
    *   secondSkip: number;
    *   secondAmount: number;
    *   isEmpty: boolean;
-   * }} The calculated skip and take amounts for both APIs and a flag 
+   * }} The calculated skip and take amounts for both APIs and a flag
    * indicating if the batch is empty.
    * @private
    */
@@ -265,26 +265,31 @@ export class EventsService {
   ) {
     const half = Math.ceil(limit / 2);
     const totalItemsBefore = (page - 1) * limit;
-  
+
     let firstSkip = 0;
     let secondSkip = 0;
-  
+
     let tempRest1 = api1Total;
     let tempRest2 = api2Total;
     let skipped = 0;
-  
+
     while (skipped < totalItemsBefore && (tempRest1 > 0 || tempRest2 > 0)) {
-      const { take1, take2 } = this.distributeItems(limit, half, tempRest1, tempRest2);
-  
+      const { take1, take2 } = this.distributeItems(
+        limit,
+        half,
+        tempRest1,
+        tempRest2,
+      );
+
       tempRest1 -= take1;
       tempRest2 -= take2;
       firstSkip += take1;
       secondSkip += take2;
       skipped += take1 + take2;
-  
+
       if (take1 + take2 === 0) break;
     }
-  
+
     if (tempRest1 === 0 && tempRest2 === 0) {
       return {
         firstSkip,
@@ -294,9 +299,14 @@ export class EventsService {
         isEmpty: true,
       };
     }
-  
-    const { take1, take2 } = this.distributeItems(limit, half, tempRest1, tempRest2);
-  
+
+    const { take1, take2 } = this.distributeItems(
+      limit,
+      half,
+      tempRest1,
+      tempRest2,
+    );
+
     return {
       firstSkip,
       firstAmount: take1,
@@ -308,18 +318,18 @@ export class EventsService {
 
 
   /**
-   * Distributes the number of items to take from two sources given their 
+   * Distributes the number of items to take from two sources given their
    * remaining counts and a limit.
-   * 
-   * Attempts to evenly split the limit, then fills the remainder from 
+   *
+   * Attempts to evenly split the limit, then fills the remainder from
    * whichever source has available items.
    *
    * @param {number} limit - Total number of items to take.
-   * @param {number} half - Half of the limit, used as initial allocation for 
+   * @param {number} half - Half of the limit, used as initial allocation for
    * the first source.
    * @param {number} rest1 - Remaining items available in the first source.
    * @param {number} rest2 - Remaining items available in the second source.
-   * @returns {{ take1: number; take2: number }} The number of items to take 
+   * @returns {{ take1: number; take2: number }} The number of items to take
    * from each source.
    * @private
    */
@@ -330,13 +340,13 @@ export class EventsService {
     rest2: number,
   ) {
     let need = limit;
-  
+
     let take1 = Math.min(half, rest1);
     need -= take1;
-  
+
     let take2 = Math.min(need, rest2);
     need -= take2;
-  
+
     if (need > 0 && rest1 - take1 > 0) {
       const extra = Math.min(need, rest1 - take1);
       take1 += extra;
@@ -346,7 +356,7 @@ export class EventsService {
       take2 += extra;
       need -= extra;
     }
-  
+
     return { take1, take2 };
   }
 }

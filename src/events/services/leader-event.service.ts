@@ -117,16 +117,12 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     return normalizedEvent;
   }
 
-
   async getAmount(query: GetEventListQueryDto): Promise<number> {
     const params = await this.buildSearchParams(query, 2);
-    
+
     const data = await this.fetchFromLeaderApi<{
       meta: { totalCount: number };
-    }>(
-      '/events/search', 
-      params
-    );
+    }>('/events/search', params);
 
     this.logger.debug('Leader events amount recieved successfully');
 
@@ -135,15 +131,15 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
 
   /**
-   * Builds search parameters for Leader API requests based on the provided 
+   * Builds search parameters for Leader API requests based on the provided
    * query.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query object containing filters 
+   * @param {GetEventListQueryDto} query - The query object containing filters
    * and search criteria.
    * @param {number} limit - The maximum number of results to return per page.
    * @param {number} [page] - The page number for pagination (optional).
-   * @returns {Promise<Record<string, any>>} A promise that resolves to an 
+   * @returns {Promise<Record<string, any>>} A promise that resolves to an
    * object with the formatted search parameters.
    * @private
    */
@@ -191,14 +187,14 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
 
   /**
-   * Sends a GET request to the Leader API with the given URL path and query 
+   * Sends a GET request to the Leader API with the given URL path and query
    * parameters.
    * Automatically attaches the Bearer access token to the request headers.
    *
    * @async
    * @template T
    * @param {string} urlPart - The endpoint path to append to the base URL.
-   * @param {object} [params] - Optional query parameters to include in the 
+   * @param {object} [params] - Optional query parameters to include in the
    * request.
    * @returns {Promise<T>} A promise resolving to the response data of type T.
    * @throws {HttpException} Throws an HTTP exception if the request fails.

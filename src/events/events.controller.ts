@@ -70,13 +70,13 @@ export class EventsController {
     name: 'dateFrom',
     required: false,
     description: 'Фильтрация мероприятий позднее указанной даты',
-    example: '2020-12-30'
+    example: '2020-12-30',
   })
   @ApiQuery({
     name: 'dateTo',
     required: false,
     description: 'Фильтрация мероприятий раньше указанной даты',
-    example: '2020-12-31'
+    example: '2020-12-31',
   })
   @ApiResponse({
     status: 200,
@@ -138,13 +138,13 @@ export class EventsController {
     name: 'dateFrom',
     required: false,
     description: 'Фильтрация мероприятий позднее указанной даты',
-    example: '2020-12-30'
+    example: '2020-12-30',
   })
   @ApiQuery({
     name: 'dateTo',
     required: false,
     description: 'Фильтрация мероприятий раньше указанной даты',
-    example: '2020-12-31'
+    example: '2020-12-31',
   })
   @ApiResponse({
     status: 200,
@@ -159,7 +159,7 @@ export class EventsController {
     return await this.eventsService.getEventsListFromSource(source, query);
   }
 
-  
+
   @ApiOperation({ summary: 'Получить информации о мероприятии по id' })
   @ApiParam({
     name: 'source',

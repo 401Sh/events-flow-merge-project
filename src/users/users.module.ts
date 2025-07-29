@@ -6,14 +6,8 @@ import { ClientAuthModule } from 'src/auth/client-auth/client-auth.module';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    ClientAuthModule,
-    HttpModule,
-  ],
+  imports: [ClientAuthModule, HttpModule],
   controllers: [UsersController],
-  providers: [
-    UsersService,
-    LeaderUserService,
-  ],
+  providers: [UsersService, LeaderUserService],
 })
 export class UsersModule {}

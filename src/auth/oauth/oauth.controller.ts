@@ -52,8 +52,9 @@ export class OAuthController {
 
 
   @ApiOperation({
-    summary: 'callback для обмена code от leaderId на access и refresh токены,' +
-             'а также на userId - необходимый для получения данных',
+    summary:
+      'callback для обмена code от leaderId на access и refresh токены,' +
+      'а также на userId - необходимый для получения данных',
   })
   @ApiQuery({
     name: 'code',
@@ -70,7 +71,11 @@ export class OAuthController {
   async oauthLeaderCallback(@Query() query: CallbackDto, @Res() res: Response) {
     const result = await this.oAuthService.getLeaderAccessToken(query);
 
-    res.cookie('leaderIdRefreshToken', result.refresh_token, refreshCookieOptions);
+    res.cookie(
+      'leaderIdRefreshToken',
+      result.refresh_token,
+      refreshCookieOptions,
+    );
 
     return res.json({
       userId: result.user_id,
@@ -79,7 +84,7 @@ export class OAuthController {
     });
   }
 
-  
+
   @ApiOperation({
     summary:
       'Обновить токены доступа к leaderId. ' +
@@ -98,7 +103,11 @@ export class OAuthController {
 
     const result = await this.oAuthService.refreshLeaderToken(refreshToken);
 
-    res.cookie('leaderIdRefreshToken', result.refresh_token, refreshCookieOptions);
+    res.cookie(
+      'leaderIdRefreshToken',
+      result.refresh_token,
+      refreshCookieOptions,
+    );
 
     return res.json({
       userId: result.user_id,

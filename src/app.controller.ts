@@ -11,18 +11,19 @@ export class AppController {
     return this.appService.getHello();
   }
 
+
   @ApiOperation({
     summary: 'Проверить работу сервера',
   })
   @ApiResponse({
     status: 200,
-    description: 'API работает'
+    description: 'API работает',
   })
   @Get('ping')
   ping() {
     return {
       status: 'ok',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

@@ -20,14 +20,14 @@ export class GeoService {
    * Retrieves a paginated list of cities filtered by an optional search term.
    *
    * @async
-   * @param {GetCitiesQueryDto} query - The query parameters including limit, 
+   * @param {GetCitiesQueryDto} query - The query parameters including limit,
    * page, and optional search term.
-   * @returns {Promise<{ 
-   * data: CityEntity[], 
-   * meta: { 
-   *  totalCitiesCount: number; 
-   *  totalPagesAmount: number; 
-   *  currentPage: number } }>} A promise that resolves to an object containing 
+   * @returns {Promise<{
+   * data: CityEntity[],
+   * meta: {
+   *  totalCitiesCount: number;
+   *  totalPagesAmount: number;
+   *  currentPage: number } }>} A promise that resolves to an object containing
    * the list of cities and pagination metadata.
    */
   async findCityList(query: GetCitiesQueryDto) {
@@ -50,7 +50,7 @@ export class GeoService {
       'cities.name',
       'cities.intName',
       'cities.posterUrl',
-    ])
+    ]);
 
     const [cities, citiesCount] = await queryBuilder.getManyAndCount();
     const totalPagesAmount = Math.ceil(citiesCount / query.limit);
@@ -72,12 +72,12 @@ export class GeoService {
    *
    * @async
    * @param {number} cityId - The ID of the city to find neighbors for.
-   * @param {GetNearestCitiesQueryDto} query - Query params containing the 
+   * @param {GetNearestCitiesQueryDto} query - Query params containing the
    * limit of results to return.
-   * @returns {Promise<{ data: CityEntity[] }>} A promise that resolves to an 
+   * @returns {Promise<{ data: CityEntity[] }>} A promise that resolves to an
    * object with an array of nearest city entities.
    *
-   * @throws {NotFoundException} When the city with the provided ID does not 
+   * @throws {NotFoundException} When the city with the provided ID does not
    * exist.
    */
   async findNearestCities(cityId: number, query: GetNearestCitiesQueryDto) {
@@ -122,13 +122,13 @@ export class GeoService {
   /**
    * Finds the nearest city based on given geographic coordinates.
    *
-   * @param {CoordinatesDto} coords - An object containing longitude and 
+   * @param {CoordinatesDto} coords - An object containing longitude and
    * latitude.
    * @param {number} coords.longitude - The longitude of the location.
    * @param {number} coords.latitude - The latitude of the location.
-   * @returns {Promise<Object>} A promise that resolves to the city object 
+   * @returns {Promise<Object>} A promise that resolves to the city object
    * containing id, name, intName, posterUrl, and location.
-   * @throws {NotFoundException} Throws an error if no city is found near the 
+   * @throws {NotFoundException} Throws an error if no city is found near the
    * given coordinates.
    */
   async findCityByCoords(coords: CoordinatesDto) {
@@ -136,7 +136,9 @@ export class GeoService {
 
     const city = await this.cityRepository
       .createQueryBuilder('cities')
-      .orderBy(`cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), ${DEFAULT_SRID})`)
+      .orderBy(
+        `cities.location <-> ST_SetSRID(ST_MakePoint(:lng, :lat), ${DEFAULT_SRID})`,
+      )
       .setParameters({ lng: longitude, lat: latitude })
       .select([
         'cities.id',
@@ -162,7 +164,7 @@ export class GeoService {
    * Finds a city by its unique identifier.
    *
    * @param {number} cityId - The unique ID of the city to find.
-   * @returns {Promise<Object|null>} A promise that resolves to the city object 
+   * @returns {Promise<Object|null>} A promise that resolves to the city object
    * with selected fields, or null if not found.
    */
   async findCityById(cityId: number) {
@@ -170,13 +172,7 @@ export class GeoService {
       where: {
         id: cityId,
       },
-      select: [
-        'id',
-        'intName',
-        'name',
-        'posterUrl',
-        'location',
-      ],
+      select: ['id', 'intName', 'name', 'posterUrl', 'location'],
     });
 
     return city;

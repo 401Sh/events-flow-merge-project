@@ -28,8 +28,9 @@ export async function seedCities(dataSource: DataSource) {
       coordinates: coords, // [долгота, широта]
     };
 
-    const intName = props.int_name ? 
-      props.int_name : slugify(props.name, { lowercase: false });
+    const intName = props.int_name
+      ? props.int_name
+      : slugify(props.name, { lowercase: false });
 
     // сущность города
     const city = cityRepo.create({

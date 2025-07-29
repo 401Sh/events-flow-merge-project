@@ -8,9 +8,6 @@ import { LeaderOAuthService } from './services/leader-oauth.service';
 @Module({
   imports: [ClientAuthModule, HttpModule],
   controllers: [OAuthController],
-  providers: [
-    OAuthService,
-    LeaderOAuthService,
-  ],
+  providers: [OAuthService, LeaderOAuthService],
 })
 export class OauthModule {}

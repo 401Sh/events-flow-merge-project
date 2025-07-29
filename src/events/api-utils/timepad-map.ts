@@ -8,10 +8,10 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import he from 'he';
 
 /**
- * Converts a date string that includes a timezone offset (e.g. "+0300") into a 
+ * Converts a date string that includes a timezone offset (e.g. "+0300") into a
  * UTC ISO 8601 string with 'Z'.
  *
- * @param dateStr - date string with timezone offset, e.g. 
+ * @param dateStr - date string with timezone offset, e.g.
  * "2050-01-01T00:00:00+0300"
  * @returns a string in UTC ISO format: e.g. "2049-12-31T21:00:00Z"
  */
@@ -31,8 +31,8 @@ export function mapTimepad(raw: any): TimepadDataDto {
   const location = mapLocation(raw.location);
   const themes = mapThemes(raw.categories);
   const description = mergeDescriptionsKeepAll(
-    raw.description_short, 
-    raw.description_html
+    raw.description_short,
+    raw.description_html,
   );
 
   const timepadObj: TimepadData = {
@@ -63,8 +63,8 @@ export function mapTimepad(raw: any): TimepadDataDto {
 
 
 function mergeDescriptionsKeepAll(
-  shortDesc?: string, 
-  htmlDesc?: string
+  shortDesc?: string,
+  htmlDesc?: string,
 ): string | null {
   if (!shortDesc && !htmlDesc) {
     return null;
@@ -86,7 +86,6 @@ function mergeDescriptionsKeepAll(
 
   return `${safeShort}\n\n${cleanFull}`;
 }
-
 
 
 function mapLocation(rawLocation: any): EventLocation {

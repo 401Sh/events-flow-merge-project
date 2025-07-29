@@ -1,12 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNumber } from 'class-validator';
 
 export class SubscribeLeaderEventDto {
   @ApiProperty({
-    description: 'Отключение уведомлений (без дополнительных прав доступен только false)',
+    description:
+      'Отключение уведомлений (без дополнительных прав доступен только false)',
     example: false,
     default: false,
-    type: Boolean 
+    type: Boolean,
   })
   @IsBoolean()
   disableNotifications: boolean;
@@ -14,7 +15,7 @@ export class SubscribeLeaderEventDto {
   @ApiProperty({
     description: 'Id мероприятия на которое нужно произвести запись',
     example: 563429,
-    type: Number 
+    type: Number,
   })
   @IsNumber()
   eventId: number;
@@ -27,7 +28,7 @@ export class SubscribeLeaderEventDto {
   @ApiProperty({
     example: 2,
     default: 1,
-    type: Number 
+    type: Number,
   })
   @IsNumber()
   numberParticipantst: number = 1;

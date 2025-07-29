@@ -18,7 +18,7 @@ export function toIso(dateStr: string, tzOffset: string): string {
   // парсинг строки как локальное время (без временной зоны)
   const localDate = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
 
-  if (tzOffset == '00:00') tzOffset = '+00:00'
+  if (tzOffset == '00:00') tzOffset = '+00:00';
   // localeDate в UTC
   const utcDate = fromZonedTime(localDate, tzOffset);
   // UTC в ISO 8601 с Z (UTC)
@@ -78,8 +78,8 @@ function extractDescription(fullInfoRaw: string | undefined): any | null {
   if (!parsedJson.blocks || !Array.isArray(parsedJson.blocks)) return null;
 
   const text = parsedJson.blocks
-    .map(block => block.data?.text ?? '')
-    .filter(text => text.trim().length > 0);
+    .map((block) => block.data?.text ?? '')
+    .filter((text) => text.trim().length > 0);
 
   if (text.length == 0) return null;
 

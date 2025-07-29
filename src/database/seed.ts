@@ -8,7 +8,7 @@ async function seed() {
   try {
     await seedThemes(dataSource);
     await seedCities(dataSource);
-    
+
     console.log('Seed completed');
   } catch (e) {
     console.error('Seed failed:', e);

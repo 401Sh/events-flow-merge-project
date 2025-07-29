@@ -1,10 +1,16 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserLocation } from "../interfaces/user-location.interface";
-import { UserProfile } from "../interfaces/user-profile.interface";
-import { IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
-import { UserLocationDto } from "./user-location.dto";
-import { EventAPISource } from "src/events/enums/event-source.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { UserLocation } from '../interfaces/user-location.interface';
+import { UserProfile } from '../interfaces/user-profile.interface';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { UserLocationDto } from './user-location.dto';
+import { EventAPISource } from 'src/events/enums/event-source.enum';
 
 export class UserProfileDto implements UserProfile {
   @ApiProperty({ type: Number })
@@ -23,7 +29,7 @@ export class UserProfileDto implements UserProfile {
   @IsOptional()
   @IsString()
   fatherName: string | null;
-  
+
   @ApiProperty({ nullable: true, type: String, required: false })
   @IsOptional()
   @IsString()

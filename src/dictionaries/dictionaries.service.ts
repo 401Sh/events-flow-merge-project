@@ -21,7 +21,7 @@ export class DictionariesService {
    * Retrieves all event themes from the repository.
    *
    * @async
-   * @returns {Promise<{ data: EventThemeEntity[] }>} A promise that resolves 
+   * @returns {Promise<{ data: EventThemeEntity[] }>} A promise that resolves
    * to an object containing an array of event themes.
    */
   async findEventThemes() {
@@ -33,13 +33,13 @@ export class DictionariesService {
 
 
   /**
-   * Finds external theme IDs for the given parent theme IDs and event API 
+   * Finds external theme IDs for the given parent theme IDs and event API
    * source.
    *
    * @async
    * @param {number[]} parentId - Array of parent event theme IDs.
    * @param {EventAPISource} source - The source of the event API.
-   * @returns {Promise<number[]>} A promise that resolves to an array of 
+   * @returns {Promise<number[]>} A promise that resolves to an array of
    * external theme IDs corresponding to the given parent IDs and source.
    */
   async findExternalThemeIds(parentId: number[], source: EventAPISource) {

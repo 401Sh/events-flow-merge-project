@@ -1,6 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString, Matches, Min } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsString,
+  Matches,
+  Min,
+} from 'class-validator';
 
 export class GetEventListQueryDto {
   @ApiPropertyOptional({
@@ -37,7 +44,7 @@ export class GetEventListQueryDto {
     description: 'Id тем мероприятий',
     example: [1, 2, 3],
   })
-  @Transform(({ value }) =>  {
+  @Transform(({ value }) => {
     if (Array.isArray(value)) {
       return value.map(Number);
     }
@@ -64,7 +71,7 @@ export class GetEventListQueryDto {
 
   @ApiPropertyOptional({
     description: 'Начало диапазона даты',
-    example: "2020-12-30",
+    example: '2020-12-30',
   })
   @IsString()
   @IsOptional()
@@ -75,7 +82,7 @@ export class GetEventListQueryDto {
 
   @ApiPropertyOptional({
     description: 'Конец диапазона даты',
-    example: "2020-12-31",
+    example: '2020-12-31',
   })
   @IsString()
   @IsOptional()

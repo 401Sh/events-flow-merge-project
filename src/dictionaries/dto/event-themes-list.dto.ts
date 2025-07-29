@@ -4,7 +4,11 @@ import { EventThemesDto } from './event-themes.dto';
 import { Type } from 'class-transformer';
 
 export class EventThemesList {
-  @ApiProperty({ type: [EventThemesDto] })
+  @ApiProperty({
+    description: 'Список тем мероприятий',
+    isArray: true,
+    type: () => EventThemesDto,
+  })
   @ValidateNested({ each: true })
   @Type(() => EventThemesDto)
   data: EventThemesDto[];

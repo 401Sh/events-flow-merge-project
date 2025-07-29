@@ -5,13 +5,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { EventsListMetaDto } from 'src/events/dto/events-list-result.dto';
 
 export class VisitedEventsListWithMetaResultDto {
-  @ApiProperty({ isArray: true, type: () => VisitedEventDto })
+  @ApiProperty({
+    description: 'Список посещенных/предстоящих мероприятий',
+    isArray: true,
+    type: () => VisitedEventDto,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VisitedEventDto)
   data: VisitedEventDto[];
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Метаданные пагинации',
+    type: () => EventsListMetaDto,
+  })
   @ValidateNested()
   @Type(() => EventsListMetaDto)
   meta: EventsListMetaDto;

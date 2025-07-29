@@ -3,7 +3,7 @@ import { EventAPISource } from 'src/events/enums/event-source.enum';
 export interface VisitedEvent {
   uuid: string;
   eventId: number;
-  completed: boolean;
+  isCompleted: boolean;
   completedAt: string | null;
   signedUpAt: string;
   title: string;

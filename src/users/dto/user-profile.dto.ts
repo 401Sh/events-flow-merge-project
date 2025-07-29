@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserLocation } from '../interfaces/user-location.interface';
 import { UserProfile } from '../interfaces/user-profile.interface';
 import {
@@ -13,64 +13,113 @@ import { UserLocationDto } from './user-location.dto';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
 
 export class UserProfileDto implements UserProfile {
-  @ApiProperty({ type: Number })
+  @ApiProperty({
+    description: 'Id пользователя',
+    required: true,
+    nullable: false,
+    type: Number,
+  })
   @IsNumber()
   id: string;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Имя пользователя',
+    type: String,
+  })
   @IsString()
   firstName: string;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Фамилия пользователя',
+    type: String,
+  })
   @IsString()
   lastName: string;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Отчество пользователя',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   fatherName: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Адрес почты пользователя',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   email: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Пол пользователя',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   gender: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Дата рождения пользователя',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   birthday: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Описание пользователя',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   description: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Номер телефона пользователя',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   phone: string | null;
 
-  @ApiProperty({ type: UserLocationDto })
+  @ApiProperty({
+    description: 'Адрес проживания/работы пользователя',
+    type: UserLocationDto,
+  })
   @ValidateNested()
   @Type(() => UserLocationDto)
   address: UserLocation;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Ссылка на страницу пользователя в источнике',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   url: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Ссылка на изображение профиля',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   photoUrl: string | null;
 
-  @ApiProperty({ enum: EventAPISource })
+  @ApiProperty({
+    description: 'Источник профиля пользователя (leaderId или timepad)',
+    enum: EventAPISource,
+  })
   @IsEnum(EventAPISource)
   source: EventAPISource;
 }

@@ -4,7 +4,11 @@ import { VisitedEventDto } from './visited-event.dto';
 import { Type } from 'class-transformer';
 
 export class VisitedEventsListResultDto {
-  @ApiProperty({ isArray: true, type: () => VisitedEventDto })
+  @ApiProperty({
+    description: 'Список посещенных/предстоящих мероприятий',
+    isArray: true,
+    type: () => VisitedEventDto,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VisitedEventDto)

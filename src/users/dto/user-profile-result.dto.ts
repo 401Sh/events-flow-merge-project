@@ -4,7 +4,10 @@ import { ValidateNested } from 'class-validator';
 import { UserProfileDto } from './user-profile.dto';
 
 export class UserProfileResultDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Информация о пользователе',
+    type: () => UserProfileDto,
+  })
   @ValidateNested()
   @Type(() => UserProfileDto)
   data: UserProfileDto;

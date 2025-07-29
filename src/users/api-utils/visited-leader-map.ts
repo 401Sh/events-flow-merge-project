@@ -35,7 +35,7 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
     uuid: raw.id,
 
     eventId: raw.eventId,
-    completed: raw.completed,
+    isCompleted: raw.completed,
     completedAt: raw.completedAt || null,
     signedUpAt: raw.createdAt,
 

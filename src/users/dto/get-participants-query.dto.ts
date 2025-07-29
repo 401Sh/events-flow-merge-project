@@ -7,6 +7,7 @@ export class GetParticipantsQueryDto {
     description: 'Количество мероприятий на странице',
     example: 10,
     minimum: 4,
+    type: Number,
   })
   @Type(() => Number)
   @IsInt()
@@ -18,6 +19,7 @@ export class GetParticipantsQueryDto {
     description: 'Номер страницы (начинается с 1)',
     example: 1,
     minimum: 1,
+    type: Number,
   })
   @Type(() => Number)
   @IsInt()

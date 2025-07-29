@@ -3,8 +3,8 @@ import { IsBoolean, IsNumber } from 'class-validator';
 
 export class SubscribeLeaderEventDto {
   @ApiProperty({
-    description:
-      'Отключение уведомлений (без дополнительных прав доступен только false)',
+    description: 'Отключение уведомлений о мероприятии ' +
+      '(без дополнительных прав доступен только false)',
     example: false,
     default: false,
     type: Boolean,
@@ -20,7 +20,12 @@ export class SubscribeLeaderEventDto {
   @IsNumber()
   eventId: number;
 
-  // @ApiProperty({ nullable: true, type: String, required: false })
+  // @ApiProperty({
+  //   description: '',
+  //   nullable: true,
+  //   required: false,
+  //   type: String,
+  // })
   // @IsOptional()
   // @IsString()
   // quizAnswerId?: string;

@@ -18,6 +18,7 @@ import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiHeader,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -78,6 +79,11 @@ export class UsersController {
     example: 2,
     default: 1,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer access токен доступа пользователя',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     description: 'Список посещенных и предстоящих мероприятий в leaderId',
@@ -119,6 +125,11 @@ export class UsersController {
       'Если false - в ответе будут предстоящие мероприятия.',
     example: false,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer access токен доступа пользователя',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     description: 'Список посещенных/предстоящих мероприятий в leaderId',
@@ -154,6 +165,11 @@ export class UsersController {
   @ApiBody({
     description: 'Данные для записи на мероприятие',
     type: SubscribeLeaderEventDto,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer access токен доступа пользователя',
+    required: true,
   })
   @ApiResponse({
     status: 200,
@@ -192,6 +208,11 @@ export class UsersController {
     required: true,
     description: 'UUID записи на мероприятие',
     example: '158a3f67-1eba-46cd-bb85-34767232149d',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer access токен доступа пользователя',
+    required: true,
   })
   @ApiResponse({
     status: 204,

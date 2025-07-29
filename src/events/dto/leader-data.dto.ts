@@ -4,32 +4,51 @@ import { IsNumber, IsString, ValidateNested } from 'class-validator';
 import { UnifiedEventDto } from './unified-event.dto';
 
 export class LeaderParticipantDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Id участника мероприятия',
+    type: Number,
+  })
   @IsNumber()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Имя участника мероприятия',
+    type: String,
+  })
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Ссылка на изображение профиля участника мероприятия',
+    type: String,
+  })
   @IsString()
   photo: string;
 }
 
 export class LeaderSpecificDataDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Количество участников мероприятия',
+    type: Number,
+  })
   @IsNumber()
   participantsCount: number;
 
-  @ApiProperty({ type: [LeaderParticipantDto] })
+  @ApiProperty({
+    description: 'Список участников мероприятия',
+    isArray: true,
+    type: () => LeaderParticipantDto,
+  })
   @ValidateNested({ each: true })
   @Type(() => LeaderParticipantDto)
   participants: LeaderParticipantDto[];
 }
 
 export class LeaderDataDto extends UnifiedEventDto {
-  @ApiProperty({ type: LeaderSpecificDataDto })
+  @ApiProperty({
+    description: 'Специфические для leaderId данные',
+    type: () => LeaderSpecificDataDto,
+  })
   @ValidateNested()
   @Type(() => LeaderSpecificDataDto)
   specificData: LeaderSpecificDataDto;

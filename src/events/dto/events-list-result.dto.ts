@@ -4,27 +4,43 @@ import { Type } from 'class-transformer';
 import { UnifiedEventDto } from './unified-event.dto';
 
 export class EventsListMetaDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Общее количество мероприятий',
+    type: Number,
+  })
   @IsNumber()
   totalEventsAmount: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Общее количество страниц',
+    type: Number,
+  })
   @IsNumber()
   totalPagesAmount: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Текущая запрошенная страница',
+    type: Number,
+  })
   @IsNumber()
   currentPage: number;
 }
 
 export class EventsListResultDto {
-  @ApiProperty({ isArray: true, type: () => UnifiedEventDto })
+  @ApiProperty({
+    description: 'Список мероприятий',
+    isArray: true,
+    type: () => UnifiedEventDto,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UnifiedEventDto)
   data: UnifiedEventDto[];
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Метаданные пагинации',
+    type: () => EventsListMetaDto,
+  })
   @ValidateNested()
   @Type(() => EventsListMetaDto)
   meta: EventsListMetaDto;

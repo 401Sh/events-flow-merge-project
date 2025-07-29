@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsOptional,
@@ -13,65 +13,113 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { UnifiedEvent } from '../interfaces/unified-event.interface';
 
 export class UnifiedEventDto implements UnifiedEvent {
-  @ApiProperty({ type: Number })
+  @ApiProperty({
+    description: 'Id мероприятия',
+    type: Number,
+  })
   @IsNumber()
   id: number;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Заголовок мероприятия',
+    type: String,
+  })
   @IsString()
   title: string;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Описание мероприятия',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   description: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Дата начала мероприятия',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   startsAt: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Дата окончания мероприятия',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   endsAt: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Дата начала регистрации на мероприятие',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   registrationStart: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Дата окончания мероприятия',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   registrationEnd: string | null;
 
-  @ApiProperty({ type: EventLocationDto })
+  @ApiProperty({
+    description: 'Место проведения мероприятия',
+    type: () => EventLocationDto,
+  })
   @ValidateNested()
   @Type(() => EventLocationDto)
   location: EventLocationDto;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Ссылка на мероприятие в его источнике',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   url: string | null;
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Ссылка на постер мероприятия',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   posterUrl: string | null;
 
-  @ApiProperty({ type: [EventThemesDto] })
+  @ApiProperty({
+    description: 'Список связанных с мероприятием категорий',
+    isArray: true,
+    type: () => EventThemesDto,
+  })
   @ValidateNested({ each: true })
   @Type(() => EventThemesDto)
   themes: EventThemesDto[];
 
-  @ApiProperty({ nullable: true, type: String, required: false })
+  @ApiPropertyOptional({
+    description: 'Организатор мероприятия',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   organizer: string | null;
 
-  @ApiProperty({ enum: EventAPISource })
+  @ApiProperty({
+    description: 'Источник мероприятия (leaderId или timepad)',
+    enum: EventAPISource,
+  })
   @IsEnum(EventAPISource)
   source: EventAPISource;
 }

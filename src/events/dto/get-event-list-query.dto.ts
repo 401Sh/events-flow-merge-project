@@ -14,6 +14,7 @@ export class GetEventListQueryDto {
     description: 'Количество мероприятий на странице',
     example: 10,
     minimum: 4,
+    type: Number,
   })
   @Type(() => Number)
   @IsInt()
@@ -25,6 +26,7 @@ export class GetEventListQueryDto {
     description: 'Номер страницы (начинается с 1)',
     example: 1,
     minimum: 1,
+    type: Number,
   })
   @Type(() => Number)
   @IsInt()
@@ -35,14 +37,17 @@ export class GetEventListQueryDto {
   @ApiPropertyOptional({
     description: 'Поисковая строка для фильтрации мероприятий по названию',
     example: 'ФОТО экскурсия',
+    type: String,
   })
   @IsString()
   @IsOptional()
   search?: string;
 
   @ApiPropertyOptional({
-    description: 'Id тем мероприятий',
+    description: 'Список Id тем мероприятий',
     example: [1, 2, 3],
+    isArray: true,
+    type: Number,
   })
   @Transform(({ value }) => {
     if (Array.isArray(value)) {
@@ -62,6 +67,7 @@ export class GetEventListQueryDto {
     description: 'Id города',
     example: 1,
     minimum: 1,
+    type: Number,
   })
   @Type(() => Number)
   @IsInt()
@@ -72,6 +78,7 @@ export class GetEventListQueryDto {
   @ApiPropertyOptional({
     description: 'Начало диапазона даты',
     example: '2020-12-30',
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -83,6 +90,7 @@ export class GetEventListQueryDto {
   @ApiPropertyOptional({
     description: 'Конец диапазона даты',
     example: '2020-12-31',
+    type: String,
   })
   @IsString()
   @IsOptional()

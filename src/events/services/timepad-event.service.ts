@@ -116,13 +116,15 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
 
   /**
-   * Builds search parameters for querying the Timepad API based on the provided query object.
+   * Builds search parameters for querying the Timepad API based on the 
+   * provided query object.
    *
    * @async
    * @param {GetEventListQueryDto} query - The event list query parameters.
    * @param {number} limit - The maximum number of results to return.
    * @param {number} [skip] - The number of results to skip (for pagination).
-   * @returns {Promise<Record<string, any>>} A promise resolving to an object representing the search parameters.
+   * @returns {Promise<Record<string, any>>} A promise resolving to an object 
+   * representing the search parameters.
    * @private
    */
   private async buildSearchParams(
@@ -166,7 +168,8 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
    * @async
    * @template T
    * @param {string} urlPart - The endpoint path to append to the base URL.
-   * @param {object} [params] - Optional query parameters to include in the request.
+   * @param {object} [params] - Optional query parameters to include in the 
+   * request.
    * @returns {Promise<T>} The response data of type T from the Timepad API.
    * @throws {HttpException} When the API request fails.
    * @private

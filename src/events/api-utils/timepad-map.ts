@@ -8,9 +8,11 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import he from 'he';
 
 /**
- * Converts a date string that includes a timezone offset (e.g. "+0300") into a UTC ISO 8601 string with 'Z'.
+ * Converts a date string that includes a timezone offset (e.g. "+0300") into a 
+ * UTC ISO 8601 string with 'Z'.
  *
- * @param dateStr - date string with timezone offset, e.g. "2050-01-01T00:00:00+0300"
+ * @param dateStr - date string with timezone offset, e.g. 
+ * "2050-01-01T00:00:00+0300"
  * @returns a string in UTC ISO format: e.g. "2049-12-31T21:00:00Z"
  */
 export function toIsoFromOffsetString(dateStr?: string): string | null {

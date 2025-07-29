@@ -141,14 +141,19 @@ export class LeaderUserService implements APIUserInterface {
 
 
   /**
-   * Fetches all future (not completed) event participations for a user from the leader API.
+   * Fetches all future (not completed) event participations for a user from 
+   * the leader API.
    * 
-   * This method paginates through results until no more future events remain or all pages are fetched.
+   * This method paginates through results until no more future events remain 
+   * or all pages are fetched.
    *
    * @async
-   * @param {string} token - Authorization token used to authenticate the request.
-   * @param {number} userId - The ID of the user whose future events are being fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array of future event participations, normalized.
+   * @param {string} token - Authorization token used to authenticate the 
+   * request.
+   * @param {number} userId - The ID of the user whose future events are being 
+   * fetched.
+   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array 
+   * of future event participations, normalized.
    * @private
    */
   private async getFutureUserEvents(token: string, userId: number) {
@@ -196,13 +201,17 @@ export class LeaderUserService implements APIUserInterface {
 
 
   /**
-   * Fetches all completed (visited) event participations for a user from the leader API.
+   * Fetches all completed (visited) event participations for a user from the 
+   * leader API.
    * It paginates through results and collects events marked as completed.
    *
    * @async
-   * @param {string} token - Authorization token used to authenticate the request.
-   * @param {number} userId - The ID of the user whose visited events are being fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array of completed event participations, normalized.
+   * @param {string} token - Authorization token used to authenticate the 
+   * request.
+   * @param {number} userId - The ID of the user whose visited events are being 
+   * fetched.
+   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array 
+   * of completed event participations, normalized.
    * @private
   */
   private async getVisitedUserEvents(token: string, userId: number) {
@@ -259,21 +268,28 @@ export class LeaderUserService implements APIUserInterface {
 
 
   /**
-   * Sends an HTTP request to the leader API with the specified method, URL, and optional parameters.
+   * Sends an HTTP request to the leader API with the specified method, URL, 
+   * and optional parameters.
    * 
-   * Automatically attaches the authorization token, either from the provided token or via the auth service.
+   * Automatically attaches the authorization token, either from the provided 
+   * token or via the auth service.
    * 
    * Handles errors by logging and throwing an appropriate HTTP exception.
    *
    * @async
    * @template T - The expected response data type.
-   * @param {RESTMethod} method - The HTTP method to use for the request (GET, POST, DELETE, etc.).
-   * @param {string} urlPart - The URL path appended to the base URL for the leader API.
-   * @param {string} [token] - Optional authorization token; if omitted, fetches token from auth service.
-   * @param {object} [params] - Optional query parameters to include in the request.
+   * @param {RESTMethod} method - The HTTP method to use for the request 
+   * (GET, POST, DELETE, etc.).
+   * @param {string} urlPart - The URL path appended to the base URL for the 
+   * leader API.
+   * @param {string} [token] - Optional authorization token; if omitted, 
+   * fetches token from auth service.
+   * @param {object} [params] - Optional query parameters to include in the 
+   * request.
    * @param {*} [data] - Optional request body data, for POST, PUT, etc.
    * @returns {Promise<T>} A promise resolving to the response data of type `T`.
-   * @throws {HttpException} Throws if the HTTP request fails, with the error details and status code.
+   * @throws {HttpException} Throws if the HTTP request fails, with the error 
+   * details and status code.
    * @private
    */
   private async requestLeaderApi<T>(

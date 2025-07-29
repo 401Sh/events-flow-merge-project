@@ -29,7 +29,15 @@ export class OAuthService {
     this.timepadClientId = this.configService.getOrThrow('TIMEPAD_CLIENT_ID');
   }
 
-  getRedircetUrl(source: EventAPISource) {
+  /**
+   * Constructs the OAuth authorization redirect URL for a given event API 
+   * source.
+   *
+   * @param {EventAPISource} source - The source for which to generate the 
+   * redirect URL.
+   * @returns {string} The constructed OAuth authorization redirect URL.
+   */
+  getRedircetUrl(source: EventAPISource): string {
     const redirectUrl = `${this.appUrl}/api/v1/oauth/callback/${source}`;
     const encodedRedirectUrl = encodeURIComponent(redirectUrl);
 
@@ -44,6 +52,15 @@ export class OAuthService {
   }
 
 
+  /**
+   * Exchanges an authorization code for a leader access token.
+   *
+   * @async
+   * @param {CallbackDto} query - The callback query containing the 
+   * authorization code.
+   * @returns {Promise<CallbackResultDto>} A promise that resolves to data 
+   * containing the leader access token.
+   */
   async getLeaderAccessToken(query: CallbackDto) {
     const data = await this.leaderService.exchangeСode(query.code);
 
@@ -51,6 +68,16 @@ export class OAuthService {
   }
 
 
+  /**
+   * Refreshes the leader access token using the provided refresh token.
+   *
+   * @async
+   * @param {string} refreshToken - The refresh token used to obtain a new 
+   * access token.
+   * @throws {UnauthorizedException} Throws if the refresh token is missing.
+   * @returns {Promise<CallbackResultDto>} A promise that resolves to new token 
+   * data returned from the leader service.
+   */
   async refreshLeaderToken(refreshToken: string) {
     if (!refreshToken) {
       throw new UnauthorizedException('refresh token is missing');
@@ -62,6 +89,16 @@ export class OAuthService {
   }
 
   
+  /**
+   * Returns the OAuth redirect URL components based on the given event API 
+   * source.
+   *
+   * @param {EventAPISource} source - The event API source to determine URL 
+   * parts for.
+   * @returns {{ baseURL: string; clientId: string; type: string }} An object 
+   * containing the base URL, client ID, and response type for the OAuth flow.
+   * @private
+   */
   private getSourceRedirectUrlParts(source: EventAPISource) {
     if (source == EventAPISource.LEADER_ID) {
       return {

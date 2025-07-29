@@ -74,6 +74,17 @@ export class LeaderOAuthService implements APIOAuthInterface<LeaderTokenResponse
   }
 
   
+  /**
+   * Sends a POST request to the Leader API with the specified URL path and 
+   * optional body.
+   *
+   * @template T - The expected response data type.
+   * @param {string} urlPart - The URL path to append to the base Leader API URL.
+   * @param {object} [body] - Optional request payload to send.
+   * @returns {Promise<T>} The response data from the Leader API.
+   * @throws {HttpException} Throws if the HTTP request fails.
+   * @private
+   */
   private async leaderApiPostRequest<T>(
     urlPart: string,
     body?: object,

@@ -54,7 +54,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     return mappedEvents;
   }
 
-  
+
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
     const params = await this.buildSearchParams(query, limit, page);
@@ -134,6 +134,19 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
+  /**
+   * Builds search parameters for Leader API requests based on the provided 
+   * query.
+   *
+   * @async
+   * @param {GetEventListQueryDto} query - The query object containing filters 
+   * and search criteria.
+   * @param {number} limit - The maximum number of results to return per page.
+   * @param {number} [page] - The page number for pagination (optional).
+   * @returns {Promise<Record<string, any>>} A promise that resolves to an 
+   * object with the formatted search parameters.
+   * @private
+   */
   private async buildSearchParams(
     query: GetEventListQueryDto,
     limit: number,
@@ -177,6 +190,20 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
+  /**
+   * Sends a GET request to the Leader API with the given URL path and query 
+   * parameters.
+   * Automatically attaches the Bearer access token to the request headers.
+   *
+   * @async
+   * @template T
+   * @param {string} urlPart - The endpoint path to append to the base URL.
+   * @param {object} [params] - Optional query parameters to include in the 
+   * request.
+   * @returns {Promise<T>} A promise resolving to the response data of type T.
+   * @throws {HttpException} Throws an HTTP exception if the request fails.
+   * @private
+   */
   private async fetchFromLeaderApi<T>(
     urlPart: string,
     params?: object,

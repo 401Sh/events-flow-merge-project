@@ -92,7 +92,7 @@ export class UserProfileDto implements UserProfile {
 
   @ApiProperty({
     description: 'Адрес проживания/работы пользователя',
-    type: UserLocationDto,
+    type: () => UserLocationDto,
   })
   @ValidateNested()
   @Type(() => UserLocationDto)

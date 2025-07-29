@@ -7,6 +7,7 @@ export class CoordinatesDto {
   @ApiProperty({
     description: 'Широта',
     example: 55.0288307,
+    type: Number,
   })
   @Type(() => Number)
   @IsNumber()
@@ -15,6 +16,7 @@ export class CoordinatesDto {
   @ApiProperty({
     description: 'Долгота',
     example: 82.9226887,
+    type: Number,
   })
   @Type(() => Number)
   @IsNumber()

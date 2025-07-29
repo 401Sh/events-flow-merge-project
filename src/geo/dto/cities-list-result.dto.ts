@@ -4,7 +4,11 @@ import { IsArray, ValidateNested } from 'class-validator';
 import { CityDto } from './city.dto';
 
 export class CititesListResultDto {
-  @ApiProperty({ isArray: true, type: () => CityDto })
+  @ApiProperty({
+    description: 'Список городов',
+    isArray: true,
+    type: () => CityDto,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CityDto)

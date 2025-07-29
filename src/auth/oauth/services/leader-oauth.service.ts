@@ -10,10 +10,9 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { APIOAuthInterface } from './api-oauth.service.interface';
-import { LeaderCallbackResponse } from 'src/auth/interfaces/leader-callback-response.interface';
 
 @Injectable()
-export class LeaderOAuthService implements APIOAuthInterface {
+export class LeaderOAuthService implements APIOAuthInterface<LeaderTokenResponse> {
   private readonly logger = new Logger(LeaderOAuthService.name);
 
   constructor(
@@ -33,7 +32,7 @@ export class LeaderOAuthService implements APIOAuthInterface {
       code: code,
     };
 
-    const data = await this.leaderApiPostRequest<LeaderCallbackResponse>(
+    const data = await this.leaderApiPostRequest<LeaderTokenResponse>(
       urlPart,
       body,
     );
@@ -59,7 +58,7 @@ export class LeaderOAuthService implements APIOAuthInterface {
       refresh_token: refreshToken,
     };
 
-    const data = await this.leaderApiPostRequest<LeaderCallbackResponse>(
+    const data = await this.leaderApiPostRequest<LeaderTokenResponse>(
       urlPart,
       body,
     );

@@ -1,6 +1,4 @@
-import { LeaderCallbackResponse } from "src/auth/interfaces/leader-callback-response.interface";
-
-export interface APIOAuthInterface {
-  exchangeСode(code: string): Promise<LeaderCallbackResponse>;
-  refreshToken(refreshToken: string): Promise<LeaderCallbackResponse>;
+export interface APIOAuthInterface<T> {
+  exchangeСode(code: string): Promise<T>;
+  refreshToken(refreshToken: string): Promise<T>;
 }

@@ -2,15 +2,24 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 export class TokenResponseDto {
-  @ApiProperty({ type: Number })
+  @ApiProperty({
+    description: 'Id пользователя',
+    type: Number,
+  })
   @IsString()
   userId: number;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Access токен доступа пользователя',
+    type: String,
+  })
   @IsString()
   accessToken: string;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({
+    description: 'Источник токена доступа (leaderId или timepad)',
+    type: String
+  })
   @IsString()
   source: string;
 }

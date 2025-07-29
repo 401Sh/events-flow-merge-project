@@ -12,16 +12,11 @@ export class UsersService {
   ) {}
 
   /**
-   * Retrieves the profile information of a user under a leader's 
-   * context.
+   * Retrieves the profile information of a user under a leader's context.
    *
    * @async
-   * @function
-   * @param {number} userId - The ID of the user whose profile is 
-   * being requested.
-   * @returns {Promise<{ data: UserProfileDto }>} 
-   * A promise that resolves to an object containing the user's 
-   * profile data.
+   * @param {number} userId - The ID of the user whose profile is being requested.
+   * @returns {Promise<{ data: UserProfileDto }>} A promise that resolves to an object containing the user's profile data.
    */
   async getLeaderUser(userId: number) {
     const data = await this.leaderService.getUser(userId);
@@ -31,17 +26,12 @@ export class UsersService {
 
   
   /**
-   * Retrieves a paginated list of event participations for a specific 
-   * user under a leader's context.
+   * Retrieves a paginated list of event participations for a specific user under a leader's context.
    *
    * @async
-   * @function
-   * @param {string} token - Authorization token used to 
-   * authenticate the request.
-   * @param {number} userId - The ID of the user whose participations 
-   * are being requested.
-   * @param {GetParticipantsQueryDto} query - Query parameters for 
-   * filtering and pagination.
+   * @param {string} token - Authorization token used to authenticate the request.
+   * @param {number} userId - The ID of the user whose participations are being requested.
+   * @param {GetParticipantsQueryDto} query - Query parameters for filtering and pagination.
    * @returns {Promise<{
    *   data: VisitedEventDto[],
    *   meta: {
@@ -49,8 +39,7 @@ export class UsersService {
    *     totalPagesAmount: number,
    *     currentPage: number
    *   }
-   * }>} A promise that resolves to an object containing a list of 
-   * visited events and pagination metadata.
+   * }>} A promise that resolves to an object containing a list of visited events and pagination metadata.
    */
   async getLeaderUserParticipations(
     token: string, 
@@ -68,19 +57,13 @@ export class UsersService {
 
 
   /**
-   * Retrieves a list of a user's event history under a leader's 
-   * context, filtered by completion status.
+   * Retrieves a list of a user's event history under a leader's context, filtered by completion status.
    *
    * @async
-   * @function
-   * @param {string} token - Authorization token used to 
-   * authenticate the request.
-   * @param {number} userId - The ID of the user whose event 
-   * history is being requested.
-   * @param {boolean} isCompleted - Indicates whether to fetch 
-   * completed (`true`) or ongoing (`false`) events.
-   * @returns {Promise<{ data: VisitedEventDto[] }>} A promise that 
-   * resolves to an object containing a list of visited events.
+   * @param {string} token - Authorization token used to authenticate the request.
+   * @param {number} userId - The ID of the user whose event history is being requested.
+   * @param {boolean} isCompleted - Indicates whether to fetch completed (`true`) or ongoing (`false`) events.
+   * @returns {Promise<{ data: VisitedEventDto[] }>} A promise that resolves to an object containing a list of visited events.
    */
   async getLeaderUserEventHistory(
     token: string, 
@@ -101,15 +84,10 @@ export class UsersService {
    * Subscribes a user to an event under a leader's context.
    *
    * @async
-   * @function
-   * @param {string} token - Authorization token used to 
-   * authenticate the request.
-   * @param {number} userId - The ID of the user who is 
-   * subscribing to the event.
-   * @param {SubscribeLeaderEventDto} body - The subscription 
-   * details (e.g. event ID, preferences).
-   * @returns {Promise<VisitedEventDto>} A promise that resolves 
-   * to an object containing subscribed event.
+   * @param {string} token - Authorization token used to authenticate the request.
+   * @param {number} userId - The ID of the user who is subscribing to the event.
+   * @param {SubscribeLeaderEventDto} body - The subscription details (e.g. event ID, preferences).
+   * @returns {Promise<VisitedEventDto>} A promise that resolves to an object containing subscribed event.
    */
   async subscribeToLeaderEvent(
     token: string, 
@@ -127,19 +105,13 @@ export class UsersService {
 
 
   /**
-   * Unsubscribes a user from a specific event under a 
-   * leader's context.
+   * Unsubscribes a user from a specific event under a leader's context.
    *
    * @async
-   * @function
-   * @param {string} token - Authorization token used to 
-   * authenticate the request.
-   * @param {number} userId - The ID of the user who is 
-   * unsubscribing from the event.
-   * @param {string} uuid - The unique identifier of the 
-   * event subscription to cancel.
-   * @returns {Promise<any>} Result of the unsubscription 
-   * operation.
+   * @param {string} token - Authorization token used to authenticate the request.
+   * @param {number} userId - The ID of the user who is unsubscribing from the event.
+   * @param {string} uuid - The unique identifier of the event subscription to cancel.
+   * @returns {Promise<any>} Result of the unsubscription operation.
    */
   async unsubscribeToLeaderEvent(
     token: string, 

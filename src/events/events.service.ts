@@ -21,13 +21,11 @@ export class EventsService {
    * Retrieves data by ID from the specified event API source.
    *
    * @async
-   * @param {EventAPISource} source - The source from which 
-   * to fetch the data.
+   * @param {EventAPISource} source - The source from which to fetch the data.
    * @param {number} id - The ID of the item to retrieve.
    * @returns {Promise<{ 
-   * data: LeaderDataDto | TimepadDataDto | null 
-   * }>} The data object fetched from the source, or null 
-   * if not found.
+   *  data: LeaderDataDto | TimepadDataDto | null 
+   * }>} A promise that resolves to data object fetched from the source, or null if not found.
    */
   async getFromSourceById(source: EventAPISource, id: number) {
     let data: LeaderDataDto | TimepadDataDto | null = null;
@@ -43,14 +41,11 @@ export class EventsService {
 
   
   /**
-   * Retrieves a paginated list of events from Leader and 
-   * Timepad sources.
+   * Retrieves a paginated list of events from Leader and Timepad sources.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters 
-   * including pagination and filters.
-   * @returns {Promise<object>} An object containing event data 
-   * and pagination metadata.
+   * @param {GetEventListQueryDto} query - The query parameters including pagination and filters.
+   * @returns {Promise<object>} A promise that resolves to an object containing event data and pagination metadata.
    */
   async getEventsList(query: GetEventListQueryDto) {
     // TODO: Добавить кэширование
@@ -99,18 +94,13 @@ export class EventsService {
 
 
   /**
-   * Retrieves a list of events along with metadata from the 
-   * specified source.
+   * Retrieves a list of events along with metadata from the specified source.
    *
    * @async
-   * @param {EventAPISource} source - The source from which to 
-   * fetch the events.
-   * @param {GetEventListQueryDto} query - The query parameters 
-   * for filtering and pagination.
-   * @returns {Promise<EventsListResultDto>} The events data 
-   * along with pagination metadata.
-   * @throws {NotFoundException} Throws if no events are found 
-   * for the given source.
+   * @param {EventAPISource} source - The source from which to fetch the events.
+   * @param {GetEventListQueryDto} query - The query parameters for filtering and pagination.
+   * @returns {Promise<EventsListResultDto>} A promise that resolves to events data along with pagination metadata.
+   * @throws {NotFoundException} Throws if no events are found for the given source.
    */
   async getEventsListFromSource(
     source: EventAPISource,
@@ -151,15 +141,13 @@ export class EventsService {
 
 
   /**
-   * Retrieves the total number of events from both Leader and 
-   * Timepad sources based on the query.
+   * Retrieves the total number of events from both Leader and Timepad sources based on the query.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters 
-   * used to filter events.
+   * @param {GetEventListQueryDto} query - The query parameters used to filter events.
    * @returns {Promise<{ 
    * leaderEventsAmount: number; timepadEventsAmount: number 
-   * }>} An object containing event counts from both sources.
+   * }>} A promise that resolves to an object containing event counts from both sources.
    * @private
    */
   private async getEventsAmount(query: GetEventListQueryDto) {
@@ -173,8 +161,7 @@ export class EventsService {
 
 
   /**
-   * Calculates the total number of pages based on total items 
-   * and items per page limit.
+   * Calculates the total number of pages based on total items and items per page limit.
    *
    * @param {number} totalItems - The total number of items.
    * @param {number} limit - The number of items per page.
@@ -188,8 +175,7 @@ export class EventsService {
 
 
   /**
-   * Fetches events from Leader and Timepad services based on 
-   * batch data and query parameters.
+   * Fetches events from Leader and Timepad services based on batch data and query parameters.
    *
    * @async
    * @param {{
@@ -197,12 +183,9 @@ export class EventsService {
    *   firstSkip: number;
    *   secondAmount: number;
    *   secondSkip: number;
-   * }} batchData - Object containing amounts and offsets for 
-   * both sources.
-   * @param {GetEventListQueryDto} query - The query parameters 
-   * for filtering and pagination.
-   * @returns {Promise<UnifiedEventDto[]>} A flattened array of 
-   * events fetched from both sources.
+   * }} batchData - Object containing amounts and offsets for both sources.
+   * @param {GetEventListQueryDto} query - The query parameters for filtering and pagination.
+   * @returns {Promise<UnifiedEventDto[]>} A promise that resolves to a flattened array of events fetched from both sources.
    * @private
    */
   private async fetchEvents(
@@ -244,23 +227,19 @@ export class EventsService {
 
   
   /**
-   * Calculates how many items to take and skip from two APIs 
-   * for pagination, balancing the distribution.
+   * Calculates how many items to take and skip from two APIs for pagination, balancing the distribution.
    *
    * @param {number} limit - The number of items per page.
    * @param {number} page - The current page number.
-   * @param {number} api1Total - Total available items from the 
-   * first API.
-   * @param {number} api2Total - Total available items from the 
-   * second API.
+   * @param {number} api1Total - Total available items from the first API.
+   * @param {number} api2Total - Total available items from the second API.
    * @returns {{
    *   firstSkip: number;
    *   firstAmount: number;
    *   secondSkip: number;
    *   secondAmount: number;
    *   isEmpty: boolean;
-   * }} The calculated skip and take amounts for both APIs and 
-   * a flag indicating if the batch is empty.
+   * }} The calculated skip and take amounts for both APIs and a flag indicating if the batch is empty.
    * @private
    */
   private getBatchAtSkip(
@@ -314,20 +293,15 @@ export class EventsService {
 
 
   /**
-   * Distributes the number of items to take from two sources 
-   * given their remaining counts and a limit.
-   * Attempts to evenly split the limit, then fills the remainder 
-   * from whichever source has available items.
+   * Distributes the number of items to take from two sources given their remaining counts and a limit.
+   * 
+   * Attempts to evenly split the limit, then fills the remainder from whichever source has available items.
    *
    * @param {number} limit - Total number of items to take.
-   * @param {number} half - Half of the limit, used as initial 
-   * allocation for the first source.
-   * @param {number} rest1 - Remaining items available in the 
-   * first source.
-   * @param {number} rest2 - Remaining items available in the 
-   * second source.
-   * @returns {{ take1: number; take2: number }} The number of 
-   * items to take from each source.
+   * @param {number} half - Half of the limit, used as initial allocation for the first source.
+   * @param {number} rest1 - Remaining items available in the first source.
+   * @param {number} rest2 - Remaining items available in the second source.
+   * @returns {{ take1: number; take2: number }} The number of items to take from each source.
    * @private
    */
   private distributeItems(

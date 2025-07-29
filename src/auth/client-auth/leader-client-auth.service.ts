@@ -38,8 +38,7 @@ export class LeaderClientAuthService implements OnModuleInit {
   /**
    * Retrieves the leader's access token.
    *
-   * @returns {string|undefined} The access token if available, 
-   * otherwise undefined.
+   * @returns {string|undefined} The access token if available, otherwise undefined.
    */
   getAccessToken(): string | undefined {
     if (!this.tokensData) {
@@ -52,15 +51,12 @@ export class LeaderClientAuthService implements OnModuleInit {
 
 
   /**
-   * Authenticates the client using client credentials grant and 
-   * obtains leader tokens.
+   * Authenticates the client using client credentials grant and obtains leader tokens.
    *
-   * Sends a POST request to the OAuth token endpoint with client 
-   * ID and secret, then stores the received tokens.
+   * Sends a POST request to the OAuth token endpoint with client ID and secret, then stores the received tokens.
    *
    * @async
-   * @returns {Promise<LeaderTokenResponse>} Resolves with the 
-   * token response data.
+   * @returns {Promise<LeaderTokenResponse>} Resolves with the token response data.
    * @throws {UnauthorizedException} Throws if authentication fails.
    */
   async authenticateClient(): Promise<LeaderTokenResponse> {
@@ -98,8 +94,7 @@ export class LeaderClientAuthService implements OnModuleInit {
 
 
   /**
-   * Stores the leader token data and sets up a timeout 
-   * to refresh the access token before it expires.
+   * Stores the leader token data and sets up a timeout to refresh the access token before it expires.
    *
    * @param {LeaderTokenResponse} data - The token response data to be stored.
    * @private
@@ -120,12 +115,10 @@ export class LeaderClientAuthService implements OnModuleInit {
   /**
    * Refreshes the access token using the refresh token.
    * 
-   * If no refresh token is available, falls back to authenticating 
-   * the client again.
+   * If no refresh token is available, falls back to authenticating the client again.
    *
    * @async
-   * @returns {Promise<LeaderTokenResponse>} Resolves with the new 
-   * token response data.
+   * @returns {Promise<LeaderTokenResponse>} Resolves with the new token response data.
    */
   async refreshAccessToken(): Promise<LeaderTokenResponse> {
     if (!this.tokensData?.refresh_token) {
@@ -163,14 +156,12 @@ export class LeaderClientAuthService implements OnModuleInit {
 
   
   /**
-   * Initializes the module by authenticating the client and 
-   * retrieving the leader token.
+   * Initializes the module by authenticating the client and retrieving the leader token.
    *
    * This method is called during the module initialization phase.
    *
    * @async
-   * @throws {InternalServerErrorException} Throws if authentication 
-   * fails during initialization.
+   * @throws {InternalServerErrorException} Throws if authentication fails during initialization.
    */
   async onModuleInit() {
     try {

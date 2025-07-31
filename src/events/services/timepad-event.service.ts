@@ -16,6 +16,7 @@ import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
+import { TimepadApiRateLimiterService } from 'src/api-utils/timepad-api-limiter.service';
 
 @Injectable()
 export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
@@ -28,6 +29,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     private readonly authService: TimepadClientAuthService,
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
+    private readonly rateLimiter: TimepadApiRateLimiterService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
@@ -163,7 +165,11 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
 
   /**
-   * Sends a GET request to the Timepad API with optional query parameters.
+   * Sends a GET request to the Timepad API with optional query parameters,
+   * applying rate limiting to control request throughput.
+   *
+   * Requests are executed through a Bottleneck rate limiter to ensure that
+   * outgoing requests conform to configured rate limits.
    *
    * @async
    * @template T
@@ -182,35 +188,37 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
     const token = this.authService.apiToken;
 
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get<T>(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    return this.rateLimiter.schedule(async () => {
+      try {
+        const response = await firstValueFrom(
+          this.httpService.get<T>(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: params,
+          }),
+        );
+
+        this.logger.debug(`Timepad request to ${url} succeeded`);
+
+        return response.data;
+      } catch (error) {
+        this.logger.warn(
+          `Failed to fetch from Timepad URL: ${url}`,
+          error?.response?.data || error.message,
+        );
+
+        const status =
+          error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new HttpException(
+          {
+            message: `Timepad request failed for URL: ${url}`,
+            details: error?.response?.data || error.message,
           },
-          params: params,
-        }),
-      );
-
-      this.logger.debug(`Timepad request to ${url} succeeded`);
-
-      return response.data;
-    } catch (error) {
-      this.logger.warn(
-        `Failed to fetch from Timepad URL: ${url}`,
-        error?.response?.data || error.message,
-      );
-
-      const status =
-        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
-      throw new HttpException(
-        {
-          message: `Timepad request failed for URL: ${url}`,
-          details: error?.response?.data || error.message,
-        },
-        status,
-      );
-    }
+          status,
+        );
+      }
+    });
   }
 }

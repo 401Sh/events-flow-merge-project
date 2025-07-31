@@ -7,10 +7,18 @@ import { TimepadEventService } from './services/timepad-event.service';
 import { HttpModule } from '@nestjs/axios';
 import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
 import { GeoModule } from 'src/geo/geo.module';
+import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
+import { TimepadApiRateLimiterService } from 'src/api-utils/timepad-api-limiter.service';
 
 @Module({
   imports: [ClientAuthModule, HttpModule, DictionariesModule, GeoModule],
   controllers: [EventsController],
-  providers: [EventsService, LeaderEventService, TimepadEventService],
+  providers: [
+    EventsService,
+    LeaderEventService,
+    TimepadEventService,
+    LeaderApiRateLimiterService,
+    TimepadApiRateLimiterService,
+  ],
 })
 export class EventsModule {}

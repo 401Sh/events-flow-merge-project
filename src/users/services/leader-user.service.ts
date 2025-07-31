@@ -16,6 +16,7 @@ import { mapLeaderUser } from '../api-utils/user-profile-map';
 import { RESTMethod } from '../enums/rest-method.enum';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
+import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -26,6 +27,7 @@ export class LeaderUserService implements APIUserInterface {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
+    private readonly rateLimiter: LeaderApiRateLimiterService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
@@ -274,10 +276,13 @@ export class LeaderUserService implements APIUserInterface {
 
   /**
    * Sends an HTTP request to the leader API with the specified method, URL,
-   * and optional parameters.
+   * and optional parameters, applying rate limiting to control request throughput.
    *
    * Automatically attaches the authorization token, either from the provided
    * token or via the auth service.
+   *
+   * Requests are executed through a Bottleneck rate limiter to ensure that
+   * outgoing requests conform to configured rate limits.
    *
    * Handles errors by logging and throwing an appropriate HTTP exception.
    *
@@ -307,37 +312,39 @@ export class LeaderUserService implements APIUserInterface {
     const url = `${this.baseUrl}${urlPart}`;
     const safeToken = token ?? (await this.authService.getAccessToken());
 
-    try {
-      const response = await firstValueFrom(
-        this.httpService.request<T>({
-          method,
-          url,
-          headers: {
-            Authorization: `Bearer ${safeToken}`,
+    return this.rateLimiter.schedule(async () => {
+      try {
+        const response = await firstValueFrom(
+          this.httpService.request<T>({
+            method,
+            url,
+            headers: {
+              Authorization: `Bearer ${safeToken}`,
+            },
+            params: params,
+            data: data,
+          }),
+        );
+
+        this.logger.debug(`Leader API ${method} request to ${url} succeeded`);
+        return response.data;
+      } catch (error) {
+        this.logger.warn(
+          `Failed to ${method} Leader API request to URL: ${url}`,
+          error?.response?.data || error.message,
+        );
+
+        const status =
+          error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new HttpException(
+          {
+            message: `Leader API ${method} request failed for URL: ${url}`,
+            details: error?.response?.data || error.message,
           },
-          params: params,
-          data: data,
-        }),
-      );
-
-      this.logger.debug(`Leader API ${method} request to ${url} succeeded`);
-      return response.data;
-    } catch (error) {
-      this.logger.warn(
-        `Failed to ${method} Leader API request to URL: ${url}`,
-        error?.response?.data || error.message,
-      );
-
-      const status =
-        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
-      throw new HttpException(
-        {
-          message: `Leader API ${method} request failed for URL: ${url}`,
-          details: error?.response?.data || error.message,
-        },
-        status,
-      );
-    }
+          status,
+        );
+      }
+    });
   }
 }

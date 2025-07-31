@@ -16,6 +16,7 @@ import { LeaderDataDto } from '../dto/leader-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
+import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -28,6 +29,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     private readonly authService: LeaderClientAuthService,
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
+    private readonly rateLimiter: LeaderApiRateLimiterService,
   ) {
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
@@ -117,8 +119,9 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     return normalizedEvent;
   }
 
+
   async getAmount(query: GetEventListQueryDto): Promise<number> {
-    const params = await this.buildSearchParams(query, 2);
+    const params = await this.buildSearchParams(query, query.limit);
 
     const data = await this.fetchFromLeaderApi<{
       meta: { totalCount: number };
@@ -188,8 +191,11 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
   /**
    * Sends a GET request to the Leader API with the given URL path and query
-   * parameters.
+   * parameters, applying rate limiting to control request throughput.
    * Automatically attaches the Bearer access token to the request headers.
+   *
+   * Requests are executed through a Bottleneck rate limiter to ensure that
+   * outgoing requests conform to configured rate limits.
    *
    * @async
    * @template T
@@ -208,35 +214,37 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     const token = await this.authService.getAccessToken();
 
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get<T>(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    return this.rateLimiter.schedule(async () => {
+      try {
+        const response = await firstValueFrom(
+          this.httpService.get<T>(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: params,
+          }),
+        );
+
+        this.logger.debug(`Leader API request to ${url} succeeded`);
+
+        return response.data;
+      } catch (error) {
+        this.logger.warn(
+          `Failed to fetch from Leader API URL: ${url}`,
+          error?.response?.data || error.message,
+        );
+
+        const status =
+          error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new HttpException(
+          {
+            message: `Leader API request failed for URL: ${url}`,
+            details: error?.response?.data || error.message,
           },
-          params: params,
-        }),
-      );
-
-      this.logger.debug(`Leader API request to ${url} succeeded`);
-
-      return response.data;
-    } catch (error) {
-      this.logger.warn(
-        `Failed to fetch from Leader API URL: ${url}`,
-        error?.response?.data || error.message,
-      );
-
-      const status =
-        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
-      throw new HttpException(
-        {
-          message: `Leader API request failed for URL: ${url}`,
-          details: error?.response?.data || error.message,
-        },
-        status,
-      );
-    }
+          status,
+        );
+      }
+    });
   }
 }

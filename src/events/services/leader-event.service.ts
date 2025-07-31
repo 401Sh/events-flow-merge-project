@@ -17,6 +17,7 @@ import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
+import { LEADER_EVENT_PAGE_LIMIT } from 'src/constants/leader-request.constant';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -59,6 +60,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
   async getAllWithMeta(query: GetEventListQueryDto) {
     const { limit, page } = query;
+
     const params = await this.buildSearchParams(query, limit, page);
 
     type LeaderResponseType = {
@@ -79,11 +81,18 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     this.logger.debug('Leader event list recieved successfully');
 
+    const maxEvents = query.limit * LEADER_EVENT_PAGE_LIMIT;
+    const totalAmount = data.meta?.totalCount || 0;
+    const normalizedAmount = totalAmount > maxEvents ? maxEvents : totalAmount;
+    const normalizedPageAmount = 
+      data.meta.paginationPageCount > LEADER_EVENT_PAGE_LIMIT ? 
+      LEADER_EVENT_PAGE_LIMIT : data.meta.paginationPageCount;
+
     const dataWithMeta = {
       data: mappedEvents,
       meta: {
-        totalEventsAmount: data.meta.totalCount,
-        totalPagesAmount: data.meta.paginationPageCount,
+        totalEventsAmount: normalizedAmount,
+        totalPagesAmount: normalizedPageAmount,
         currentPage: data.meta.paginationPage,
       },
     };
@@ -129,7 +138,11 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     this.logger.debug('Leader events amount recieved successfully');
 
-    return data.meta?.totalCount || 0;
+    const maxEvents = query.limit * LEADER_EVENT_PAGE_LIMIT;
+    const totalAmount = data.meta?.totalCount || 0;
+    const normalizedAmount = totalAmount > maxEvents ? maxEvents : totalAmount;
+
+    return normalizedAmount;
   }
 
 

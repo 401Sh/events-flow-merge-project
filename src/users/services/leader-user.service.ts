@@ -17,6 +17,7 @@ import { RESTMethod } from '../enums/rest-method.enum';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
+import { LEADER_EVENT_MAX_AMOUNT } from 'src/constants/leader-request.constant';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -164,7 +165,6 @@ export class LeaderUserService implements APIUserInterface {
    * @private
    */
   private async getFutureUserEvents(token: string, userId: number) {
-    const limit = 100;
     let page = 1;
     const allEvents: any[] = [];
     const keepFetching = true;
@@ -180,7 +180,7 @@ export class LeaderUserService implements APIUserInterface {
 
     while (keepFetching) {
       const params = {
-        paginationSize: limit,
+        paginationSize: LEADER_EVENT_MAX_AMOUNT,
         paginationPage: page,
       };
 
@@ -198,7 +198,7 @@ export class LeaderUserService implements APIUserInterface {
       allEvents.push(...futureEvents);
 
       if (rawEvents.some((e) => e.completed === true)) break;
-      if (rawEvents.length < limit) break;
+      if (rawEvents.length < LEADER_EVENT_MAX_AMOUNT) break;
 
       page++;
     }
@@ -222,7 +222,6 @@ export class LeaderUserService implements APIUserInterface {
    * @private
    */
   private async getVisitedUserEvents(token: string, userId: number) {
-    const limit = 100;
     let page = 1;
     let allEvents: any[] = [];
     let foundVisited = false;
@@ -239,7 +238,7 @@ export class LeaderUserService implements APIUserInterface {
 
     while (keepFetching) {
       const params = {
-        paginationSize: limit,
+        paginationSize: LEADER_EVENT_MAX_AMOUNT,
         paginationPage: page,
       };
 
@@ -263,7 +262,7 @@ export class LeaderUserService implements APIUserInterface {
         allEvents.push(...rawEvents);
       }
 
-      if (rawEvents.length < limit) break;
+      if (rawEvents.length < LEADER_EVENT_MAX_AMOUNT) break;
 
       page++;
     }

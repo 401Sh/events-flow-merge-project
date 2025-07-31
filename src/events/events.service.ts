@@ -51,7 +51,7 @@ export class EventsService {
    * event data and pagination metadata.
    */
   async getEventsList(query: GetEventListQueryDto) {
-    // TODO: Добавить кэширование
+    // TODO: Add cache
     const { leaderEventsAmount, timepadEventsAmount } =
       await this.getEventsAmount(query);
 
@@ -212,7 +212,7 @@ export class EventsService {
   ): Promise<UnifiedEventDto[]> {
     const promises: Promise<UnifiedEventDto[]>[] = [];
 
-    // TODO: Отрефакторить
+    // TODO: Refactor
     if (batchData.firstAmount != 0) {
       promises.push(
         this.leaderService.getAll(

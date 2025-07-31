@@ -25,14 +25,14 @@ export async function seedCities(dataSource: DataSource) {
 
     const location = {
       type: 'Point' as const,
-      coordinates: coords, // [долгота, широта]
+      coordinates: coords, // [longtitude, latitude]
     };
 
     const intName = props.int_name
       ? props.int_name
       : slugify(props.name, { lowercase: false });
 
-    // сущность города
+    // city entity
     const city = cityRepo.create({
       intName: intName,
       name: props.name,

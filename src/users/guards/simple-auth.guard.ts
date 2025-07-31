@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-// TODO: Заменить на passport jwt guard
+// TODO: Switch to passport jwt guard
 @Injectable()
 export class SimpleAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {

@@ -18,7 +18,7 @@ export async function seedThemes(dataSource: DataSource) {
   const themes: ThemeSeedItem[] = themesDataJson.data.themes;
 
   for (const item of themes) {
-    // сущности тем
+    // theme entities
     const theme = themeRepo.create({
       name: item.name,
       tag: item.tag,
@@ -29,7 +29,7 @@ export async function seedThemes(dataSource: DataSource) {
 
     const externalRefs: ExternalThemeRefEntity[] = [];
 
-    // сущность и связи с leader
+    // leader entities and relations
     if (Array.isArray(item.leaderId)) {
       for (const leaderIdValue of item.leaderId) {
         externalRefs.push(
@@ -42,7 +42,7 @@ export async function seedThemes(dataSource: DataSource) {
       }
     }
 
-    // сущность и связь с timepad
+    // timepad entities and relations
     if (item.timepad) {
       externalRefs.push(
         externalRefRepo.create({

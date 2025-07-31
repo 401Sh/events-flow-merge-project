@@ -93,7 +93,7 @@ export class GeoService {
       throw new NotFoundException('City not found');
     }
 
-    // приведение geojson формата координат к wkt
+    // geojson to wkt
     const { coordinates } = city.location;
     const wkt = `POINT(${coordinates[0]} ${coordinates[1]})`;
 

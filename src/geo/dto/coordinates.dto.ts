@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber } from 'class-validator';
 
-// TODO: Добавить поле type и потом проверять его на 'Point'?
+// TODO: Add type field and check on 'Point' value?
 export class CoordinatesDto {
   @ApiProperty({
     description: 'Широта',

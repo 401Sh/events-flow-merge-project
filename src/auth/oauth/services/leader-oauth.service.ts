@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
 import { APIOAuthInterface } from './api-oauth.service.interface';
+import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
 
 @Injectable()
 export class LeaderOAuthService
@@ -21,6 +22,7 @@ export class LeaderOAuthService
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
+    private readonly rateLimiter: LeaderApiRateLimiterService,
   ) {}
 
 
@@ -78,7 +80,10 @@ export class LeaderOAuthService
 
   /**
    * Sends a POST request to the Leader API with the specified URL path and
-   * optional body.
+   * optional body, applying rate limiting to control request throughput.
+   *
+   * Requests are executed through a Bottleneck rate limiter to ensure that
+   * outgoing requests conform to configured rate limits.
    *
    * @template T - The expected response data type.
    * @param {string} urlPart - The URL path to append to the base Leader API URL.
@@ -94,34 +99,36 @@ export class LeaderOAuthService
     const baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
     const url = `${baseUrl}${urlPart}`;
 
-    try {
-      const response = await firstValueFrom(
-        this.httpService.post<T>(url, body, {
-          headers: {
-            'Content-Type': 'application/json',
+    return this.rateLimiter.schedule(async () => {
+      try {
+        const response = await firstValueFrom(
+          this.httpService.post<T>(url, body, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
+        );
+
+        this.logger.debug(`Leader API POST request to ${url} succeeded`);
+
+        return response.data;
+      } catch (error) {
+        this.logger.warn(
+          `Failed to POST to Leader API URL: ${url}`,
+          error?.response?.data || error.message,
+        );
+
+        const status =
+          error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
+        throw new HttpException(
+          {
+            message: `Leader API POST request failed for URL: ${url}`,
+            details: error?.response?.data || error.message,
           },
-        }),
-      );
-
-      this.logger.debug(`Leader API POST request to ${url} succeeded`);
-
-      return response.data;
-    } catch (error) {
-      this.logger.warn(
-        `Failed to POST to Leader API URL: ${url}`,
-        error?.response?.data || error.message,
-      );
-
-      const status =
-        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-
-      throw new HttpException(
-        {
-          message: `Leader API POST request failed for URL: ${url}`,
-          details: error?.response?.data || error.message,
-        },
-        status,
-      );
-    }
+          status,
+        );
+      }
+    });
   }
 }

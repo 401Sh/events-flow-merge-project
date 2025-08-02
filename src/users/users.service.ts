@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import { LeaderUserService } from './services/leader-user.service';
 import { SubscribeLeaderEventDto } from './dto/subscribe-leader-event.dto';
@@ -38,15 +38,31 @@ export class UsersService {
   }
 
 
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    const user = await this.userRepository
+      .createQueryBuilder('users')
+      .where('users.email = :email', { email })
+      .select([
+        'users.id',
+        'users.email',
+        'users.password',
+      ])
+      .getOne();
+
+    this.logger.log(`Finded user with email: ${email}`);
+    return user;
+  }
+
+
   private async isEmailAvailable(email: string): Promise<boolean> {
     const existingUser = await this.userRepository.findOne({ where: { email } });
     return !existingUser;
-  };
+  }
 
 
   private hashData(data: string): Promise<string> {
     return argon2.hash(data);
-  };
+  }
 
 
   /**

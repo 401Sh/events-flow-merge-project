@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshSessionEntity } from './entities/refresh-session.entity';
@@ -29,7 +29,12 @@ export class AuthService {
     this.refreshSecret = this.configService.getOrThrow('JWT_REFRESH_SECRET');
   }
 
-  async signUp(authDto: AuthDto, userAgent: string, ip: string, fingerprint: string) {
+  async signUp(
+    authDto: AuthDto,
+    userAgent: string,
+    ip: string,
+    fingerprint: string,
+  ) {
     const newUser = await this.usersService.create(
       authDto.email,
       authDto.password,
@@ -51,13 +56,63 @@ export class AuthService {
   }
 
 
-  signIn(authDto: AuthDto, userAgent: string, ip: string, fingerprint: string) {
-    throw new Error('Method not implemented.');
+  async signIn(
+    authDto: AuthDto,
+    userAgent: string,
+    ip: string,
+    fingerprint: string,
+  ) {
+    const user = await this.usersService.findByEmail(authDto.email);
+
+    if (!user) throw new BadRequestException('User does not exist');
+
+    if (!fingerprint) {
+      fingerprint = await this.generateFingerprint(ip, userAgent);
+    };
+
+    const verifiedPassword = await this.verifyData(
+      authDto.password,
+      user.password,
+    );
+    if (!verifiedPassword){
+      throw new BadRequestException('Password is incorrect');
+    };
+
+    const existiingSession = await this.findRefreshSession(
+      user.id,
+      fingerprint,
+    );
+
+    if (existiingSession){
+      await this.deleteRefreshSession(user.id, fingerprint);
+    };
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.createRefreshSession(
+      user,
+      tokens.refreshToken,
+      userAgent,
+      ip,
+      fingerprint
+    );
+    return tokens;
   }
 
 
-  deleteRefreshSession(userId: any, fingerprint: string) {
-    throw new Error('Method not implemented.');
+  async deleteRefreshSession(userId: number, fingerprint: string){
+    this.logger.debug(`Deleting user ${userId} session`);
+    const deleteResult = await this.refreshSessionRepository.delete({
+      user: { id: userId },
+      fingerprint: fingerprint
+    });
+
+    if (deleteResult.affected === 0) {
+      this.logger.debug(`Cannot delete session. No session with user 
+        id: ${userId} and fingerprint ${fingerprint}`);
+      throw new NotFoundException('Session not found');
+    };
+
+    return deleteResult;
   }
 
 
@@ -96,7 +151,12 @@ export class AuthService {
   
   private hashData(data: string): Promise<string> {
     return argon2.hash(data);
-  };
+  }
+
+
+  private verifyData(data: string, hashedData: string): Promise<boolean> {
+    return argon2.verify(hashedData, data);
+  }
 
 
   private async getTokens(userId: number, email: string) {
@@ -129,4 +189,19 @@ export class AuthService {
       refreshToken,
     };
   }
+
+
+  private async findRefreshSession(userId: number, fingerprint: string){
+    const session = await this.refreshSessionRepository.findOne(
+      { 
+        where: {
+          user: { id: userId },
+          fingerprint: fingerprint,
+        }
+      }
+    );
+    
+    this.logger.debug(`Finded session for user id: ${userId}`, session);
+    return session;
+  };
 }

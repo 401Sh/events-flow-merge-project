@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshSessionEntity } from './entities/refresh-session.entity';
@@ -70,11 +70,11 @@ export class AuthService {
       fingerprint = await this.generateFingerprint(ip, userAgent);
     };
 
-    const verifiedPassword = await this.verifyData(
+    const isPasswordValid = await this.verifyData(
       authDto.password,
       user.password,
     );
-    if (!verifiedPassword){
+    if (!isPasswordValid){
       throw new BadRequestException('Password is incorrect');
     };
 
@@ -116,8 +116,63 @@ export class AuthService {
   }
 
 
-  refreshTokens(userId: any, refreshToken: any, userAgent: string, ip: string, fingerprint: string) {
-    throw new Error('Method not implemented.');
+  async refreshTokens(
+    userId: number,
+    refreshToken: string,
+    userAgent: string,
+    ip: string,
+    fingerprint: string,
+  ) {
+    const user = await this.usersService.findById(userId);
+    
+    if (!user) {
+      this.logger.debug(`No user with id: `, userId);
+      throw new BadRequestException('User does not exist');
+    };
+
+    if (!fingerprint) {
+      fingerprint = await this.generateFingerprint(ip, userAgent);
+    };
+
+    // Verifing refresh token
+    const session = await this.findRefreshSession(user.id, fingerprint);
+    
+    if (!session) {
+      this.logger.log(`Access denied for user: ${user.id}. No existing session`);
+      throw new ForbiddenException('Access Denied');
+    };
+
+    // Check if token has expired
+    const currentTime = new Date();
+    if (session.expiresAt < currentTime) {
+      this.logger.log(`Access denied for user: ${user.id}. Refresh token expired`);
+      throw new ForbiddenException('Refresh token expired');
+    }
+
+    const isTokenValid = await this.verifyData(
+      refreshToken,
+      session.refreshToken,
+    );
+
+    if (!isTokenValid) {
+      this.logger.log(`Access denied for user: ${user.id}. Incorrect refresh token`);
+      throw new ForbiddenException('Access Denied');
+    };
+
+    await this.deleteRefreshSession(user.id, fingerprint);
+
+    // Create new refreshToken session
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.createRefreshSession(
+      user,
+      tokens.refreshToken,
+      userAgent,
+      ip,
+      fingerprint,
+    );
+
+    this.logger.debug(`Created new jwt tokens for user: `, user.id);
+    return tokens;
   }
 
 
@@ -136,7 +191,7 @@ export class AuthService {
       userAgent,
       ip,
       fingerprint,
-      expiresAt: REFRESH_TOKEN_TTL,
+      expiresAt: this.createFutureDate(REFRESH_TOKEN_TTL),
     });
 
     return session;
@@ -156,6 +211,14 @@ export class AuthService {
 
   private verifyData(data: string, hashedData: string): Promise<boolean> {
     return argon2.verify(hashedData, data);
+  }
+
+
+  private createFutureDate(milliseconds: number): Date {
+    const now = new Date();
+    const futureDate = new Date(now.getTime() + milliseconds);
+
+    return futureDate;
   }
 
 

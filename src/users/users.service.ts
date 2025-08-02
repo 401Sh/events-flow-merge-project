@@ -54,6 +54,18 @@ export class UsersService {
   }
 
 
+  async findById(id: number): Promise<UserEntity | null> {
+    const user = await this.userRepository
+      .createQueryBuilder('users')
+      .where('users.id = :id', { id })
+      .select(['users.login', 'users.id'])
+      .getOne();
+
+    this.logger.log(`Finded user with id: ${id}`);
+    return user;
+  }
+
+
   private async isEmailAvailable(email: string): Promise<boolean> {
     const existingUser = await this.userRepository.findOne({ where: { email } });
     return !existingUser;

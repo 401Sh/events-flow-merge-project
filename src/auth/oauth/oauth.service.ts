@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
-import { CallbackDto } from '../dto/callback.dto';
+import { CallbackDto } from './dto/callback.dto';
 import { LeaderOAuthService } from './services/leader-oauth.service';
 
 @Injectable()

@@ -12,7 +12,7 @@ import {
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
 import { EventAPISource } from 'src/events/enums/event-source.enum';
-import { CallbackDto } from '../dto/callback.dto';
+import { CallbackDto } from './dto/callback.dto';
 import { refreshCookieOptions } from 'src/configs/cookie.config';
 import {
   ApiCookieAuth,
@@ -21,7 +21,7 @@ import {
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
-import { TokenResponseDto } from '../dto/token-response.dto';
+import { TokenResponseDto } from './dto/token-response.dto';
 import { LeaderRefreshTokenGuard } from './guards/leader-refresh-token.guard';
 
 @Controller('oauth')

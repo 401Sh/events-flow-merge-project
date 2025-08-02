@@ -10,6 +10,7 @@ import { DictionariesModule } from './dictionaries/dictionaries.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './configs/typeorm.config';
 import { GeoModule } from './geo/geo.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GeoModule } from './geo/geo.module';
     DictionariesModule,
     TypeOrmModule.forRoot(dataSourceOptions),
     GeoModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

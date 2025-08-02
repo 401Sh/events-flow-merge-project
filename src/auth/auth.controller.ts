@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { refreshCookieOptions } from 'src/configs/cookie.config';
 import { AuthDto } from './dto/auth.dto';
+import { AccessTokenGuard } from './guards/access-token.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {

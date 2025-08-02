@@ -14,5 +14,6 @@ import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limit
     LeaderUserService,
     LeaderApiRateLimiterService,
   ],
+  exports: [UsersService]
 })
 export class UsersModule {}

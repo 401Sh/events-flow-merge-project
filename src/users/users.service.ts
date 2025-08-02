@@ -1,13 +1,53 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import { LeaderUserService } from './services/leader-user.service';
 import { SubscribeLeaderEventDto } from './dto/subscribe-leader-event.dto';
+import { UserEntity } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(private readonly leaderService: LeaderUserService) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+
+    private readonly leaderService: LeaderUserService
+  ) {}
+
+  async create(email: string, password: string): Promise<UserEntity> {
+    const isAvailable = await this.isEmailAvailable(email);
+    if (!isAvailable) {
+      this.logger.log(`Cannot create user. Email ${email} is already used`);
+      throw new ConflictException(`Email ${email} is already used`);
+    };
+
+    const hashedPassword = await this.hashData(password);
+
+    const user = await this.userRepository.save({
+      email: email,
+      password: hashedPassword,
+    });
+
+    this.logger.log(`Created user with email: `, email);
+    this.logger.debug('Created user', user);
+    return user;
+  }
+
+
+  private async isEmailAvailable(email: string): Promise<boolean> {
+    const existingUser = await this.userRepository.findOne({ where: { email } });
+    return !existingUser;
+  };
+
+
+  private hashData(data: string): Promise<string> {
+    return argon2.hash(data);
+  };
+
 
   /**
    * Retrieves the profile information of a user under a leader's context.

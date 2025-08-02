@@ -5,11 +5,14 @@ import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { AccessTokenStrategy } from './strategies/accessToken.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
+import { RefreshSessionEntity } from './entities/refresh-session.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     UsersModule,
-    JwtModule.register({})
+    JwtModule.register({}),
+    TypeOrmModule.forFeature([RefreshSessionEntity]),
   ],
   controllers: [AuthController],
   providers: [

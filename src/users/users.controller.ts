@@ -13,7 +13,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { ExternalUsersService } from './external-users.service';
 import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
 import {
   ApiBearerAuth,
@@ -33,7 +33,7 @@ import { VisitedEventDto } from './dto/visited-event.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly eventsService: UsersService) {}
+  constructor(private readonly externalUsersService: ExternalUsersService) {}
 
   @ApiOperation({
     summary: 'Получить профиль пользователя из leaderId',
@@ -51,7 +51,7 @@ export class UsersController {
   })
   @Get(':userId/leaderId')
   async getUser(@Param('userId', ParseIntPipe) userId: number) {
-    return await this.eventsService.getLeaderUser(userId);
+    return await this.externalUsersService.getLeaderUser(userId);
   }
 
 
@@ -98,7 +98,7 @@ export class UsersController {
   ) {
     const token = req.userToken;
 
-    return await this.eventsService.getLeaderUserParticipations(
+    return await this.externalUsersService.getLeaderUserParticipations(
       token,
       userId,
       query,
@@ -144,7 +144,7 @@ export class UsersController {
   ) {
     const token = req.userToken;
 
-    return await this.eventsService.getLeaderUserEventHistory(
+    return await this.externalUsersService.getLeaderUserEventHistory(
       token,
       userId,
       isCompleted,
@@ -185,7 +185,7 @@ export class UsersController {
   ) {
     const token = req.userToken;
 
-    return await this.eventsService.subscribeToLeaderEvent(
+    return await this.externalUsersService.subscribeToLeaderEvent(
       token,
       userId,
       subscribeLeaderEventDto,
@@ -228,6 +228,6 @@ export class UsersController {
   ) {
     const token = req.userToken;
 
-    await this.eventsService.unsubscribeToLeaderEvent(token, userId, uuid);
+    await this.externalUsersService.unsubscribeToLeaderEvent(token, userId, uuid);
   }
 }

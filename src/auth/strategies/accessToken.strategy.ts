@@ -9,6 +9,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   constructor() {
     const jwtSecret = process.env.JWT_ACCESS_SECRET;
+    
     if (!jwtSecret) {
       AccessTokenStrategy.logger.error('JWT_ACCESS_SECRET is not defined. Application cannot start.');
       throw new Error('JWT_ACCESS_SECRET is not defined');

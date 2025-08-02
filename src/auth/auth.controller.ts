@@ -61,11 +61,14 @@ export class AuthController {
   ) {
     const userId = req.user['sub'];
 
-    const tokens = await this.authService.deleteRefreshSession(userId, fingerprint);
+    await this.authService.deleteRefreshSession(userId, fingerprint);
 
     res.clearCookie('refreshToken', { path: '/' });
 
-    return res.status(200).send({ message: 'Succesfully logout' });
+    return res.status(200).send({
+      message: 'Succesfully logout',
+      accessToken: ''
+    });
   }
 
 

@@ -1,5 +1,5 @@
-import { EventThemeEntity } from "src/dictionaries/entities/theme.entity";
-import { UserEntity } from "src/users/entities/user.entity";
+import { EventThemeEntity } from "../../dictionaries/entities/theme.entity";
+import { UserEntity } from "../../users/entities/user.entity";
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { EventAccess } from "../enums/event-access.enum";
 

@@ -1,5 +1,5 @@
-import { RefreshSessionEntity } from 'src/auth/entities/refresh-session.entity';
-import { EventEntity } from 'src/events/entities/event.entity';
+import { RefreshSessionEntity } from '../../auth/entities/refresh-session.entity';
+import { EventEntity } from '../../events/entities/event.entity';
 import { 
   Entity, 
   PrimaryGeneratedColumn, 

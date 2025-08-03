@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ExternalThemeRefEntity } from './external-theme.entity';
-import { EventEntity } from 'src/events/entities/event.entity';
+import { EventEntity } from '../../events/entities/event.entity';
 
 @Entity('event_themes')
 export class EventThemeEntity extends BaseEntity {

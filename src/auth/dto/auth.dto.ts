@@ -5,7 +5,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 export class AuthDto {
   @ApiProperty({
     description: 'Логин пользователя',
-    example: 'user123',
+    example: 'user123@mail.example',
   })
   @Type(() => String)
   @IsString()

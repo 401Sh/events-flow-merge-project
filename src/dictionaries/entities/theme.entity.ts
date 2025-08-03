@@ -3,11 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ExternalThemeRefEntity } from './external-theme.entity';
+import { EventEntity } from 'src/events/entities/event.entity';
 
 @Entity('event_themes')
 export class EventThemeEntity extends BaseEntity {
@@ -38,4 +40,7 @@ export class EventThemeEntity extends BaseEntity {
     { cascade: true, onDelete: 'CASCADE' },
   )
   externalRefs: ExternalThemeRefEntity[];
+
+  @ManyToOne(() => EventEntity, (event) => event.themes)
+  event: EventEntity;
 }

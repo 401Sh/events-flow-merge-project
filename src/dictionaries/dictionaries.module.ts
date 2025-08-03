@@ -11,7 +11,10 @@ import { ExternalThemeRefEntity } from './entities/external-theme.entity';
   imports: [
     ClientAuthModule,
     HttpModule,
-    TypeOrmModule.forFeature([EventThemeEntity, ExternalThemeRefEntity]),
+    TypeOrmModule.forFeature([
+      EventThemeEntity,
+      ExternalThemeRefEntity
+    ]),
   ],
   controllers: [DictionariesController],
   providers: [DictionariesService],

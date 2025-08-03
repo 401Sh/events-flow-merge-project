@@ -1,4 +1,5 @@
 import { RefreshSessionEntity } from 'src/auth/entities/refresh-session.entity';
+import { EventEntity } from 'src/events/entities/event.entity';
 import { 
   Entity, 
   PrimaryGeneratedColumn, 
@@ -35,4 +36,7 @@ export class UserEntity extends BaseEntity {
     { cascade: true, onDelete: 'CASCADE' }
   )
   refreshSessions: RefreshSessionEntity[];
+
+  @OneToMany(() => EventEntity, (event) => event.user)
+  events: EventEntity[];
 }

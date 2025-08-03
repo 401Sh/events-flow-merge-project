@@ -1,4 +1,4 @@
-import { Injectable, Logger, ConflictException } from "@nestjs/common";
+import { Injectable, Logger, ConflictException, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "./entities/user.entity";
@@ -49,12 +49,17 @@ export class UsersService {
   }
 
 
-  async findById(id: number): Promise<UserEntity | null> {
+  async findById(id: number): Promise<UserEntity> {
     const user = await this.userRepository
       .createQueryBuilder('users')
       .where('users.id = :id', { id })
       .select(['users.login', 'users.id'])
       .getOne();
+
+    if (!user) {
+      this.logger.log(`No user with id: ${id}`);
+      throw new BadRequestException('User does not exist');
+    };
 
     this.logger.log(`Finded user with id: ${id}`);
     return user;

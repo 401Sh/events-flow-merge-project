@@ -80,7 +80,7 @@ export class UpdateEventBodyDto {
   @ApiPropertyOptional({
     description: 'Форма доступа записи на мероприятие.\n' +
       'public - мероприятие видно всем, link - мероприятие доступно по ссылке',
-    type: Enumerator<EventAccess>,
+    enum: EventAccess,
   })
   @IsOptional()
   @IsEnum(EventAccess)

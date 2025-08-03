@@ -125,10 +125,10 @@ export class AuthService {
   ) {
     const user = await this.usersService.findById(userId);
     
-    if (!user) {
-      this.logger.debug(`No user with id: `, userId);
-      throw new BadRequestException('User does not exist');
-    };
+    // if (!user) {
+    //   this.logger.debug(`No user with id: `, userId);
+    //   throw new BadRequestException('User does not exist');
+    // };
 
     if (!fingerprint) {
       fingerprint = await this.generateFingerprint(ip, userAgent);

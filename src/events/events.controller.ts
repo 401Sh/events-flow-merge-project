@@ -24,7 +24,7 @@ export class EventsController {
 
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Get(':eventId/self')
-  async findMyEvent(@Param('eventId') eventId: string) {
+  async findMyEvent(@Param('eventId') eventId: number) {
     const result = await this.eventsService.findById(eventId);
 
     return result;
@@ -34,7 +34,7 @@ export class EventsController {
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Patch(':eventId')
   async update(
-    @Param('eventId') eventId: string,
+    @Param('eventId') eventId: number,
     @Body() data: UpdateEventBodyDto
   ) {
     const result = await this.eventsService.update(eventId, data);
@@ -45,7 +45,7 @@ export class EventsController {
 
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Delete(':eventId')
-  async delete(@Param('eventId') eventId: string) {
+  async delete(@Param('eventId') eventId: number) {
     const result = await this.eventsService.delete(eventId);
 
     return result;

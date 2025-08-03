@@ -6,14 +6,18 @@
 
 ### Задачи
 
-- [X] Получение списка мероприятий
+- [X] Получение общего списка мероприятий
 - [X] Фильтрация мероприятий по городу пользователя
 - [X] Определение города по координатам пользователя
 - [X] Просмотр информации о мероприятии
 - [ ] Вход по OAuth Timepad
 - [X] Вход по OAuth Leader-ID
-- [X] Список посещенных пользователем мероприятий
-- [X] Список мероприятий на которые записался пользователь
+- [X] Список посещенных пользователем мероприятий Leader-ID
+- [ ] Список посещенных пользователем мероприятий Timepad
+- [X] Список мероприятий на которые записался пользователь Leader-ID
+- [ ] Список мероприятий на которые записался пользователь Timepad
+- [ ] Регистрация и авторизация пользователей
+- [ ] CRUD для собственных мероприятий
 
 ### Технологии
 
@@ -21,6 +25,7 @@
 - **Class-Validator** - валидация клиентских запросов.
 - **NestJS** - обработка маршрутов.
 - **@NestJS/Axios** - формирование запросов к API.
+- **TypeORM** - работа с БД
 
 ## Установка
 
@@ -129,26 +134,39 @@ npm run migration:revert
 src/
 │
 │── auth/               # Модули аунтентификации и авторизации
-│   ├── client-auth/    # Модуль получения токенов доступа к API
 │   ├── dto/
-│   ├── interfaces/
-│   ├── oauth/          # Модуль пользовательской аутентификации
-│       ├── guards/
-│       ├── services/   # Сервисы логики запросов данных со сторонних API
+│   ├── entities/
+│   ├── guards/
+│   ├── strategies/
+│   ├── types/
 │
-│── configs/
-│── constants/
+├── client-auth/        # Модуль получения токенов доступа к API
+│
+│── common/
+│   ├── api-utils/
+│   ├── configs/
+│   ├── constants/
+│
 │── database/           # Вспомогательный функционал для БД (сиды и миграции)
 │
 │── dictionaries/       # Модуль словарей
 │   ├── dto/
 │   ├── entities/       # Сущности БД
-│   ├── services/       # Сервисы логики запросов данных со сторонних API
 │
 │── events/             # Модуль мероприятий
+│
+│── external-events/    # Модуль мероприятий сторонних API
 │   ├── api-utils/      # Мапперы для приведения events к одному виду
 │   ├── dto/
 │   ├── enums/
+│   ├── interfaces/
+│   ├── services/       # Сервисы логики запросов данных со сторонних API
+│
+│── external-users/     # Модуль пользователей сторонних API
+│   ├── api-utils/      # Мапперы для приведения данных к visited events
+│   ├── dto/
+│   ├── enums/
+│   ├── guards/
 │   ├── interfaces/
 │   ├── services/       # Сервисы логики запросов данных со сторонних API
 │
@@ -156,11 +174,14 @@ src/
 │   ├── dto/
 │   ├── entities/       # Сущности БД
 │
-│── users/              # Модуль пользователей
-│   ├── api-utils/      # Мапперы для приведения данных к visited events
+├── oauth/              # Модуль пользовательской аутентификации
 │   ├── dto/
 │   ├── guards/
+│   ├── interfaces/
 │   ├── services/       # Сервисы логики запросов данных со сторонних API
+│
+│── users/              # Модуль пользователей
+│   ├── entities/       # Сущности БД
 │
 .env
 tsconfig.json
@@ -173,11 +194,11 @@ package.json
 
 - **GET    /dictionaries/themes**                    - Получение списка общих категорий/тем для фильтрации
 
-### Модуль events
+### Модуль external-events
 
-- **GET    /events**                              - Получение общего списка событий от двух источников
-- **GET    /events/:source**                      - Получение списка событий от источника
-- **GET    /events/:source/:eventId**             - Получение данных о событии от источника (в данный момент работает только для timepad)
+- **GET    /external/events**                              - Получение общего списка событий от двух источников
+- **GET    /external/events/:source**                      - Получение списка событий от источника
+- **GET    /external/events/:source/:eventId**             - Получение данных о событии от источника (в данный момент работает только для timepad)
 
 ### Модуль geo
 
@@ -185,13 +206,13 @@ package.json
 - **GET    /geo/:cityId/nearest**                 - Получение списка ближайших городов к конкретному городу
 - **GET    /geo/coords**                          - Получение id ближайшего города по координатам
 
-### Модуль users
+### Модуль external-users
 
-- **GET    /users/:userId/leaderId**                                - Получение данных пользователя leaderId
-- **GET    /users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя leaderId
-- **GET    /users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя leaderId
-- **POST   /users/:userId/leaderId/participations**                 - Запись на мероприятие leaderId
-- **DELETE /users/:userId/leaderId/participations/:uuid**           - Отмена записи на мероприятие leaderId
+- **GET    /external/users/:userId/leaderId**                                - Получение данных пользователя leaderId
+- **GET    /external/users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя leaderId
+- **GET    /external/users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя leaderId
+- **POST   /external/users/:userId/leaderId/participations**                 - Запись на мероприятие leaderId
+- **DELETE /external/users/:userId/leaderId/participations/:uuid**           - Отмена записи на мероприятие leaderId
 
 ### Модуль oauth
 

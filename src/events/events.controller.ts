@@ -2,8 +2,8 @@ import { Controller, Post, UseGuards, Request, Patch, Delete, Get, Param, Body }
 import { EventsService } from './events.service';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { EventOwnerGuard } from './guards/event-owner.guard';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
+import { CreateEventBodyDto } from './dto/create-event-body.dto';
+import { UpdateEventBodyDto } from './dto/update-event-body.dto';
 
 @Controller('events')
 export class EventsController {
@@ -13,7 +13,7 @@ export class EventsController {
   @Post()
   async create(
     @Request() req,
-    @Body() data: CreateEventDto,
+    @Body() data: CreateEventBodyDto,
   ) {
     const userId = req.user['sub'];
     const result = await this.eventsService.create(userId, data);
@@ -35,7 +35,7 @@ export class EventsController {
   @Patch(':eventId')
   async update(
     @Param('eventId') eventId: string,
-    @Body() data: UpdateEventDto
+    @Body() data: UpdateEventBodyDto
   ) {
     const result = await this.eventsService.update(eventId, data);
 

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
+import { CreateEventBodyDto } from './dto/create-event-body.dto';
+import { UpdateEventBodyDto } from './dto/update-event-body.dto';
 
 @Injectable()
 export class EventsService {
@@ -8,7 +8,7 @@ export class EventsService {
 
   constructor() {}
 
-  create(userId: any, data: CreateEventDto) {
+  create(userId: any, data: CreateEventBodyDto) {
     throw new Error('Method not implemented.');
   }
 
@@ -18,7 +18,7 @@ export class EventsService {
   }
 
 
-  update(eventId: string, data: UpdateEventDto) {
+  update(eventId: string, data: UpdateEventBodyDto) {
     throw new Error('Method not implemented.');
   }
 

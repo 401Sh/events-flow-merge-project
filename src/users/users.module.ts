@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { LeaderUserService } from './services/leader-user.service';
-import { ClientAuthModule } from 'src/auth/client-auth/client-auth.module';
+import { ClientAuthModule } from 'src/client-auth/client-auth.module';
 import { HttpModule } from '@nestjs/axios';
 import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
 import { ExternalUsersService } from './external-users.service';

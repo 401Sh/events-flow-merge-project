@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
+import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
 import { APIOAuthInterface } from './api-oauth.service.interface';
 import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
 

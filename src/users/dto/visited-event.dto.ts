@@ -7,7 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 
 export class VisitedEventDto implements VisitedEvent {
   @ApiProperty({

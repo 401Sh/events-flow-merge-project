@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
 import { UsersModule } from './users/users.module';
-import { OauthModule } from './auth/oauth/oauth.module';
+import { OauthModule } from './oauth/oauth.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { DictionariesModule } from './dictionaries/dictionaries.module';
@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './configs/typeorm.config';
 import { GeoModule } from './geo/geo.module';
 import { AuthModule } from './auth/auth.module';
+import { ExternalEventsModule } from './external-events/external-events.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRoot(dataSourceOptions),
     GeoModule,
     AuthModule,
+    ExternalEventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

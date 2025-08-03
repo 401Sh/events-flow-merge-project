@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { OAuthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
 import { HttpModule } from '@nestjs/axios';
-import { ClientAuthModule } from '../client-auth/client-auth.module';
+import { ClientAuthModule } from '../auth/client-auth/client-auth.module';
 import { LeaderOAuthService } from './services/leader-oauth.service';
 import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
 

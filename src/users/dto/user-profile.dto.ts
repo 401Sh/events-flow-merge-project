@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UserLocationDto } from './user-location.dto';
-import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 
 export class UserProfileDto implements UserProfile {
   @ApiProperty({

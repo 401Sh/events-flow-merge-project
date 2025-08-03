@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { APIEventInterface } from './api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
-import { TimepadClientAuthService } from 'src/auth/client-auth/timepad-client-auth.service';
+import { TimepadClientAuthService } from 'src/client-auth/timepad-client-auth.service';
 import { firstValueFrom } from 'rxjs';
 import { mapTimepad } from '../api-utils/timepad-map';
 import { ConfigService } from '@nestjs/config';

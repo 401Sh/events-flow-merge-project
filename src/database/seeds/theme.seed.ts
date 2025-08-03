@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import * as themesDataJson from './data/common-themes.json';
 import { ExternalThemeRefEntity } from '../../dictionaries/entities/external-theme.entity';
 import { EventThemeEntity } from '../../dictionaries/entities/theme.entity';
-import { EventAPISource } from '../../events/enums/event-source.enum';
+import { EventAPISource } from '../../external-events/enums/event-source.enum';
 
 type ThemeSeedItem = {
   timepad: number;

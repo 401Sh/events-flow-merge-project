@@ -1,4 +1,4 @@
-import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 import { UserLocation } from './user-location.interface';
 
 export interface UserProfile {

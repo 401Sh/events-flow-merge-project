@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
-import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 import { CallbackDto } from './dto/callback.dto';
 import { refreshCookieOptions } from 'src/configs/cookie.config';
 import {

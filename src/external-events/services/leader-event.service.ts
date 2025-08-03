@@ -9,7 +9,7 @@ import { APIEventInterface } from './api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
 import { mapLeader } from '../api-utils/leader-map';
 import { firstValueFrom } from 'rxjs';
-import { LeaderClientAuthService } from 'src/auth/client-auth/leader-client-auth.service';
+import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
 import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { LeaderDataDto } from '../dto/leader-data.dto';

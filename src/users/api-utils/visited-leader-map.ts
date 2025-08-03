@@ -3,7 +3,7 @@ import { fromZonedTime } from 'date-fns-tz';
 import { plainToInstance } from 'class-transformer';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 import { VisitedEvent } from '../interfaces/visited-event.interface';
-import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 
 /**
  * Converts a local date with time zone offset into ISO 8601 UTC format.

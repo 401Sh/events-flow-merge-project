@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { EventAPISource } from 'src/events/enums/event-source.enum';
+import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 import { UserProfileDto } from '../dto/user-profile.dto';
 import { UserProfile } from '../interfaces/user-profile.interface';
 import { UserLocation } from '../interfaces/user-location.interface';

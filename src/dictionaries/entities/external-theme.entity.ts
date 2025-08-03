@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EventThemeEntity } from './theme.entity';
-import { EventAPISource } from '../../events/enums/event-source.enum';
+import { EventAPISource } from '../../external-events/enums/event-source.enum';
 
 @Entity('external_themes')
 export class ExternalThemeRefEntity extends BaseEntity {

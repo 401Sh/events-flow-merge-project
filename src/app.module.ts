@@ -12,6 +12,7 @@ import { dataSourceOptions } from './configs/typeorm.config';
 import { GeoModule } from './geo/geo.module';
 import { AuthModule } from './auth/auth.module';
 import { ExternalEventsModule } from './external-events/external-events.module';
+import { ExternalUsersModule } from './external-users/external-users.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ExternalEventsModule } from './external-events/external-events.module';
     GeoModule,
     AuthModule,
     ExternalEventsModule,
+    ExternalUsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

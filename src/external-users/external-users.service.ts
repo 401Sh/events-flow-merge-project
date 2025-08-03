@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GetParticipantsQueryDto } from './dto/get-participants-query.dto';
-import { LeaderUserService } from './services/leader-user.service';
-import { SubscribeLeaderEventDto } from './dto/subscribe-leader-event.dto';
+import { GetParticipantsQueryDto } from '../external-users/dto/get-participants-query.dto';
+import { LeaderUserService } from '../external-users/services/leader-user.service';
+import { SubscribeLeaderEventDto } from '../external-users/dto/subscribe-leader-event.dto';
 
 @Injectable()
 export class ExternalUsersService {

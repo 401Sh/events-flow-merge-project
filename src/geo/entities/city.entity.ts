@@ -1,4 +1,4 @@
-import { DEFAULT_SRID } from 'src/constants/geospatial.constant';
+import { DEFAULT_SRID } from 'src/common/constants/geospatial.constant';
 import {
   Column,
   CreateDateColumn,

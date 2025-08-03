@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { LEADER_API_TOKEN_TTL } from 'src/constants/auth.constant';
+import { LEADER_API_TOKEN_TTL } from 'src/common/constants/auth.constant';
 
 @Injectable()
 export class LeaderClientAuthService implements OnModuleInit {

@@ -16,7 +16,7 @@ import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
-import { TimepadApiRateLimiterService } from 'src/api-utils/timepad-api-limiter.service';
+import { TimepadApiRateLimiterService } from 'src/common/api-utils/timepad-api-limiter.service';
 
 @Injectable()
 export class TimepadEventService implements APIEventInterface<TimepadDataDto> {

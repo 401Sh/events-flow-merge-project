@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Headers, Ip, Post, Res, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { refreshCookieOptions } from 'src/configs/cookie.config';
+import { refreshCookieOptions } from 'src/common/configs/cookie.config';
 import { AuthDto } from './dto/auth.dto';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';

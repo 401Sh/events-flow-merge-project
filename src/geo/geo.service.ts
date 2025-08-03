@@ -5,7 +5,7 @@ import { In, Repository } from 'typeorm';
 import { CoordinatesDto } from './dto/coordinates.dto';
 import { GetCitiesQueryDto } from './dto/get-cities-query.dto';
 import { GetNearestCitiesQueryDto } from './dto/get-nearest-cities-query.dto';
-import { DEFAULT_SRID } from 'src/constants/geospatial.constant';
+import { DEFAULT_SRID } from 'src/common/constants/geospatial.constant';
 
 @Injectable()
 export class GeoService {

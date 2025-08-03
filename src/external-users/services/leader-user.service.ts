@@ -16,8 +16,8 @@ import { mapLeaderUser } from '../api-utils/user-profile-map';
 import { RESTMethod } from '../enums/rest-method.enum';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
-import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
-import { LEADER_EVENT_MAX_AMOUNT } from 'src/constants/leader-request.constant';
+import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
+import { LEADER_EVENT_MAX_AMOUNT } from 'src/common/constants/leader-request.constant';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {

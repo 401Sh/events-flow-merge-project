@@ -16,8 +16,8 @@ import { LeaderDataDto } from '../dto/leader-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
-import { LeaderApiRateLimiterService } from 'src/api-utils/leader-api-rate-limiter.service';
-import { LEADER_EVENT_PAGE_LIMIT } from 'src/constants/leader-request.constant';
+import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
+import { LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {

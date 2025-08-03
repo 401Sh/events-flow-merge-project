@@ -1,4 +1,4 @@
-import { dataSourceOptions } from '../configs/typeorm.config';
+import { dataSourceOptions } from '../common/configs/typeorm.config';
 import { DataSource } from 'typeorm';
 
 const overrideOptions = {

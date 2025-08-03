@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { DictionariesModule } from './dictionaries/dictionaries.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourceOptions } from './configs/typeorm.config';
+import { dataSourceOptions } from './common/configs/typeorm.config';
 import { GeoModule } from './geo/geo.module';
 import { AuthModule } from './auth/auth.module';
 import { ExternalEventsModule } from './external-events/external-events.module';

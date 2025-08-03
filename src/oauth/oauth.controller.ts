@@ -13,7 +13,7 @@ import { OAuthService } from './oauth.service';
 import { Response } from 'express';
 import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 import { CallbackDto } from './dto/callback.dto';
-import { refreshCookieOptions } from 'src/configs/cookie.config';
+import { refreshCookieOptions } from 'src/common/configs/cookie.config';
 import {
   ApiCookieAuth,
   ApiOperation,

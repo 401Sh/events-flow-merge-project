@@ -1,6 +1,6 @@
 import Bottleneck from 'bottleneck';
 import { Injectable } from '@nestjs/common';
-import { TIMEPAD_RATE_LIMITS } from 'src/constants/timepad-api-rate-limits.constant';
+import { TIMEPAD_RATE_LIMITS } from 'src/common/constants/timepad-api-rate-limits.constant';
 
 @Injectable()
 export class TimepadApiRateLimiterService {

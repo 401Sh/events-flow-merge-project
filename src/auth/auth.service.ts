@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as argon2 from 'argon2';
-import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from 'src/constants/jwt-token.constant';
+import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from 'src/common/constants/jwt-token.constant';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()

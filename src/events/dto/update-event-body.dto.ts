@@ -1,7 +1,8 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { EventAccess } from "../enums/event-access.enum";
-import { ArrayUnique, IsArray, IsBoolean, IsDate, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
+import { ArrayUnique, IsArray, IsBoolean, IsDate, IsEnum, IsInt, IsOptional, IsString, Validate } from "class-validator";
 import { Type } from "class-transformer";
+import { IsDatesConsistent } from "../validators/event-date.validator";
 
 export class UpdateEventBodyDto {
   @ApiPropertyOptional({
@@ -98,4 +99,8 @@ export class UpdateEventBodyDto {
   @IsInt({ each: true })
   @Type(() => Number)
   themeIds?: number[];
+
+  // validation trigger field
+  @Validate(IsDatesConsistent)
+  datesConsistencyCheck: any;
 }

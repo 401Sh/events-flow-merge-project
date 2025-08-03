@@ -18,7 +18,13 @@ export class EventsService {
   ) {}
 
   async create(userId: number, data: CreateEventBodyDto) {
-    const user = await this.usersService.findById(userId)
+    const user = await this.usersService.findById(userId);
+
+    // if (data.endsAt && data.startsAt > data.endsAt) {
+    //   throw new BadRequestException(
+    //     'The startsAt date cannot be later than the endsAt date'
+    //   );
+    // }
 
     const event = await this.eventRepository.save({
       ...data,
@@ -41,7 +47,7 @@ export class EventsService {
     if (!event) {
       this.logger.log(`No survey with id: `, eventId);
       throw new BadRequestException('Event does not exist');
-    };
+    }
 
     this.logger.log(`Finded event with id: `, eventId);
     this.logger.log(`Finded event with id: `, event);
@@ -70,7 +76,7 @@ export class EventsService {
     if (deleteResult.affected === 0) {
       this.logger.log(`Cannot delete event. No event with id: `, eventId);
       throw new NotFoundException(`Event with id ${eventId} not found`);
-    };
+    }
 
     return deleteResult;
   }

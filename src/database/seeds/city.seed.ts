@@ -7,6 +7,7 @@ type CitySeedItem = {
   properties: {
     int_name?: string;
     name: string;
+    population: number;
   };
   geometry: {
     type: string;
@@ -37,6 +38,7 @@ export async function seedCities(dataSource: DataSource) {
       intName: intName,
       name: props.name,
       location: location,
+      population: props.population,
     });
 
     await cityRepo.save(city);

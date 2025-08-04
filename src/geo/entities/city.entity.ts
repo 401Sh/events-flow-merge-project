@@ -22,6 +22,9 @@ export class CityEntity {
   @Column({ type: 'varchar', length: 512, nullable: true })
   posterUrl?: string;
 
+  @Column({ type: 'integer', nullable: true })
+  population?: number;
+
   @Column({
     type: 'geometry',
     spatialFeatureType: 'Point',

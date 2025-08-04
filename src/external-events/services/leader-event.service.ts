@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { APIEventInterface } from './api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
-import { mapLeader } from '../api-utils/leader-map';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
 import { ConfigService } from '@nestjs/config';
@@ -18,6 +17,7 @@ import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
+import { LeaderMapperService } from './leader-mapper.service';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -31,6 +31,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
     private readonly rateLimiter: LeaderApiRateLimiterService,
+    private readonly leaderMapper: LeaderMapperService,
   ) {
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
@@ -50,7 +51,9 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     );
 
     const rawEvents = response.items || [];
-    const mappedEvents = rawEvents.map(mapLeader);
+    const mappedEvents = await Promise.all(
+      rawEvents.map(this.leaderMapper.map)
+    );
 
     this.logger.debug('Leader event list recieved successfully');
 
@@ -77,7 +80,9 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
       params,
     );
     const rawEvents = data.items || [];
-    const mappedEvents = rawEvents.map(mapLeader);
+    const mappedEvents = await Promise.all(
+      rawEvents.map(this.leaderMapper.map)
+    );
 
     this.logger.debug('Leader event list recieved successfully');
 
@@ -121,7 +126,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
       );
     }
 
-    const normalizedEvent = mapLeader(dataResponce.items[0]);
+    const normalizedEvent = await this.leaderMapper.map(dataResponce.items[0]);
 
     this.logger.debug('Leader event recieved successfully');
 

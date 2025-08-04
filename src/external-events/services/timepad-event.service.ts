@@ -9,7 +9,6 @@ import { APIEventInterface } from './api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/client-auth/timepad-client-auth.service';
 import { firstValueFrom } from 'rxjs';
-import { mapTimepad } from '../api-utils/timepad-map';
 import { ConfigService } from '@nestjs/config';
 import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
@@ -17,6 +16,7 @@ import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { TimepadApiRateLimiterService } from 'src/common/api-utils/timepad-api-limiter.service';
+import { TimepadMapperService } from './timepad-mapper.service';
 
 @Injectable()
 export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
@@ -30,6 +30,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
     private readonly rateLimiter: TimepadApiRateLimiterService,
+    private readonly timepadMapper: TimepadMapperService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
@@ -47,7 +48,9 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     );
 
     const rawEvents = response.values || [];
-    const mappedEvents = rawEvents.map(mapTimepad);
+    const mappedEvents = await Promise.all(
+      rawEvents.map(this.timepadMapper.map)
+    );
 
     this.logger.debug('Timepad event list recieved successfully');
 
@@ -67,7 +70,9 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     }>('/events', params);
 
     const rawEvents = response.values || [];
-    const mappedEvents = rawEvents.map(mapTimepad);
+    const mappedEvents = await Promise.all(
+      rawEvents.map(this.timepadMapper.map)
+    );
 
     this.logger.debug('Timepad event list with meta recieved successfully');
 
@@ -96,7 +101,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
       );
     }
 
-    const normalizedEvent = mapTimepad(rawEvent);
+    const normalizedEvent = await this.timepadMapper.map(rawEvent);
 
     this.logger.debug('Timepad event recieved successfully');
 

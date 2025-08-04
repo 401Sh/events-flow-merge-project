@@ -9,6 +9,8 @@ import { HttpModule } from '@nestjs/axios';
 import { ClientAuthModule } from 'src/client-auth/client-auth.module';
 import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
 import { GeoModule } from 'src/geo/geo.module';
+import { LeaderMapperService } from './services/leader-mapper.service';
+import { TimepadMapperService } from './services/timepad-mapper.service';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { GeoModule } from 'src/geo/geo.module';
     TimepadEventService,
     LeaderApiRateLimiterService,
     TimepadApiRateLimiterService,
+    LeaderMapperService,
+    TimepadMapperService,
   ]
 })
 export class ExternalEventsModule {}

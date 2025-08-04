@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EventThemeEntity } from './entities/theme.entity';
 import { In, Repository } from 'typeorm';
 import { ExternalThemeRefEntity } from './entities/external-theme.entity';
+import { EventThemesDto } from './dto/event-themes.dto';
 
 @Injectable()
 export class DictionariesService {
@@ -55,5 +56,38 @@ export class DictionariesService {
     const externalIds = themeIds.map((v) => v.sourceId);
 
     return externalIds;
+  }
+
+
+  /**
+   * Finds event themes corresponding to the given external theme IDs and event
+   * API source.
+   * 
+   * @async
+   * @param {number[]} externalIds - Array of external theme IDs
+   * (source-specific IDs).
+   * @param {EventAPISource} source - The source of the event API.
+   * @returns {Promise<EventThemesDto[]>} A promise that resolves
+   * to an array
+   * of event theme objects with `id` and `name` fields.
+   */
+  async findEventThemesByExternalThemeIds (
+    externalIds: number[],
+    source: EventAPISource,
+  ): Promise<EventThemesDto[]> {
+    const externalThemes = await this.externalThemeRefRepository.find({
+      where: {
+        source,
+        sourceId: In(externalIds),
+      },
+      relations: ['eventTheme'],
+    });
+
+    const eventThemes = externalThemes.map((v) => ({
+      id: v.eventTheme.id,
+      name: v.eventTheme.name,
+    }));
+
+    return eventThemes;
   }
 }

@@ -31,7 +31,7 @@ export class EventsService {
       user: user,
     });
 
-    this.logger.log(`Created new event for user: `, userId);
+    this.logger.log(`Created new event for user: ${userId}`);
     this.logger.debug(`Created new event: `, event);
     return event;
   }
@@ -45,18 +45,18 @@ export class EventsService {
       .getOne();
 
     if (!event) {
-      this.logger.log(`No survey with id: `, eventId);
+      this.logger.log(`No survey with id: ${eventId}`);
       throw new BadRequestException('Event does not exist');
     }
 
-    this.logger.log(`Finded event with id: `, eventId);
+    this.logger.log(`Finded event with id: ${eventId}`);
     this.logger.log(`Finded event with id: `, event);
     return event;
   }
 
 
   async update(eventId: number, data: UpdateEventBodyDto) {
-    this.logger.log(`Updating event with id: `, eventId);
+    this.logger.log(`Updating event with id: ${eventId}`);
     await this.eventRepository.update({ id: eventId }, data);
 
     const updatedEvent = await this.eventRepository.findOne({
@@ -70,11 +70,11 @@ export class EventsService {
 
 
   async delete(eventId: number) {
-    this.logger.log(`Deleting event with id: `, eventId);
+    this.logger.log(`Deleting event with id: ${eventId}`);
     const deleteResult = await this.eventRepository.delete({ id: eventId });
 
     if (deleteResult.affected === 0) {
-      this.logger.log(`Cannot delete event. No event with id: `, eventId);
+      this.logger.log(`Cannot delete event. No event with id: ${eventId}`);
       throw new NotFoundException(`Event with id ${eventId} not found`);
     }
 

@@ -126,7 +126,7 @@ export class AuthService {
     const user = await this.usersService.findById(userId);
     
     // if (!user) {
-    //   this.logger.debug(`No user with id: `, userId);
+    //   this.logger.debug(`No user with id: ${userId}`);
     //   throw new BadRequestException('User does not exist');
     // };
 
@@ -171,7 +171,7 @@ export class AuthService {
       fingerprint,
     );
 
-    this.logger.debug(`Created new jwt tokens for user: `, user.id);
+    this.logger.debug(`Created new jwt tokens for user: ${user.id}`);
     return tokens;
   }
 

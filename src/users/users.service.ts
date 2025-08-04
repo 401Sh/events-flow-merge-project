@@ -27,7 +27,7 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    this.logger.log(`Created user with email: `, email);
+    this.logger.log(`Created user with email: ${email}`);
     this.logger.debug('Created user', user);
     return user;
   }

@@ -44,7 +44,7 @@ export class LeaderOAuthService
     this.logger.debug('Received Leader user code exchange response');
 
     if (!data.user_validated) {
-      this.logger.debug('Unauthorized user:', data.user_id);
+      this.logger.debug(`Unauthorized user: ${data.user_id}`);
       throw new UnauthorizedException('Leader ID - unauthorized');
     }
 
@@ -70,7 +70,7 @@ export class LeaderOAuthService
     this.logger.debug('Received Leader refresh token response');
 
     if (!data.user_validated) {
-      this.logger.debug('Unauthorized user:', data.user_id);
+      this.logger.debug(`Unauthorized user: ${data.user_id}`);
       throw new UnauthorizedException('Leader ID - unauthorized');
     }
 

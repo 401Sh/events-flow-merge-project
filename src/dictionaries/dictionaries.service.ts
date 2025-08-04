@@ -1,6 +1,5 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventAPISource } from 'src/external-events/enums/event-source.enum';
-import { EventThemesDto } from './dto/event-themes.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventThemeEntity } from './entities/theme.entity';
 import { In, Repository } from 'typeorm';

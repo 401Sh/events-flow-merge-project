@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { Logger, LogLevel, ValidationPipe } from '@nestjs/common';
 import cors from 'cors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   app.useLogger(logLevels);
+  app.use(cookieParser());
 
   app.use(
     cors({

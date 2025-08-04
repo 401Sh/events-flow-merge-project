@@ -36,14 +36,17 @@ export class GeoService {
     const queryBuilder = this.cityRepository.createQueryBuilder('cities');
 
     if (search) {
+      const searchLower = search.toLowerCase();
+
       queryBuilder.where(
-        '(cities.name Like :search OR cities.intName LIKE :search)',
+        '(LOWER(cities.name) Like :search OR LOWER(cities.intName) LIKE :search)',
         {
-          search: `%${search}%`,
+          search: `%${searchLower}%`,
         },
       );
     }
 
+    queryBuilder.orderBy('cities.population', 'DESC', 'NULLS LAST');
     queryBuilder.skip((page - 1) * limit).take(limit);
     queryBuilder.select([
       'cities.id',

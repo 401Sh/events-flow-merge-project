@@ -75,17 +75,18 @@ export class DictionariesService {
     externalIds: number[],
     source: EventAPISource,
   ): Promise<EventThemesDto[]> {
-    const externalThemes = await this.externalThemeRefRepository.find({
-      where: {
-        source,
-        sourceId: In(externalIds),
-      },
-      relations: ['eventTheme'],
-    });
+    const externalThemes = await this.externalThemeRefRepository
+      .createQueryBuilder('extthemes')
+      .leftJoinAndSelect('extthemes.eventTheme', 'eventTheme')
+      .where('extthemes.source = :source', {source})
+      .andWhere('extthemes.sourceId IN (:...externalIds)', {externalIds})
+      .select(['eventTheme.id', 'eventTheme.name'])
+      .distinct(true)
+      .getRawMany();
 
     const eventThemes = externalThemes.map((v) => ({
-      id: v.eventTheme.id,
-      name: v.eventTheme.name,
+      id: v.eventTheme_id,
+      name: v.eventTheme_name,
     }));
 
     return eventThemes;

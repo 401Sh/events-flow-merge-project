@@ -161,7 +161,6 @@ src/
 │   ├── validators/       # Кастомные валидаторы для DTO
 │
 │── external-events/    # Модуль мероприятий сторонних API
-│   ├── api-utils/      # Мапперы для приведения events к одному виду
 │   ├── dto/
 │   ├── enums/
 │   ├── interfaces/

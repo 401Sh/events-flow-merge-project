@@ -1,5 +1,5 @@
-import { EventsListResultDto } from '../dto/events-list-result.dto';
-import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
+import { EventsListResultDto } from '../../dto/events-list-result.dto';
+import { GetEventListQueryDto } from '../../dto/get-event-list-query.dto';
 
 export interface APIEventInterface<T> {
   /**

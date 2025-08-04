@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { APIEventInterface } from './api-event.service.interface';
+import { APIEventInterface } from './api-interfaces/api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';

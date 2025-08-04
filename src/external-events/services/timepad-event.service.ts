@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { APIEventInterface } from './api-event.service.interface';
+import { APIEventInterface } from './api-interfaces/api-event.service.interface';
 import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/client-auth/timepad-client-auth.service';
 import { firstValueFrom } from 'rxjs';

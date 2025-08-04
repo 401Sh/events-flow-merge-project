@@ -8,7 +8,7 @@ import { LeaderData } from '../interfaces/leader-data.interface';
 import { plainToInstance } from 'class-transformer';
 import { LeaderDataDto } from '../dto/leader-data.dto';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
-import { APIMapperInterface } from "./api-mapper.service.interface";
+import { APIMapperInterface } from "./api-interfaces/api-mapper.service.interface";
 
 @Injectable()
 export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {

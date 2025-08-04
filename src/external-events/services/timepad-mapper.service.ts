@@ -8,7 +8,7 @@ import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { plainToInstance } from 'class-transformer';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import he from 'he';
-import { APIMapperInterface } from "./api-mapper.service.interface";
+import { APIMapperInterface } from "./api-interfaces/api-mapper.service.interface";
 
 @Injectable()
 export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> {

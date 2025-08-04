@@ -130,7 +130,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
 
   async getAmount(query: GetEventListQueryDto): Promise<number> {
-    const params = await this.buildSearchParams(query, query.limit);
+    const params = await this.buildSearchParams(query);
 
     const data = await this.fetchFromLeaderApi<{
       meta: { totalCount: number };
@@ -161,10 +161,10 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
    */
   private async buildSearchParams(
     query: GetEventListQueryDto,
-    limit: number,
+    limit?: number,
     page?: number,
   ): Promise<Record<string, any>> {
-    const apiLimit = limit > 2 ? limit : 2;
+    const apiLimit = limit && limit > 2 ? limit : 2;
 
     const params: Record<string, any> = {
       paginationSize: apiLimit,

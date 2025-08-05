@@ -8,21 +8,19 @@ import { readFileSync } from 'fs';
 
 @Injectable()
 export class MailService {
-  private readonly appUrl: string;
   private readonly mailer: nodemailer.Transporter;
   private readonly confirmationTemplate: handlebars.TemplateDelegate;
 
   constructor(
     private readonly configService: ConfigService,
   ) {
-    this.appUrl = this.configService.getOrThrow('APP_BASE_URL');
     this.confirmationTemplate = this.loadTemplate('confirmation.hbs');
 
     this.mailer = nodemailer.createTransport(
       {
         host: this.configService.getOrThrow('MAIL_HOST'),
         port: this.configService.getOrThrow<number>('MAIL_PORT'),
-        secure: this.configService.getOrThrow<boolean>('MAIL_SECURE'),
+        secure: this.configService.get<boolean>('MAIL_SECURE'),
         auth: {
           user: this.configService.getOrThrow('MAIL_USER'),
           pass: this.configService.getOrThrow('MAIL_PASSWORD'),

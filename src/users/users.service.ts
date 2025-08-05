@@ -44,11 +44,6 @@ export class UsersService {
     const user = await this.userRepository
       .createQueryBuilder('users')
       .where('users.email = :email', { email })
-      .select([
-        'users.id',
-        'users.email',
-        'users.password',
-      ])
       .getOne();
 
     this.logger.log(`Finded user with email: ${email}`);

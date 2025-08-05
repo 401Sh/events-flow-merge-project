@@ -56,7 +56,7 @@ export class AuthService {
   ) {
     const user = await this.usersService.findByEmail(signUpConfirmDto.email);
 
-    if (!user) throw new BadRequestException('User does not exist');
+    if (!user) throw new NotFoundException('User does not exist');
 
     if (user.isEmailConfirmed) {
       throw new BadRequestException('Mail is already confirmed');

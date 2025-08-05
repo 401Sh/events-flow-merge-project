@@ -34,19 +34,17 @@ export class AuthService {
   }
 
   async signUp(authDto: AuthDto) {
-    const code = this.generateOtp();
-    const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
+    const user = await this.usersService.findByEmail(authDto.email);
 
-    const newUser = await this.usersService.create(
-      authDto.email,
-      authDto.password,
-      code,
-      expiresAt,
-    );
+    if (!user) return await this.signUpNewUser(authDto);
 
-    await this.mailService.sendUserConfirmation(newUser, code);
+    if (user && user.isEmailConfirmed) {
+      throw new BadRequestException(
+        'A user with this email address is already registered'
+      );
+    }
 
-    return newUser;
+    return await this.resendSignUpCode(user!);
   }
 
 
@@ -154,6 +152,38 @@ export class AuthService {
     };
 
     return deleteResult;
+  }
+
+
+  private async resendSignUpCode(user: UserEntity) {
+    const code = this.generateOtp();
+    const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
+
+    user.emailConfirmationCode = code;
+    user.emailConfirmationCodeExpiresAt = expiresAt;
+
+    await this.usersService.update(user.id, user);
+
+    await this.mailService.sendUserConfirmation(user, code);
+
+    return user;
+  }
+
+
+  private async signUpNewUser(authDto: AuthDto) {
+    const code = this.generateOtp();
+    const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
+
+    const newUser = await this.usersService.create(
+      authDto.email,
+      authDto.password,
+      code,
+      expiresAt,
+    );
+
+    await this.mailService.sendUserConfirmation(newUser, code);
+
+    return newUser;
   }
 
 

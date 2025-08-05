@@ -45,7 +45,7 @@ export class AuthController {
     await this.authService.signUp(authDto);
 
     return {
-      message: 'User successully created, confirmation code sent to your mail'
+      message: 'Confirmation code sent to your mail'
     }
   }
 

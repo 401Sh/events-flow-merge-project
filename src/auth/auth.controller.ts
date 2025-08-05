@@ -21,22 +21,9 @@ export class AuthController {
     type: AuthDto,
     required: true,
   })
-  @ApiHeader({
-    name: 'user-agent',
-    description: 'User-Agent заголовок',
-    required: true,
-    example: 'Mozilla/5.0',
-  })
-  @ApiHeader({
-    name: 'x-fingerprint',
-    description: 'Уникальный отпечаток устройства',
-    required: true,
-    example: '123456789abcdef',
-  })
   @ApiResponse({
-    status: 201,
-    description: 'Пользователь успешно зарегистрирован',
-    type: TokenResultDto,
+    status: 200,
+    description: 'Код подтверждения отправлен на почту',
   })
   @Post('signup')
   async signup(
@@ -50,6 +37,31 @@ export class AuthController {
   }
 
 
+  @ApiOperation({
+    summary: 'Подтверждение регистрации аккаунта',
+  })
+  @ApiHeader({
+    name: 'user-agent',
+    description: 'User-Agent заголовок',
+    required: true,
+    example: 'Mozilla/5.0',
+  })
+  @ApiHeader({
+    name: 'x-fingerprint',
+    description: 'Уникальный отпечаток устройства',
+    required: true,
+    example: '123456789abcdef',
+  })
+  @ApiBody({
+    description: 'Данные для подтверждения регистрации',
+    type: SignUpConfirmDto,
+    required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Пользователь успешно зарегистрирован',
+    type: TokenResultDto,
+  })
   @Get('signup/confirm')
   async confirmEmail(
     @Headers('user-agent') userAgent: string,

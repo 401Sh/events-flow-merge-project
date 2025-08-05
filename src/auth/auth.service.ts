@@ -105,6 +105,10 @@ export class AuthService {
 
     if (!user) throw new BadRequestException('User does not exist');
 
+    if (!user.isEmailConfirmed) {
+      throw new BadRequestException('Mail does not confirmed');
+    }
+
     if (!fingerprint) {
       fingerprint = await this.generateFingerprint(ip, userAgent);
     };

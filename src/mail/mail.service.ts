@@ -37,10 +37,8 @@ export class MailService {
     );
   }
 
-  async sendUserConfirmation(user: UserEntity, token: string) {
-    const encodedToken = encodeURIComponent(token);
-    const url = `${this.appUrl}/api/v1/auth/signup/confirm?token=${encodedToken}`;
-    const html = this.confirmationTemplate({name: user.login, url})
+  async sendUserConfirmation(user: UserEntity, code: string) {
+    const html = this.confirmationTemplate({name: user.login, code})
 
     await this.mailer.sendMail({
       to: user.email,

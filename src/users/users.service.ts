@@ -1,4 +1,4 @@
-import { Injectable, Logger, ConflictException, BadRequestException } from "@nestjs/common";
+import { Injectable, Logger, ConflictException, BadRequestException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "./entities/user.entity";
@@ -13,7 +13,12 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(email: string, password: string): Promise<UserEntity> {
+  async create(
+    email: string,
+    password: string,
+    emailConfirmationCode: string,
+    emailConfirmationCodeExpiresAt: Date,
+  ): Promise<UserEntity> {
     const isAvailable = await this.isEmailAvailable(email);
     if (!isAvailable) {
       this.logger.log(`Cannot create user. Email ${email} is already used`);
@@ -23,8 +28,10 @@ export class UsersService {
     const hashedPassword = await this.hashData(password);
 
     const user = await this.userRepository.save({
-      email: email,
+      email,
       password: hashedPassword,
+      emailConfirmationCode,
+      emailConfirmationCodeExpiresAt,
     });
 
     this.logger.log(`Created user with email: ${email}`);
@@ -63,6 +70,18 @@ export class UsersService {
 
     this.logger.log(`Finded user with id: ${id}`);
     return user;
+  }
+
+
+  async update(userId: number, user: UserEntity) {
+    const updateResult = await this.userRepository.update({ id: userId }, user);
+
+    if (updateResult.affected === 0) {
+      this.logger.debug(`Cannot update user with id: ${userId}`);
+      throw new NotFoundException('User not found');
+    };
+
+    return updateResult;
   }
 
 

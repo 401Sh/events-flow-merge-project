@@ -9,6 +9,9 @@ import { UsersService } from 'src/users/users.service';
 import * as argon2 from 'argon2';
 import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from 'src/common/constants/jwt-token.constant';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { MailService } from 'src/mail/mail.service';
+import { SignUpConfirmDto } from './dto/signup-confirm.dto';
+import { MAIL_CONFIRMATION_CODE_TTL } from 'src/common/constants/mail-confirmation-code.constant';
 
 @Injectable()
 export class AuthService {
@@ -24,29 +27,67 @@ export class AuthService {
     private configService: ConfigService,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {
     this.accessSecret = this.configService.getOrThrow('JWT_ACCESS_SECRET');
     this.refreshSecret = this.configService.getOrThrow('JWT_REFRESH_SECRET');
   }
 
-  async signUp(
-    authDto: AuthDto,
+  async signUp(authDto: AuthDto) {
+    const code = this.generateOtp();
+    const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
+
+    const newUser = await this.usersService.create(
+      authDto.email,
+      authDto.password,
+      code,
+      expiresAt,
+    );
+
+    await this.mailService.sendUserConfirmation(newUser, code);
+
+    return newUser;
+  }
+
+
+  async confirmEmail(
+    signUpConfirmDto: SignUpConfirmDto,
     userAgent: string,
     ip: string,
     fingerprint: string,
   ) {
-    const newUser = await this.usersService.create(
-      authDto.email,
-      authDto.password,
-    );
+    const user = await this.usersService.findByEmail(signUpConfirmDto.email);
+
+    if (!user) throw new BadRequestException('User does not exist');
+
+    if (user.isEmailConfirmed) {
+      throw new BadRequestException('Mail is already confirmed');
+    }
+
+    if (
+      !user.emailConfirmationCodeExpiresAt ||
+      user.emailConfirmationCodeExpiresAt < new Date()
+    ) {
+      throw new BadRequestException('Confirmation code has expired');
+    }
+
+    if (user.emailConfirmationCode != signUpConfirmDto.code) {
+      throw new BadRequestException('Invalid confirmation code');
+    }
+
+    user.isEmailConfirmed = true;
+    user.emailConfirmationCode = null;
+    user.emailConfirmationCodeExpiresAt = null;
+
+    await this.usersService.update(user.id, user);
 
     if (!fingerprint) {
       fingerprint = await this.generateFingerprint(ip, userAgent);
     };
 
-    const tokens = await this.getTokens(newUser.id, newUser.email);
+    const tokens = await this.getTokens(user.id, user.email);
     await this.createRefreshSession(
-      newUser,
+      user,
       tokens.refreshToken,
       userAgent,
       ip,
@@ -267,4 +308,17 @@ export class AuthService {
     this.logger.debug(`Finded session for user id: ${userId}`, session);
     return session;
   };
+
+
+  // TODO: Change on normal implementation
+  private generateOtp(length = 6): string {
+    const digits = '0123456789';
+    
+    let otp = '';
+    for (let i = 0; i < length; i++) {
+      otp += digits[Math.floor(Math.random() * digits.length)];
+    }
+
+    return otp;
+  }
 }

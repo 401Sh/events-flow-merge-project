@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Headers, Ip, Post, Res, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Headers, Ip, Post, Res, Request, UseGuards, Get, Param, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { refreshCookieOptions } from 'src/common/configs/cookie.config';
@@ -7,6 +7,7 @@ import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TokenResultDto } from './dto/token-result.dto';
+import { SignUpConfirmDto } from './dto/signup-confirm.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -39,14 +40,26 @@ export class AuthController {
   })
   @Post('signup')
   async signup(
+    @Body() authDto: AuthDto,
+  ) {
+    await this.authService.signUp(authDto);
+
+    return {
+      message: 'User successully created, confirmation code sent to your mail'
+    }
+  }
+
+
+  @Get('signup/confirm')
+  async confirmEmail(
     @Headers('user-agent') userAgent: string,
     @Headers('x-fingerprint') fingerprint: string,
     @Ip() ip: string,
-    @Body() authDto: AuthDto,
+    @Body() signUpConfirmDto: SignUpConfirmDto,
     @Res() res: Response,
   ) {
-    const tokens = await this.authService.signUp(
-      authDto,
+    const tokens = await this.authService.confirmEmail(
+      signUpConfirmDto,
       userAgent,
       ip,
       fingerprint,

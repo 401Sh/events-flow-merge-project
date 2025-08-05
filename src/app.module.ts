@@ -13,6 +13,7 @@ import { GeoModule } from './geo/geo.module';
 import { AuthModule } from './auth/auth.module';
 import { ExternalEventsModule } from './external-events/external-events.module';
 import { ExternalUsersModule } from './external-users/external-users.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ExternalUsersModule } from './external-users/external-users.module';
     AuthModule,
     ExternalEventsModule,
     ExternalUsersModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

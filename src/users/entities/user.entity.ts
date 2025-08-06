@@ -27,7 +27,7 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'boolean', default: false, nullable: false })
   isEmailConfirmed: boolean = false;
 
-  @Column({ type: 'varchar', length: 64, nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   emailConfirmationCode?: string | null;
 
   @Column({ type: 'timestamp', nullable: true })

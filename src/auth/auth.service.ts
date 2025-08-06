@@ -69,8 +69,17 @@ export class AuthService {
       throw new BadRequestException('Confirmation code has expired');
     }
 
-    if (user.emailConfirmationCode != signUpConfirmDto.code) {
-      throw new BadRequestException('Invalid confirmation code');
+    if (!user.emailConfirmationCode) {
+      throw new BadRequestException('No confirmation code, sing up your account');
+    }
+
+    const isCodeValid = await this.verifyData(
+      signUpConfirmDto.code,
+      user.emailConfirmationCode
+    );
+    if (!isCodeValid) {
+      this.logger.log(`Access denied for user: ${user.id}. Incorrect confirmation code`);
+      throw new ForbiddenException('Confirmation Denied');
     }
 
     user.isEmailConfirmed = true;
@@ -80,7 +89,7 @@ export class AuthService {
     await this.usersService.update(user.id, user);
 
     if (!fingerprint) {
-      fingerprint = await this.generateFingerprint(ip, userAgent);
+      throw new BadRequestException('Fingerprint header is required');
     };
 
     const tokens = await this.getTokens(user.id, user.email);
@@ -110,7 +119,7 @@ export class AuthService {
     }
 
     if (!fingerprint) {
-      fingerprint = await this.generateFingerprint(ip, userAgent);
+      throw new BadRequestException('Fingerprint header is required');
     };
 
     const isPasswordValid = await this.verifyData(
@@ -161,9 +170,10 @@ export class AuthService {
 
   private async resendSignUpCode(user: UserEntity) {
     const code = this.generateOtp();
+    const hashedCode = await this.hashData(code);
     const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
 
-    user.emailConfirmationCode = code;
+    user.emailConfirmationCode = hashedCode;
     user.emailConfirmationCodeExpiresAt = expiresAt;
 
     await this.usersService.update(user.id, user);
@@ -176,12 +186,13 @@ export class AuthService {
 
   private async signUpNewUser(authDto: AuthDto) {
     const code = this.generateOtp();
+    const hashedCode = await this.hashData(code);
     const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
 
     const newUser = await this.usersService.create(
       authDto.email,
       authDto.password,
-      code,
+      hashedCode,
       expiresAt,
     );
 
@@ -206,7 +217,7 @@ export class AuthService {
     // };
 
     if (!fingerprint) {
-      fingerprint = await this.generateFingerprint(ip, userAgent);
+      throw new BadRequestException('Fingerprint header is required');
     };
 
     // Verifing refresh token
@@ -270,12 +281,6 @@ export class AuthService {
     });
 
     return session;
-  }
-
-
-  private async generateFingerprint(ip: string, ua: string): Promise<string> {
-    const hash = await this.hashData(ip + ua);
-    return hash;
   }
   
   

@@ -13,6 +13,9 @@ import { GeoModule } from './geo/geo.module';
 import { AuthModule } from './auth/auth.module';
 import { ExternalEventsModule } from './external-events/external-events.module';
 import { ExternalUsersModule } from './external-users/external-users.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { THROTTLE_DEFAULT_LIMIT, THROTTLE_DEFAULT_TTL } from './common/constants/throttle.constant';
 
 @Module({
   imports: [
@@ -29,8 +32,22 @@ import { ExternalUsersModule } from './external-users/external-users.module';
     AuthModule,
     ExternalEventsModule,
     ExternalUsersModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: THROTTLE_DEFAULT_TTL,
+          limit: THROTTLE_DEFAULT_LIMIT,
+        },
+      ],
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    },
+  ],
 })
 export class AppModule {}

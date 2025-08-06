@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 import { CallbackDto } from './dto/callback.dto';
@@ -62,6 +62,17 @@ export class OAuthService {
    * containing the leader access token.
    */
   async getLeaderAccessToken(query: CallbackDto) {
+    if (query.error && query.error_description) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          error: query.error,
+          message: query.error_description,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const data = await this.leaderService.exchangeСode(query.code);
 
     return data;

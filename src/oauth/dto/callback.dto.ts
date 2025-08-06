@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CallbackDto {
   @ApiProperty({
@@ -7,5 +7,14 @@ export class CallbackDto {
     type: String,
   })
   @IsString()
+  @IsOptional()
   code: string;
+
+  @IsString()
+  @IsOptional()
+  error_description: string;
+
+  @IsString()
+  @IsOptional()
+  error: string;
 }

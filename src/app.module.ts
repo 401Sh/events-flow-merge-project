@@ -16,6 +16,7 @@ import { ExternalUsersModule } from './external-users/external-users.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { THROTTLE_DEFAULT_LIMIT, THROTTLE_DEFAULT_TTL } from './common/constants/throttle.constant';
+import { ApiKeyGuard } from './common/guards/api-key.guard';
 
 @Module({
   imports: [
@@ -48,6 +49,8 @@ import { THROTTLE_DEFAULT_LIMIT, THROTTLE_DEFAULT_TTL } from './common/constants
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     },
+    ApiKeyGuard,
   ],
+  exports: [ApiKeyGuard],
 })
 export class AppModule {}

@@ -5,16 +5,12 @@ import { Logger, LogLevel, ValidationPipe } from '@nestjs/common';
 import cors from 'cors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import { ApiKeyGuard } from './common/guards/api-key.guard';
 
 dotenv.config();
 
 const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
-
-const allowedFrontendHost = process.env.FRONTEND_HOST || '127.0.0.1';
-const allowedFrontendPort = process.env.FRONTEND_PORT
-  ? +process.env.FRONTEND_PORT
-  : 5173;
 
 const logLevels = (process.env.LOG_LEVEL?.split(',') as LogLevel[]) || [
   'log',
@@ -29,9 +25,11 @@ async function bootstrap() {
   app.useLogger(logLevels);
   app.use(cookieParser());
 
+  const apiKeyGuard = app.get(ApiKeyGuard);
+  app.useGlobalGuards(apiKeyGuard)
+
   app.use(
     cors({
-      origin: `http://${allowedFrontendHost}:${allowedFrontendPort}`,
       credentials: true,
       methods: 'GET,POST,PUT,DELETE,PATCH',
       allowedHeaders: 'Content-Type,Authorization',
@@ -50,9 +48,15 @@ async function bootstrap() {
     .setDescription('API documentation')
     .setVersion('1.0')
     .addBearerAuth()
+    .addApiKey(
+      { type: 'apiKey', name: 'x-api-key', in: 'header' },
+      'ApiKeyAuth',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+  document.security = [{ ApiKeyAuth: [] }];
+
   SwaggerModule.setup('api/v1/docs', app, document);
 
   await app.listen(port, host).then(() => {

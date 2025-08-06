@@ -7,7 +7,6 @@ import { TimepadData } from '../interfaces/timepad-data.interface';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { plainToInstance } from 'class-transformer';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
-import he from 'he';
 import { APIMapperInterface } from "./api-interfaces/api-mapper.service.interface";
 
 @Injectable()
@@ -18,10 +17,8 @@ export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> 
     const location = this.mapLocation(raw.location);
     const themes = await this.mapThemes(raw.categories);
 
-    const description = this.mergeDescriptionsKeepAll(
-      raw.description_short,
-      raw.description_html,
-    );
+    // TODO: add short_description check
+    const description = raw.description_html ? raw.description_html : null;
   
     const timepadObj: TimepadData = {
       id: raw.id,
@@ -47,38 +44,6 @@ export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> 
     };
   
     return plainToInstance(TimepadDataDto, timepadObj);
-  }
-  
-  
-  private mergeDescriptionsKeepAll(
-    shortDesc?: string,
-    htmlDesc?: string,
-  ): string | null {
-    if (!shortDesc && !htmlDesc) {
-      return null;
-    }
-
-    const safeShort = shortDesc ? shortDesc.trim() : '';
-    const safeHtml = htmlDesc ?? '';
-  
-    const htmlShort = safeShort ? `<p>${this.escapeHtml(safeShort)}</p>` : '';
-  
-    if (!safeShort) return safeHtml;
-
-    if (!safeHtml) return htmlShort;
-  
-    return `${htmlShort}\n${htmlShort}`;
-  }
-
-
-  private escapeHtml(text:string) {
-    const escaped = he.encode(text, {
-      useNamedReferences: true,
-      decimal: true,
-      allowUnsafeSymbols: true,
-    });
-
-    return escaped;
   }
   
   

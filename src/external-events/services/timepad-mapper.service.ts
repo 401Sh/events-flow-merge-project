@@ -57,22 +57,28 @@ export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> 
     if (!shortDesc && !htmlDesc) {
       return null;
     }
-  
+
     const safeShort = shortDesc ? shortDesc.trim() : '';
     const safeHtml = htmlDesc ?? '';
   
-    const noTags = safeHtml.replace(/<[^>]+>/g, '');
+    const htmlShort = safeShort ? `<p>${this.escapeHtml(safeShort)}</p>` : '';
   
-    const cleanFull = he.decode(noTags).trim();
+    if (!safeShort) return safeHtml;
+
+    if (!safeHtml) return htmlShort;
   
-    if (cleanFull.startsWith(safeShort) && safeShort.length > 0) {
-      return cleanFull;
-    }
-  
-    if (!safeShort) return cleanFull;
-    if (!cleanFull) return safeShort;
-  
-    return `${safeShort}\n\n${cleanFull}`;
+    return `${htmlShort}\n${htmlShort}`;
+  }
+
+
+  private escapeHtml(text:string) {
+    const escaped = he.encode(text, {
+      useNamedReferences: true,
+      decimal: true,
+      allowUnsafeSymbols: true,
+    });
+
+    return escaped;
   }
   
   

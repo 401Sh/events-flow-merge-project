@@ -9,9 +9,12 @@ import { plainToInstance } from 'class-transformer';
 import { LeaderDataDto } from '../dto/leader-data.dto';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { APIMapperInterface } from "./api-interfaces/api-mapper.service.interface";
+import EditorJSHTML from 'editorjs-html'
 
 @Injectable()
 export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {
+  private readonly editjsParser = EditorJSHTML();
+  
   constructor(private readonly dictionariesService: DictionariesService) {}
 
   map = async (raw: any) => {
@@ -63,13 +66,9 @@ export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {
   
     if (!parsedJson.blocks || !Array.isArray(parsedJson.blocks)) return null;
   
-    const text = parsedJson.blocks
-      .map((block) => block.data?.text ?? '')
-      .filter((text) => text.trim().length > 0);
+    const html = this.editjsParser.parse(parsedJson);
   
-    if (text.length == 0) return null;
-  
-    return text.join('\n');
+    return html;
   }
   
   

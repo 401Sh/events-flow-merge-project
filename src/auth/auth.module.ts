@@ -7,10 +7,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { RefreshSessionEntity } from './entities/refresh-session.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
     UsersModule,
+    MailModule,
     JwtModule.register({}),
     TypeOrmModule.forFeature([RefreshSessionEntity]),
   ],

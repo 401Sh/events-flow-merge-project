@@ -9,6 +9,9 @@ import { UsersService } from 'src/users/users.service';
 import * as argon2 from 'argon2';
 import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from 'src/common/constants/jwt-token.constant';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { MailService } from 'src/mail/mail.service';
+import { SignUpConfirmDto } from './dto/signup-confirm.dto';
+import { MAIL_CONFIRMATION_CODE_TTL } from 'src/common/constants/mail-confirmation-code.constant';
 
 @Injectable()
 export class AuthService {
@@ -24,29 +27,74 @@ export class AuthService {
     private configService: ConfigService,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {
     this.accessSecret = this.configService.getOrThrow('JWT_ACCESS_SECRET');
     this.refreshSecret = this.configService.getOrThrow('JWT_REFRESH_SECRET');
   }
 
-  async signUp(
-    authDto: AuthDto,
+  async signUp(authDto: AuthDto) {
+    const user = await this.usersService.findByEmail(authDto.email);
+
+    if (!user) return await this.signUpNewUser(authDto);
+
+    if (user && user.isEmailConfirmed) {
+      throw new BadRequestException(
+        'A user with this email address is already registered'
+      );
+    }
+
+    return await this.resendSignUpCode(user!);
+  }
+
+
+  async confirmEmail(
+    signUpConfirmDto: SignUpConfirmDto,
     userAgent: string,
     ip: string,
     fingerprint: string,
   ) {
-    const newUser = await this.usersService.create(
-      authDto.email,
-      authDto.password,
+    const user = await this.usersService.findByEmail(signUpConfirmDto.email);
+
+    if (!user) throw new NotFoundException('User does not exist');
+
+    if (user.isEmailConfirmed) {
+      throw new BadRequestException('Mail is already confirmed');
+    }
+
+    if (
+      !user.emailConfirmationCodeExpiresAt ||
+      user.emailConfirmationCodeExpiresAt < new Date()
+    ) {
+      throw new BadRequestException('Confirmation code has expired');
+    }
+
+    if (!user.emailConfirmationCode) {
+      throw new BadRequestException('No confirmation code, sing up your account');
+    }
+
+    const isCodeValid = await this.verifyData(
+      signUpConfirmDto.code,
+      user.emailConfirmationCode
     );
+    if (!isCodeValid) {
+      this.logger.log(`Access denied for user: ${user.id}. Incorrect confirmation code`);
+      throw new ForbiddenException('Confirmation Denied');
+    }
+
+    user.isEmailConfirmed = true;
+    user.emailConfirmationCode = null;
+    user.emailConfirmationCodeExpiresAt = null;
+
+    await this.usersService.update(user.id, user);
 
     if (!fingerprint) {
-      fingerprint = await this.generateFingerprint(ip, userAgent);
+      throw new BadRequestException('Fingerprint header is required');
     };
 
-    const tokens = await this.getTokens(newUser.id, newUser.email);
+    const tokens = await this.getTokens(user.id, user.email);
     await this.createRefreshSession(
-      newUser,
+      user,
       tokens.refreshToken,
       userAgent,
       ip,
@@ -66,8 +114,12 @@ export class AuthService {
 
     if (!user) throw new BadRequestException('User does not exist');
 
+    if (!user.isEmailConfirmed) {
+      throw new BadRequestException('Mail does not confirmed');
+    }
+
     if (!fingerprint) {
-      fingerprint = await this.generateFingerprint(ip, userAgent);
+      throw new BadRequestException('Fingerprint header is required');
     };
 
     const isPasswordValid = await this.verifyData(
@@ -116,6 +168,40 @@ export class AuthService {
   }
 
 
+  private async resendSignUpCode(user: UserEntity) {
+    const code = this.generateOtp();
+    const hashedCode = await this.hashData(code);
+    const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
+
+    user.emailConfirmationCode = hashedCode;
+    user.emailConfirmationCodeExpiresAt = expiresAt;
+
+    await this.usersService.update(user.id, user);
+
+    await this.mailService.sendUserConfirmation(user, code);
+
+    return user;
+  }
+
+
+  private async signUpNewUser(authDto: AuthDto) {
+    const code = this.generateOtp();
+    const hashedCode = await this.hashData(code);
+    const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
+
+    const newUser = await this.usersService.create(
+      authDto.email,
+      authDto.password,
+      hashedCode,
+      expiresAt,
+    );
+
+    await this.mailService.sendUserConfirmation(newUser, code);
+
+    return newUser;
+  }
+
+
   async refreshTokens(
     userId: number,
     refreshToken: string,
@@ -131,7 +217,7 @@ export class AuthService {
     // };
 
     if (!fingerprint) {
-      fingerprint = await this.generateFingerprint(ip, userAgent);
+      throw new BadRequestException('Fingerprint header is required');
     };
 
     // Verifing refresh token
@@ -195,12 +281,6 @@ export class AuthService {
     });
 
     return session;
-  }
-
-
-  private async generateFingerprint(ip: string, ua: string): Promise<string> {
-    const hash = await this.hashData(ip + ua);
-    return hash;
   }
   
   
@@ -267,4 +347,17 @@ export class AuthService {
     this.logger.debug(`Finded session for user id: ${userId}`, session);
     return session;
   };
+
+
+  // TODO: Change on normal implementation
+  private generateOtp(length = 6): string {
+    const digits = '0123456789';
+    
+    let otp = '';
+    for (let i = 0; i < length; i++) {
+      otp += digits[Math.floor(Math.random() * digits.length)];
+    }
+
+    return otp;
+  }
 }

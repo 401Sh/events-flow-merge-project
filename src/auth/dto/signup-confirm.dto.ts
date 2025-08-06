@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class AuthDto {
+export class SignUpConfirmDto {
   @ApiProperty({
     description: 'Почта пользователя',
     example: 'user123@mail.example',
@@ -13,12 +13,10 @@ export class AuthDto {
   email: string;
 
   @ApiProperty({
-    description: 'Пароль пользователя',
-    example: 'securePassword123',
+    description: 'Код подтверждения',
   })
   @Type(() => String)
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
-  @MinLength(6, { message: 'Password must be at least 6 characters long.' })
-  password: string;
+  @IsNotEmpty({ message: 'Code is required' })
+  code: string;
 }

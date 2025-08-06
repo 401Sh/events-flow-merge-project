@@ -1,8 +1,9 @@
 import { Injectable, Logger, ConflictException, BadRequestException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import { UserEntity } from "./entities/user.entity";
 import * as argon2 from 'argon2';
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class UsersService {
@@ -88,5 +89,25 @@ export class UsersService {
 
   private hashData(data: string): Promise<string> {
     return argon2.hash(data);
+  }
+
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleDeleteExpiredAccounts() {
+    const now = new Date();
+
+    const expiredUsers = await this.userRepository.find({
+      where: {
+        isEmailConfirmed: false,
+        emailConfirmationCodeExpiresAt: LessThan(now),
+      },
+    });
+
+    if (expiredUsers.length) {
+      this.logger.log(`Removing ${expiredUsers.length} unconfirmed users`);
+      await this.userRepository.remove(expiredUsers);
+    } else {
+      this.logger.log('No unconfirmed users');
+    }
   }
 }

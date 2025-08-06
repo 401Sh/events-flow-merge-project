@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { ExternalEventsModule } from './external-events/external-events.module';
 import { ExternalUsersModule } from './external-users/external-users.module';
 import { MailModule } from './mail/mail.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MailModule } from './mail/mail.module';
     ExternalEventsModule,
     ExternalUsersModule,
     MailModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -146,6 +146,7 @@ src/
 │   ├── api-utils/
 │   ├── configs/
 │   ├── constants/
+│   ├── guards/
 │
 │── database/           # Вспомогательный функционал для БД (сиды и миграции)
 │
@@ -194,6 +195,8 @@ package.json
 
 ## Используемые роуты
 
+Все маршруты защищенны api ключом доступа, который нужно передавать в заголовке x-api-key.
+
 ### Модуль dictionaries
 
 - **GET    /dictionaries/themes**                    - Получение списка общих категорий/тем для фильтрации
@@ -212,17 +215,25 @@ package.json
 
 ### Модуль external-users
 
-- **GET    /external/users/:userId/leaderId**                                - Получение данных пользователя leaderId
-- **GET    /external/users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя leaderId
-- **GET    /external/users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя leaderId
-- **POST   /external/users/:userId/leaderId/participations**                 - Запись на мероприятие leaderId
-- **DELETE /external/users/:userId/leaderId/participations/:uuid**           - Отмена записи на мероприятие leaderId
+- **GET    /external/users/:userId/leaderId**                                          - Получение данных пользователя leaderId
+- protected **GET    /external/users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя leaderId
+- protected **GET    /external/users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя leaderId
+- protected **POST   /external/users/:userId/leaderId/participations**                 - Запись на мероприятие leaderId
+- protected **DELETE /external/users/:userId/leaderId/participations/:uuid**           - Отмена записи на мероприятие leaderId
 
 ### Модуль oauth
 
-- **GET    /oauth/redirect/:source**                - Редирект на авторизацию в источнике
-- **GET    /oauth/callback/leaderId**               - Обмен кода leaderId на токены доступа
-- **POST   /oauth/refresh/leaderId**                - Обновление токенов доступа leaderId по refresh токену
+- **GET    /oauth/redirect/:source**                          - Редирект на авторизацию в источнике
+- **GET    /oauth/callback/leaderId**                         - Обмен кода leaderId на токены доступа
+- protected **POST   /oauth/refresh/leaderId**                - Обновление токенов доступа leaderId по refresh токену
+
+### Модуль auth
+
+- **POST   /auth/signup**                       - Регистрация аккаунта по почте и паролю
+- **GET    /auth/signup/confirm**               - Подтверждение регистрации
+- **POST   /auth/signin**                       - Авторизация пользователя
+- protected **DELETE /auth/logout**             - Удаление пользовательской сессии
+- protected **POST   /auth/refresh**            - Обновление токенов доступа
 
 ## Статус проекта
 

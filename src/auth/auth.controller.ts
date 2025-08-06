@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Headers, Ip, Post, Res, Request, UseGuards, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Headers, Ip, Post, Res, Request, UseGuards, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { refreshCookieOptions } from 'src/common/configs/cookie.config';
 import { AuthDto } from './dto/auth.dto';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { TokenResultDto } from './dto/token-result.dto';
 import { SignUpConfirmDto } from './dto/signup-confirm.dto';
 
@@ -130,6 +130,7 @@ export class AuthController {
 
 
   @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Удаление пользовательской сессии',
   })
@@ -165,6 +166,7 @@ export class AuthController {
 
 
   @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Обновление токенов',
   })

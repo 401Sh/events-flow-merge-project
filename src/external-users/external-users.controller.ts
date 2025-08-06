@@ -23,6 +23,7 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
+  ApiSecurity,
 } from '@nestjs/swagger';
 import { VisitedEventsListResultDto } from '../external-users/dto/visited-event-list-result.dto';
 import { UserProfileResultDto } from '../external-users/dto/user-profile-result.dto';
@@ -56,6 +57,7 @@ export class ExternalUsersController {
 
 
   @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Получить список посещенных и предстоящих мероприятий из leaderId',
   })
@@ -107,6 +109,7 @@ export class ExternalUsersController {
 
 
   @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Получить список посещенных/предстоящих мероприятий из leaderId',
   })
@@ -153,6 +156,7 @@ export class ExternalUsersController {
 
 
   @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Записаться на мероприятие leaderId',
   })
@@ -194,6 +198,7 @@ export class ExternalUsersController {
 
 
   @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Отписаться от мероприятия leaderId',
   })

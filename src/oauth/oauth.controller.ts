@@ -20,6 +20,7 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
+  ApiSecurity,
 } from '@nestjs/swagger';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { LeaderRefreshTokenGuard } from './guards/leader-refresh-token.guard';
@@ -85,6 +86,8 @@ export class OAuthController {
   }
 
 
+  @ApiCookieAuth('refreshToken')
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary:
       'Обновить токены доступа к leaderId. ' +
@@ -95,7 +98,6 @@ export class OAuthController {
     description: 'Новый access токен для доступа к ресурсам на leaderId',
     type: TokenResponseDto,
   })
-  @ApiCookieAuth('refreshToken')
   @Post('refresh/leaderId')
   @UseGuards(LeaderRefreshTokenGuard)
   async oauthLeaderRefresh(@Request() req, @Res() res: Response) {

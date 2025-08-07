@@ -1,20 +1,10 @@
-import Bottleneck from 'bottleneck';
 import { Injectable } from '@nestjs/common';
 import { LEADER_RATE_LIMITS } from 'src/common/constants/leader-api-rate-limits.constant';
+import { ApiRateLimiterService } from './api-rate-limiter.abstract.service';
 
 @Injectable()
-export class LeaderApiRateLimiterService {
-  private limiter: Bottleneck;
-
+export class LeaderApiRateLimiterService extends ApiRateLimiterService {
   constructor() {
-    this.limiter = new Bottleneck({
-      reservoir: LEADER_RATE_LIMITS.reservoir,
-      reservoirRefreshAmount: LEADER_RATE_LIMITS.reservoirRefreshAmount,
-      reservoirRefreshInterval: LEADER_RATE_LIMITS.reservoirRefreshInterval,
-    });
-  }
-
-  async schedule<T>(fn: () => Promise<T>): Promise<T> {
-    return this.limiter.schedule(fn);
+    super(LEADER_RATE_LIMITS);
   }
 }

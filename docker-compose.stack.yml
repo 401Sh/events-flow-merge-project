@@ -71,7 +71,7 @@ services:
       MINIO_ROOT_USER: ${S3_USER}
       MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
     ports:
-      - "${S3_PORT}:9000"
+      - "9000:9000"
       - "9001:9001"
     command: server /data --console-address ":9001"
 

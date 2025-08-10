@@ -88,7 +88,8 @@ export class UpdateEventBodyDto {
   accessType?: EventAccess;
 
   @ApiPropertyOptional({
-    description: 'Список id тем, связанных с мероприятием',
+    description: 'Список id тем, связанных с мероприятием.\n' +
+      'Все имеющиеся темы мероприятия заменяются на новые темы из themeIds',
     example: [1, 13, 5],
     isArray: true,
     type: () => Number,

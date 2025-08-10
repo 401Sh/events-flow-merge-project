@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEntity } from './entities/event.entity';
 import { UsersModule } from 'src/users/users.module';
 import { StorageModule } from 'src/storage/storage.module';
+import { EventOwnerGuard } from './guards/event-owner.guard';
 
 @Module({
   imports: [
@@ -13,6 +14,9 @@ import { StorageModule } from 'src/storage/storage.module';
     StorageModule,
   ],
   controllers: [EventsController],
-  providers: [EventsService],
+  providers: [
+    EventsService,
+    EventOwnerGuard,
+  ],
 })
 export class EventsModule {}

@@ -45,7 +45,13 @@ export class EventsService {
     const event = await this.eventRepository
       .createQueryBuilder("events")
       .leftJoinAndSelect("events.themes", "themes")
-      .where("events.id = :id", { eventId })
+      .leftJoin("events.user", "user")
+      .where("events.id = :eventId", { eventId })
+      .select([
+        "events",
+        "themes",
+        "user.id",
+      ])
       .getOne();
 
     if (!event) {
@@ -54,7 +60,7 @@ export class EventsService {
     }
 
     this.logger.log(`Finded event with id: ${eventId}`);
-    this.logger.log(`Finded event with id: `, event);
+    this.logger.debug(`Finded event with id: `, event);
     return event;
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Patch, Delete, Get, Param, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Patch, Delete, Get, Param, Body, UseInterceptors, UploadedFile, ParseIntPipe } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { EventOwnerGuard } from './guards/event-owner.guard';
@@ -25,7 +25,9 @@ export class EventsController {
 
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Get(':eventId/self')
-  async findMyEvent(@Param('eventId') eventId: number) {
+  async findMyEvent(
+    @Param('eventId', ParseIntPipe) eventId: number
+  ) {
     const result = await this.eventsService.findById(eventId);
 
     return result;
@@ -35,7 +37,7 @@ export class EventsController {
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Patch(':eventId')
   async update(
-    @Param('eventId') eventId: number,
+    @Param('eventId', ParseIntPipe) eventId: number,
     @Body() data: UpdateEventBodyDto,
   ) {
     const result = await this.eventsService.update(eventId, data);
@@ -49,7 +51,7 @@ export class EventsController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
-    @Param('eventId') eventId: number,
+    @Param('eventId', ParseIntPipe) eventId: number,
   ) {
     const fileUrl = await this.eventsService.updatePosterUrl(
       eventId,
@@ -68,7 +70,9 @@ export class EventsController {
 
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Delete(':eventId')
-  async delete(@Param('eventId') eventId: number) {
+  async delete(
+    @Param('eventId', ParseIntPipe) eventId: number
+  ) {
     const result = await this.eventsService.delete(eventId);
 
     return result;

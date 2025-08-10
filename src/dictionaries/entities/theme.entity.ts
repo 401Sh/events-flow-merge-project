@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -41,6 +41,6 @@ export class EventThemeEntity extends BaseEntity {
   )
   externalRefs: ExternalThemeRefEntity[];
 
-  @ManyToOne(() => EventEntity, (event) => event.themes)
-  event: EventEntity;
+  @ManyToMany(() => EventEntity, (event) => event.themes)
+  events: EventEntity[];
 }

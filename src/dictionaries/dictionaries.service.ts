@@ -28,7 +28,19 @@ export class DictionariesService {
     const themes = await this.eventThemeRepository.find();
 
     this.logger.debug(`Finded themes`, themes);
-    return { data: themes };
+    return themes;
+  }
+
+
+  async findEventThemesByIds(themeIds: number[]) {
+    const themes = await this.eventThemeRepository.find({
+      where: {
+        id: In(themeIds),
+      },
+    });
+
+    this.logger.debug(`Finded themes`, themes);
+    return themes;
   }
 
 

@@ -17,6 +17,10 @@ export class DictionariesController {
   })
   @Get('themes')
   async getEventThemes() {
-    return await this.dictionariesService.findEventThemes();
+    const themes = await this.dictionariesService.findEventThemes();
+
+    return {
+      data: themes,
+    };
   }
 }

@@ -63,7 +63,6 @@ export class CreateEventBodyDto {
     description: 'Место проведения мероприятия',
     type: String,
   })
-  @IsOptional()
   @IsString()
   location: string;
 

@@ -8,6 +8,8 @@ import { UsersService } from 'src/users/users.service';
 import { StorageService } from 'src/storage/storage.service';
 import { S3_EVENT_BUCKET } from 'src/common/constants/s3-buckets.constant';
 import { Readable } from 'stream';
+import { EventThemeEntity } from 'src/dictionaries/entities/theme.entity';
+import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 
 @Injectable()
 export class EventsService {
@@ -19,10 +21,13 @@ export class EventsService {
 
     private usersService: UsersService,
     private storageService: StorageService,
+    private dictionaryService: DictionariesService,
   ) {}
 
   async create(userId: number, data: CreateEventBodyDto) {
     const user = await this.usersService.findById(userId);
+
+    const {themeIds, ...otherData} = data;
 
     // if (data.endsAt && data.startsAt > data.endsAt) {
     //   throw new BadRequestException(
@@ -30,9 +35,16 @@ export class EventsService {
     //   );
     // }
 
+    let themes: EventThemeEntity[] = [];
+
+    if (data.themeIds && data.themeIds.length != 0) {
+      themes = await this.dictionaryService.findEventThemesByIds(data.themeIds);
+    }
+
     const event = await this.eventRepository.save({
-      ...data,
+      ...otherData,
       user: user,
+      themes: themes.length ? themes : undefined,
     });
 
     this.logger.log(`Created new event for user: ${userId}`);

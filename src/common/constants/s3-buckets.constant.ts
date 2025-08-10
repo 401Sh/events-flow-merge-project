@@ -1,0 +1,1 @@
+export const S3_EVENT_BUCKET = 'events';

@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
   S3Client,
   PutObjectCommand,
   PutObjectCommandInput,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
-import { S3_EVENT_BUCKET } from 'src/common/constants/s3-buckets.constant';
 
 @Injectable()
 export class StorageService {
   private readonly s3Client: S3Client;
   private readonly appUrl: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+  ) {
     this.appUrl = this.configService.getOrThrow('APP_BASE_URL');
     
     this.s3Client = new S3Client({
@@ -28,15 +30,15 @@ export class StorageService {
     });
   }
 
-  async uploadEventPoster(
+  async uploadFileInBucket(
+    bucket: string,
     fileName: string,
     body: Buffer | Readable,
     mimetype: string,
   ) {
-    const bucket = S3_EVENT_BUCKET;
     const key = `images/${uuidv4()}-${fileName}`;
 
-    this.uploadFile(bucket, key, body, mimetype);
+    this.upload(bucket, key, body, mimetype);
 
     const url = `${this.appUrl}/${bucket}/${key}`;
 
@@ -44,7 +46,28 @@ export class StorageService {
   }
 
 
-  async uploadFile(
+  async deleteFileInBucket(bucket: string, url: string) {
+    const key = this.extractKeyFromUrl(url);
+
+    await this.delete(bucket, key);
+  }
+
+
+  private async delete(bucket: string, key: string) {
+    const command = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    try {
+      await this.s3Client.send(command);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete old file');
+    }
+  }
+
+
+  private async upload(
     bucket: string,
     key: string,
     body: Buffer | Readable,
@@ -58,6 +81,23 @@ export class StorageService {
     };
 
     const command = new PutObjectCommand(params);
-    return this.s3Client.send(command);
+
+    try {
+      return await this.s3Client.send(command);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to upload file to storage');
+    }
+  }
+
+
+  extractKeyFromUrl(url: string): string {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+
+    const parts = pathname.split('/');
+    parts.shift();
+    parts.shift();
+
+    return parts.join('/');
   }
 }

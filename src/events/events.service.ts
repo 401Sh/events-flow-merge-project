@@ -5,6 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EventEntity } from './entities/event.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
+import { StorageService } from 'src/storage/storage.service';
+import { S3_EVENT_BUCKET } from 'src/common/constants/s3-buckets.constant';
+import { Readable } from 'stream';
 
 @Injectable()
 export class EventsService {
@@ -15,6 +18,7 @@ export class EventsService {
     private eventRepository: Repository<EventEntity>,
 
     private usersService: UsersService,
+    private storageService: StorageService,
   ) {}
 
   async create(userId: number, data: CreateEventBodyDto) {
@@ -45,7 +49,7 @@ export class EventsService {
       .getOne();
 
     if (!event) {
-      this.logger.log(`No survey with id: ${eventId}`);
+      this.logger.log(`No event with id: ${eventId}`);
       throw new BadRequestException('Event does not exist');
     }
 
@@ -79,5 +83,39 @@ export class EventsService {
     }
 
     return deleteResult;
+  }
+
+
+  async updatePosterUrl(
+    eventId: any,
+    fileName: string,
+    body: Buffer | Readable,
+    mimetype: string,
+  ) {
+    const event = await this.eventRepository.findOne(eventId);
+
+    if (!event) {
+      this.logger.log(`No event with id: ${eventId}`);
+      throw new BadRequestException('Event does not exist');
+    }
+
+    if (event.posterUrl) {
+      await this.storageService.deleteFileInBucket(
+        S3_EVENT_BUCKET,
+        event.posterUrl,
+      );
+    }
+
+    const url = await this.storageService.uploadFileInBucket(
+      S3_EVENT_BUCKET,
+      fileName,
+      body,
+      mimetype,
+    );
+
+    event.posterUrl = url;
+    const updatedEvent = await this.eventRepository.save(event);
+
+    return updatedEvent;
   }
 }

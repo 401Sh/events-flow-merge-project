@@ -32,6 +32,14 @@ export class DictionariesService {
   }
 
 
+  /**
+   * Retrieves all required event themes from the repository by his IDs.
+   *
+   * @async
+   * @param {number[]} themeIds - Array of event theme IDs
+   * @returns {Promise<{ data: EventThemeEntity[] }>} A promise that resolves
+   * to an object containing an array of event themes.
+   */
   async findEventThemesByIds(themeIds: number[]) {
     const themes = await this.eventThemeRepository.find({
       where: {

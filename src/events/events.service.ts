@@ -79,14 +79,32 @@ export class EventsService {
 
   async update(eventId: number, data: UpdateEventBodyDto) {
     this.logger.log(`Updating event with id: ${eventId}`);
-    await this.eventRepository.update({ id: eventId }, data);
 
-    const updatedEvent = await this.eventRepository.findOne({
+    const { themeIds, ...otherData } = data;
+
+    const event = await this.eventRepository.findOne({
       where: {
         id: eventId,
       },
+      relations: ['themes'],
     });
 
+    if (!event) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+
+    Object.assign(event, otherData);
+
+    if (themeIds && themeIds.length > 0) {
+      const newThemes = await this.dictionaryService.findEventThemesByIds(themeIds);
+      event.themes = newThemes;
+    } else if (themeIds && themeIds.length === 0) {
+      event.themes = [];
+    }
+
+    const updatedEvent = await this.eventRepository.save(event);
+
+    this.logger.log(`Event with id ${eventId} updated successfully`);
     return updatedEvent;
   }
 

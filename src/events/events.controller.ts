@@ -5,9 +5,10 @@ import { EventOwnerGuard } from './guards/event-owner.guard';
 import { CreateEventBodyDto } from './dto/create-event-body.dto';
 import { UpdateEventBodyDto } from './dto/update-event-body.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { EventDto } from './dto/event.dto';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
+import { EventsListResultDto } from './dto/event-list-result.dto';
 
 @Controller('events')
 export class EventsController {
@@ -108,7 +109,7 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Найденные свои мероприятия',
-    type: EventDto,
+    type: EventsListResultDto,
   })
   @UseGuards(AccessTokenGuard)
   @Get(':eventId/self')
@@ -157,6 +158,20 @@ export class EventsController {
   }
 
 
+  @ApiOperation({
+    summary: 'Загрузка постера для мероприятия',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Id своего мероприятия',
+    example: 1,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 201,
+    description: 'Постер успешно загружен',
+  })
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Post(':eventId/poster')
   @UseInterceptors(FileInterceptor('file'))

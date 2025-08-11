@@ -79,7 +79,48 @@ export class EventsService {
 
 
   async findMy(userId: number, query: GetEventListQueryDto) {
-    throw new Error('Method not implemented.');
+    const { limit, page, search, dateFrom, dateTo } = query;
+
+    const queryBuilder = this.eventRepository.createQueryBuilder('events');
+
+    queryBuilder.leftJoinAndSelect('events.themes', 'themes');
+    queryBuilder.leftJoin('events.user', 'user');
+    queryBuilder.where('user.id = :userId', { userId });
+
+    if (search) {
+      const searchLower = search.toLowerCase();
+
+      queryBuilder.andWhere(
+        '(LOWER(events.title) Like :search OR LOWER(events.description) LIKE :search)',
+        {
+          search: `%${searchLower}%`,
+        },
+      );
+    }
+
+    if (dateFrom) {
+      queryBuilder.andWhere('events.startsAt >= :dateFrom', { dateFrom });
+    }
+
+    if (dateTo) {
+      queryBuilder.andWhere('events.endsAt >= :dateTo', { dateTo });
+    }
+
+    queryBuilder.orderBy('events.startsAt', 'ASC');
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    const [events, eventsCount] = await queryBuilder.getManyAndCount();
+    const totalPagesAmount = Math.ceil(eventsCount / limit);
+
+    this.logger.debug('Get my events list: ', events);
+    return {
+      data: events,
+      meta: {
+        totalEventsCount: eventsCount,
+        totalPagesAmount: totalPagesAmount,
+        currentPage: page,
+      },
+    };
   }
 
 

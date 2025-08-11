@@ -1,12 +1,13 @@
-import { Controller, Post, UseGuards, Request, Patch, Delete, Get, Param, Body, UseInterceptors, UploadedFile, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Patch, Delete, Get, Param, Body, UseInterceptors, UploadedFile, ParseIntPipe, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { EventOwnerGuard } from './guards/event-owner.guard';
 import { CreateEventBodyDto } from './dto/create-event-body.dto';
 import { UpdateEventBodyDto } from './dto/update-event-body.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { EventDto } from './dto/event.dto';
+import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 
 @Controller('events')
 export class EventsController {
@@ -62,6 +63,62 @@ export class EventsController {
     @Param('eventId', ParseIntPipe) eventId: number
   ) {
     const result = await this.eventsService.findById(eventId);
+
+    return result;
+  }
+
+
+  @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
+  @ApiOperation({
+    summary: 'Получить свои созданные мероприятия',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Количество мероприятий на странице',
+    example: 10,
+    default: 4,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Номер страницы',
+    example: 2,
+    default: 1,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Фильтр по названию',
+    example: 'ФОТО экскурсия',
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    description: 'Фильтрация мероприятий позднее указанной даты',
+    example: '2020-12-30',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    description: 'Фильтрация мероприятий раньше указанной даты',
+    example: '2020-12-31',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Найденные свои мероприятия',
+    type: EventDto,
+  })
+  @UseGuards(AccessTokenGuard)
+  @Get(':eventId/self')
+  async findAllMyEvents(
+    @Query() query: GetEventListQueryDto,
+    @Request() req,
+  ) {
+    const userId = req.user['sub'];
+
+    const result = await this.eventsService.findMy(userId, query);
 
     return result;
   }

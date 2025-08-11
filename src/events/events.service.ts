@@ -10,6 +10,7 @@ import { S3_EVENT_BUCKET } from 'src/common/constants/s3-buckets.constant';
 import { Readable } from 'stream';
 import { EventThemeEntity } from 'src/dictionaries/entities/theme.entity';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
+import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 
 @Injectable()
 export class EventsService {
@@ -74,6 +75,11 @@ export class EventsService {
     this.logger.log(`Finded event with id: ${eventId}`);
     this.logger.debug(`Finded event with id: `, event);
     return event;
+  }
+
+
+  async findMy(userId: number, query: GetEventListQueryDto) {
+    throw new Error('Method not implemented.');
   }
 
 

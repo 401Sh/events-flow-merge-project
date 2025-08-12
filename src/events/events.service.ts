@@ -61,6 +61,35 @@ export class EventsService {
     return event;
   }
 
+
+  /**
+   * Retrieves an published event by its ID, including its themes.
+   *
+   * @param {number} eventId - The ID of the event to retrieve.
+   * @returns {Promise<EventEntity>} The event entity with themes.
+   * @throws {BadRequestException} Throws if the event with the given ID does
+   * not exist.
+   */
+  async findPublishedById(eventId: number) {
+    const event = await this.eventRepository.findOne({
+      where: {
+        id: eventId,
+        isPublished: true,
+      }
+    })
+
+
+    if (!event) {
+      this.logger.log(`No event with id: ${eventId}`);
+      throw new BadRequestException('Event does not exist');
+    }
+
+    this.logger.log(`Finded event with id: ${eventId}`);
+    this.logger.debug(`Finded event with id: `, event);
+    return event;
+  }
+
+
   /**
    * Retrieves an event by its ID, including its themes and the user ID only.
    *

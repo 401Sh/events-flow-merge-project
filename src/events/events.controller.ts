@@ -63,6 +63,28 @@ export class EventsController {
   }
 
 
+  @ApiOperation({
+    summary: 'Найти опубликованное мероприятие',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Id опубликованного мероприятия',
+    example: 1,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Найденное мероприятие',
+    type: EventDto,
+  })
+  @Get(':eventId')
+  async findPublishedById(@Param('eventId', ParseIntPipe) eventId: number) {
+    const result = await this.eventsService.findPublishedById(eventId);
+
+    return result;
+  }
+
+
   @ApiBearerAuth()
   @ApiSecurity('ApiKeyAuth')
   @ApiOperation({

@@ -20,16 +20,6 @@ export class SubscribeLeaderEventDto {
   @IsNumber()
   eventId: number;
 
-  // @ApiProperty({
-  //   description: '',
-  //   nullable: true,
-  //   required: false,
-  //   type: String,
-  // })
-  // @IsOptional()
-  // @IsString()
-  // quizAnswerId?: string;
-
   @ApiProperty({
     example: 2,
     default: 1,

@@ -1,4 +1,10 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshSessionEntity } from './entities/refresh-session.entity';
@@ -7,7 +13,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as argon2 from 'argon2';
-import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from 'src/common/constants/jwt-token.constant';
+import {
+  ACCESS_TOKEN_TTL,
+  REFRESH_TOKEN_TTL,
+} from 'src/common/constants/jwt-token.constant';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { MailService } from 'src/mail/mail.service';
 import { SignUpConfirmDto } from './dto/signup-confirm.dto';
@@ -19,7 +28,7 @@ export class AuthService {
 
   private readonly accessSecret: string;
   private readonly refreshSecret: string;
-  
+
   constructor(
     @InjectRepository(RefreshSessionEntity)
     private refreshSessionRepository: Repository<RefreshSessionEntity>,
@@ -40,11 +49,11 @@ export class AuthService {
 
     if (user && user.isEmailConfirmed) {
       throw new BadRequestException(
-        'A user with this email address is already registered'
+        'A user with this email address is already registered',
       );
     }
 
-    return await this.resendSignUpCode(user!);
+    return await this.resendSignUpCode(user);
   }
 
 
@@ -70,15 +79,19 @@ export class AuthService {
     }
 
     if (!user.emailConfirmationCode) {
-      throw new BadRequestException('No confirmation code, sing up your account');
+      throw new BadRequestException(
+        'No confirmation code, sing up your account',
+      );
     }
 
     const isCodeValid = await this.verifyData(
       signUpConfirmDto.code,
-      user.emailConfirmationCode
+      user.emailConfirmationCode,
     );
     if (!isCodeValid) {
-      this.logger.log(`Access denied for user: ${user.id}. Incorrect confirmation code`);
+      this.logger.log(
+        `Access denied for user: ${user.id}. Incorrect confirmation code`,
+      );
       throw new ForbiddenException('Confirmation Denied');
     }
 
@@ -90,7 +103,7 @@ export class AuthService {
 
     if (!fingerprint) {
       throw new BadRequestException('Fingerprint header is required');
-    };
+    }
 
     const tokens = await this.getTokens(user.id, user.email);
     await this.createRefreshSession(
@@ -120,24 +133,24 @@ export class AuthService {
 
     if (!fingerprint) {
       throw new BadRequestException('Fingerprint header is required');
-    };
+    }
 
     const isPasswordValid = await this.verifyData(
       authDto.password,
       user.password,
     );
-    if (!isPasswordValid){
+    if (!isPasswordValid) {
       throw new BadRequestException('Password is incorrect');
-    };
+    }
 
     const existiingSession = await this.findRefreshSession(
       user.id,
       fingerprint,
     );
 
-    if (existiingSession){
+    if (existiingSession) {
       await this.deleteRefreshSession(user.id, fingerprint);
-    };
+    }
 
     const tokens = await this.getTokens(user.id, user.email);
     await this.createRefreshSession(
@@ -145,24 +158,24 @@ export class AuthService {
       tokens.refreshToken,
       userAgent,
       ip,
-      fingerprint
+      fingerprint,
     );
     return tokens;
   }
 
 
-  async deleteRefreshSession(userId: number, fingerprint: string){
+  async deleteRefreshSession(userId: number, fingerprint: string) {
     this.logger.debug(`Deleting user ${userId} session`);
     const deleteResult = await this.refreshSessionRepository.delete({
       user: { id: userId },
-      fingerprint: fingerprint
+      fingerprint: fingerprint,
     });
 
     if (deleteResult.affected === 0) {
       this.logger.debug(`Cannot delete session. No session with user 
         id: ${userId} and fingerprint ${fingerprint}`);
       throw new NotFoundException('Session not found');
-    };
+    }
 
     return deleteResult;
   }
@@ -210,28 +223,27 @@ export class AuthService {
     fingerprint: string,
   ) {
     const user = await this.usersService.findById(userId);
-    
-    // if (!user) {
-    //   this.logger.debug(`No user with id: ${userId}`);
-    //   throw new BadRequestException('User does not exist');
-    // };
 
     if (!fingerprint) {
       throw new BadRequestException('Fingerprint header is required');
-    };
+    }
 
     // Verifing refresh token
     const session = await this.findRefreshSession(user.id, fingerprint);
-    
+
     if (!session) {
-      this.logger.log(`Access denied for user: ${user.id}. No existing session`);
+      this.logger.log(
+        `Access denied for user: ${user.id}. No existing session`,
+      );
       throw new ForbiddenException('Access Denied');
-    };
+    }
 
     // Check if token has expired
     const currentTime = new Date();
     if (session.expiresAt < currentTime) {
-      this.logger.log(`Access denied for user: ${user.id}. Refresh token expired`);
+      this.logger.log(
+        `Access denied for user: ${user.id}. Refresh token expired`,
+      );
       throw new ForbiddenException('Refresh token expired');
     }
 
@@ -241,9 +253,11 @@ export class AuthService {
     );
 
     if (!isTokenValid) {
-      this.logger.log(`Access denied for user: ${user.id}. Incorrect refresh token`);
+      this.logger.log(
+        `Access denied for user: ${user.id}. Incorrect refresh token`,
+      );
       throw new ForbiddenException('Access Denied');
-    };
+    }
 
     await this.deleteRefreshSession(user.id, fingerprint);
 
@@ -282,8 +296,8 @@ export class AuthService {
 
     return session;
   }
-  
-  
+
+
   private hashData(data: string): Promise<string> {
     return argon2.hash(data);
   }
@@ -314,7 +328,7 @@ export class AuthService {
           expiresIn: ACCESS_TOKEN_TTL,
         },
       ),
-      
+
       this.jwtService.signAsync(
         {
           sub: userId,
@@ -334,25 +348,22 @@ export class AuthService {
   }
 
 
-  private async findRefreshSession(userId: number, fingerprint: string){
-    const session = await this.refreshSessionRepository.findOne(
-      { 
-        where: {
-          user: { id: userId },
-          fingerprint: fingerprint,
-        }
-      }
-    );
-    
+  private async findRefreshSession(userId: number, fingerprint: string) {
+    const session = await this.refreshSessionRepository.findOne({
+      where: {
+        user: { id: userId },
+        fingerprint: fingerprint,
+      },
+    });
+
     this.logger.debug(`Finded session for user id: ${userId}`, session);
     return session;
-  };
-
+  }
 
   // TODO: Change on normal implementation
   private generateOtp(length = 6): string {
     const digits = '0123456789';
-    
+
     let otp = '';
     for (let i = 0; i < length; i++) {
       otp += digits[Math.floor(Math.random() * digits.length)];

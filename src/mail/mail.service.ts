@@ -40,7 +40,6 @@ export class MailService {
 
     await this.mailer.sendMail({
       to: user.email,
-      // from: '"Support Team" <support@example.com>', // override default from
       subject: 'Welcome to Our Events! Confirm your Email',
       html,
     });

@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
-import { parse, formatISO } from 'date-fns';
-import { fromZonedTime } from 'date-fns-tz';
 import { EventAPISource } from '../enums/event-source.enum';
 import { EventLocation } from '../interfaces/event-location.interface';
 import { LeaderData } from '../interfaces/leader-data.interface';
@@ -10,6 +8,7 @@ import { LeaderDataDto } from '../dto/leader-data.dto';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { APIMapperInterface } from './api-interfaces/api-mapper.service.interface';
 import EditorJSHTML from 'editorjs-html';
+import { localeDateToIso } from 'src/common/functions/local-date-to-iso';
 
 @Injectable()
 export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {
@@ -29,15 +28,20 @@ export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {
       id: raw.id,
       title: raw.full_name,
       description: description,
-      startsAt: raw.date_start ? this.toIso(raw.date_start, tz) : null,
-      endsAt: raw.date_end ? this.toIso(raw.date_end, tz) : null,
+      startsAt: raw.date_start
+        ? localeDateToIso(raw.date_start, tz)
+        : null,
+
+      endsAt: raw.date_end
+        ? localeDateToIso(raw.date_end, tz)
+        : null,
 
       registrationStart: raw.registrationDateStart
-        ? this.toIso(raw.registrationDateStart, tz)
+        ? localeDateToIso(raw.registrationDateStart, tz)
         : null,
 
       registrationEnd: raw.registrationDateEnd
-        ? this.toIso(raw.registrationDateEnd, tz)
+        ? localeDateToIso(raw.registrationDateEnd, tz)
         : null,
 
       url: `https://leader-id.ru/events/${raw.id}`,
@@ -96,26 +100,5 @@ export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {
       );
 
     return themes;
-  }
-
-
-  /**
-   * Converts a local date with time zone offset into ISO 8601 UTC format.
-   *
-   * @param dateStr - date string, e.g. "2024-05-28 00:10:43"
-   * @param tzOffset - time zone offset, e.g. "+03:00"
-   * @returns a string in UTC ISO format: "2024-05-27T21:10:43Z"
-   */
-  private toIso(dateStr: string, tzOffset: string): string {
-    // parse string like local time (without timezone)
-    const localDate = parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date());
-
-    if (tzOffset == '00:00') tzOffset = '+00:00';
-    // localeDate в UTC
-    const utcDate = fromZonedTime(localDate, tzOffset);
-    // UTC в ISO 8601 с Z (UTC)
-    const final_date = formatISO(utcDate, { representation: 'complete' });
-
-    return final_date;
   }
 }

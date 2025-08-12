@@ -173,6 +173,8 @@ export class EventsController {
   }
 
 
+  @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Загрузка постера для мероприятия',
   })

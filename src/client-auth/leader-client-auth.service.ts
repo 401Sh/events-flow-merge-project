@@ -9,6 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { LEADER_API_TOKEN_TTL } from 'src/common/constants/auth.constant';
+import { LeaderTokenResponse } from 'src/oauth/interfaces/leader-token-response.interface';
 
 @Injectable()
 export class LeaderClientAuthService implements OnModuleInit {

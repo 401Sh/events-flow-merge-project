@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
 import { APIOAuthInterface } from './api-oauth.service.interface';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
+import { LeaderTokenResponse } from '../interfaces/leader-token-response.interface';
 
 @Injectable()
 export class LeaderOAuthService

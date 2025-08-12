@@ -248,6 +248,7 @@ package.json
 
 ### Модуль events
 
+- **GET    /events**                                  - Получить список опубликованных мероприятий
 - **GET    /events/:eventId**                         - Получить опубликованное мероприятие
 - protected **POST   /events**                        - Создание мероприятия
 - protected **GET    /events/self**                   - Получить все свои созданные мероприятия

@@ -117,6 +117,67 @@ export class EventsService {
     return event;
   }
 
+
+  /**
+   * Retrieves a paginated list of published events, with optional filtering 
+   * by search text and date range.
+   *
+   * @param {GetEventListQueryDto} query - Query parameters for filtering and
+   * pagination.
+   * @returns {Promise<{
+   *   data: EventEntity[];
+   *   meta: {
+   *     totalEventsCount: number;
+   *     totalPagesAmount: number;
+   *     currentPage: number;
+   *   }
+   * }>} Paginated list of events matching the criteria.
+   */
+  async findAllPublished(query: GetEventListQueryDto) {
+    const { limit, page, search, dateFrom, dateTo } = query;
+
+    const queryBuilder = this.eventRepository.createQueryBuilder('events');
+
+    queryBuilder.leftJoinAndSelect('events.themes', 'themes');
+
+    if (search) {
+      const searchLower = search.toLowerCase();
+
+      queryBuilder.andWhere(
+        '(LOWER(events.title) Like :search OR LOWER(events.description) LIKE :search)',
+        {
+          search: `%${searchLower}%`,
+        },
+      );
+    }
+
+    if (dateFrom) {
+      queryBuilder.andWhere('events.startsAt >= :dateFrom', { dateFrom });
+    }
+
+    if (dateTo) {
+      queryBuilder.andWhere('events.endsAt <= :dateTo', { dateTo });
+    }
+
+    queryBuilder.andWhere('events.isPublished = true');
+    queryBuilder.orderBy('events.startsAt', 'ASC');
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    const [events, eventsCount] = await queryBuilder.getManyAndCount();
+    const totalPagesAmount = Math.ceil(eventsCount / limit);
+
+    this.logger.debug('Get events list: ', events);
+    return {
+      data: events,
+      meta: {
+        totalEventsCount: eventsCount,
+        totalPagesAmount: totalPagesAmount,
+        currentPage: page,
+      },
+    };
+  }
+
+
   /**
    * Retrieves a paginated list of events created by a specific user,
    * with optional filtering by search text and date range.

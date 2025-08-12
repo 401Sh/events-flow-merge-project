@@ -248,8 +248,9 @@ package.json
 
 ### Модуль events
 
-- protected **POST   /events**                        - Создание мероприятия
 - **GET    /events/:eventId**                         - Получить опубликованное мероприятие
+- protected **POST   /events**                        - Создание мероприятия
+- protected **GET    /events/self**                   - Получить все свои созданные мероприятия
 - protected **GET    /events/:eventId/self**          - Получить созданное мероприятие
 - protected **PATCH  /events/:eventId**               - Обновить данные мероприятия
 - protected **DELETE /events/:eventId**               - Удалить мероприятие

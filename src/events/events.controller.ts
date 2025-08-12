@@ -153,8 +153,11 @@ export class EventsController {
     type: EventsListResultDto,
   })
   @UseGuards(AccessTokenGuard)
-  @Get(':eventId/self')
-  async findAllMyEvents(@Query() query: GetEventListQueryDto, @Request() req) {
+  @Get('self')
+  async findAllMyEvents(
+    @Query() query: GetEventListQueryDto,
+    @Request() req,
+  ) {
     const userId = req.user['sub'];
 
     const result = await this.eventsService.findMy(userId, query);

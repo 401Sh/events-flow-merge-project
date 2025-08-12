@@ -1,11 +1,11 @@
 import { UserEntity } from '../../users/entities/user.entity';
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
   BaseEntity,
-  ManyToOne
+  ManyToOne,
 } from 'typeorm';
 
 @Entity('refresh-sessions')
@@ -25,16 +25,15 @@ export class RefreshSessionEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 512 })
   fingerprint: string;
 
-  @Column({ type: 'timestamp'})
+  @Column({ type: 'timestamp' })
   expiresAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(
-    () => UserEntity,
-    (user) => user.refreshSessions,
-    { onDelete: 'CASCADE', nullable: false }
-  )
-  user: UserEntity
+  @ManyToOne(() => UserEntity, (user) => user.refreshSessions, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  user: UserEntity;
 }

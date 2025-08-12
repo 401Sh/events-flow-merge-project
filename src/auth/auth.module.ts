@@ -17,10 +17,6 @@ import { MailModule } from 'src/mail/mail.module';
     TypeOrmModule.forFeature([RefreshSessionEntity]),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    AccessTokenStrategy,
-    RefreshTokenStrategy,
-  ]
+  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
 })
 export class AuthModule {}

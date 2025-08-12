@@ -1,13 +1,13 @@
 import { RefreshSessionEntity } from '../../auth/entities/refresh-session.entity';
 import { EventEntity } from '../../events/entities/event.entity';
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
-  OneToMany
+  OneToMany,
 } from 'typeorm';
 
 @Entity('users')
@@ -20,7 +20,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   password!: string;
-  
+
   @Column({ type: 'varchar', length: 255, unique: true, nullable: true })
   login?: string;
 
@@ -42,7 +42,7 @@ export class UserEntity extends BaseEntity {
   @OneToMany(
     () => RefreshSessionEntity,
     (refreshSession) => refreshSession.user,
-    { cascade: true, onDelete: 'CASCADE' }
+    { cascade: true, onDelete: 'CASCADE' },
   )
   refreshSessions: RefreshSessionEntity[];
 

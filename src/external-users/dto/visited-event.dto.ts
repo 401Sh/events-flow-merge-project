@@ -25,7 +25,8 @@ export class VisitedEventDto implements VisitedEvent {
   eventId: number;
 
   @ApiProperty({
-    description: 'Было ли мероприятие посещено (true) или его только ' +
+    description:
+      'Было ли мероприятие посещено (true) или его только ' +
       'предстоит посетить (false)',
     type: Boolean,
   })

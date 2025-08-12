@@ -1,4 +1,9 @@
-import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments, Validate } from 'class-validator';
+import {
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+  Validate,
+} from 'class-validator';
 
 @ValidatorConstraint({ name: 'IsDatesConsistent', async: false })
 export class IsDatesConsistent implements ValidatorConstraintInterface {
@@ -9,7 +14,11 @@ export class IsDatesConsistent implements ValidatorConstraintInterface {
       return false;
     }
 
-    if (obj.registrationStart && obj.registrationEnd && obj.registrationStart > obj.registrationEnd) {
+    if (
+      obj.registrationStart &&
+      obj.registrationEnd &&
+      obj.registrationStart > obj.registrationEnd
+    ) {
       return false;
     }
 

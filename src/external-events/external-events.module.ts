@@ -13,12 +13,7 @@ import { LeaderMapperService } from './services/leader-mapper.service';
 import { TimepadMapperService } from './services/timepad-mapper.service';
 
 @Module({
-  imports: [
-    ClientAuthModule,
-    HttpModule,
-    DictionariesModule,
-    GeoModule,
-  ],
+  imports: [ClientAuthModule, HttpModule, DictionariesModule, GeoModule],
   controllers: [ExternalEventsController],
   providers: [
     ExternalEventsService,
@@ -28,6 +23,6 @@ import { TimepadMapperService } from './services/timepad-mapper.service';
     TimepadApiRateLimiterService,
     LeaderMapperService,
     TimepadMapperService,
-  ]
+  ],
 })
 export class ExternalEventsModule {}

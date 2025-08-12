@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEventBodyDto } from './dto/create-event-body.dto';
 import { UpdateEventBodyDto } from './dto/update-event-body.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,7 +34,7 @@ export class EventsService {
    * Creates a new event for a specific user with optional associated themes.
    *
    * @param {number} userId - The ID of the user creating the event.
-   * @param {CreateEventBodyDto} data - The event data including optional theme 
+   * @param {CreateEventBodyDto} data - The event data including optional theme
    * IDs.
    * @returns {Promise<EventEntity>} The newly created event entity.
    * @throws Will throw an error if the user is not found or if saving fails.
@@ -37,7 +42,7 @@ export class EventsService {
   async create(userId: number, data: CreateEventBodyDto) {
     const user = await this.usersService.findById(userId);
 
-    const {themeIds, ...otherData} = data;
+    const { themeIds, ...otherData } = data;
 
     let themes: EventThemeEntity[] = [];
 
@@ -56,26 +61,21 @@ export class EventsService {
     return event;
   }
 
-
   /**
    * Retrieves an event by its ID, including its themes and the user ID only.
    *
    * @param {number} eventId - The ID of the event to retrieve.
    * @returns {Promise<EventEntity>} The event entity with themes and user ID.
-   * @throws {BadRequestException} Throws if the event with the given ID does 
+   * @throws {BadRequestException} Throws if the event with the given ID does
    * not exist.
    */
   async findById(eventId: number) {
     const event = await this.eventRepository
-      .createQueryBuilder("events")
-      .leftJoinAndSelect("events.themes", "themes")
-      .leftJoin("events.user", "user")
-      .where("events.id = :eventId", { eventId })
-      .select([
-        "events",
-        "themes",
-        "user.id",
-      ])
+      .createQueryBuilder('events')
+      .leftJoinAndSelect('events.themes', 'themes')
+      .leftJoin('events.user', 'user')
+      .where('events.id = :eventId', { eventId })
+      .select(['events', 'themes', 'user.id'])
       .getOne();
 
     if (!event) {
@@ -88,13 +88,12 @@ export class EventsService {
     return event;
   }
 
-
   /**
    * Retrieves a paginated list of events created by a specific user,
    * with optional filtering by search text and date range.
    *
    * @param {number} userId - The ID of the user whose events are being queried.
-   * @param {GetEventListQueryDto} query - Query parameters for filtering and 
+   * @param {GetEventListQueryDto} query - Query parameters for filtering and
    * pagination.
    * @returns {Promise<{
    *   data: EventEntity[];
@@ -155,10 +154,10 @@ export class EventsService {
    * Updates an existing event by its ID with new data, including optional themes.
    *
    * @param {number} eventId - The ID of the event to update.
-   * @param {UpdateEventBodyDto} data - The data to update the event with, 
+   * @param {UpdateEventBodyDto} data - The data to update the event with,
    * including optional theme IDs.
    * @returns {Promise<EventEntity>} The updated event entity.
-   * @throws {NotFoundException} Throws if the event with the given ID does not 
+   * @throws {NotFoundException} Throws if the event with the given ID does not
    * exist.
    */
   async update(eventId: number, data: UpdateEventBodyDto) {
@@ -180,7 +179,8 @@ export class EventsService {
     Object.assign(event, otherData);
 
     if (themeIds && themeIds.length > 0) {
-      const newThemes = await this.dictionaryService.findEventThemesByIds(themeIds);
+      const newThemes =
+        await this.dictionaryService.findEventThemesByIds(themeIds);
       event.themes = newThemes;
     } else if (themeIds && themeIds.length === 0) {
       event.themes = [];
@@ -198,7 +198,7 @@ export class EventsService {
    *
    * @param {number} eventId - The ID of the event to delete.
    * @returns {Promise<DeleteResult>} The result of the deletion operation.
-   * @throws {NotFoundException} Throws if the event with the given ID does not 
+   * @throws {NotFoundException} Throws if the event with the given ID does not
    * exist.
    */
   async delete(eventId: number) {
@@ -220,10 +220,10 @@ export class EventsService {
    *
    * @param {number|string} eventId - The ID of the event to update.
    * @param {string} fileName - The name of the file to upload.
-   * @param {Buffer|Readable} body - The file content as a Buffer or Readable 
+   * @param {Buffer|Readable} body - The file content as a Buffer or Readable
    * stream.
    * @param {string} mimetype - The MIME type of the file.
-   * @returns {Promise<EventEntity>} The updated event entity with the new 
+   * @returns {Promise<EventEntity>} The updated event entity with the new
    * poster URL.
    * @throws {BadRequestException} Throws if the event does not exist.
    */

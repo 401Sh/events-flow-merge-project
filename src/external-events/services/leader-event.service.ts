@@ -52,7 +52,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     const rawEvents = response.items || [];
     const mappedEvents = await Promise.all(
-      rawEvents.map(this.leaderMapper.map)
+      rawEvents.map(this.leaderMapper.map),
     );
 
     this.logger.debug('Leader event list recieved successfully');
@@ -81,7 +81,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     );
     const rawEvents = data.items || [];
     const mappedEvents = await Promise.all(
-      rawEvents.map(this.leaderMapper.map)
+      rawEvents.map(this.leaderMapper.map),
     );
 
     this.logger.debug('Leader event list recieved successfully');
@@ -89,9 +89,10 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     const maxEvents = query.limit * LEADER_EVENT_PAGE_LIMIT;
     const totalAmount = data.meta?.totalCount || 0;
     const normalizedAmount = totalAmount > maxEvents ? maxEvents : totalAmount;
-    const normalizedPageAmount = 
-      data.meta.paginationPageCount > LEADER_EVENT_PAGE_LIMIT ? 
-      LEADER_EVENT_PAGE_LIMIT : data.meta.paginationPageCount;
+    const normalizedPageAmount =
+      data.meta.paginationPageCount > LEADER_EVENT_PAGE_LIMIT
+        ? LEADER_EVENT_PAGE_LIMIT
+        : data.meta.paginationPageCount;
 
     const dataWithMeta = {
       data: mappedEvents,

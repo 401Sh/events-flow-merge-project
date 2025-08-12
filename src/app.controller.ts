@@ -11,7 +11,6 @@ export class AppController {
     return this.appService.getHello();
   }
 
-
   @ApiOperation({
     summary: 'Проверить работу сервера',
   })

@@ -1,10 +1,27 @@
-import { Controller, Get, Param, ParseEnumPipe, ParseIntPipe, Query } from "@nestjs/common";
-import { ExternalEventsService } from "./external-events.service";
-import { ApiOperation, ApiQuery, ApiResponse, ApiParam, ApiExtraModels, getSchemaPath } from "@nestjs/swagger";
-import { TimepadEventResultDto, LeaderEventResultDto } from "./dto/event-result.dto";
-import { EventsListResultDto } from "./dto/events-list-result.dto";
-import { GetEventListQueryDto } from "./dto/get-event-list-query.dto";
-import { EventAPISource } from "./enums/event-source.enum";
+import {
+  Controller,
+  Get,
+  Param,
+  ParseEnumPipe,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
+import { ExternalEventsService } from './external-events.service';
+import {
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiParam,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
+import {
+  TimepadEventResultDto,
+  LeaderEventResultDto,
+} from './dto/event-result.dto';
+import { EventsListResultDto } from './dto/events-list-result.dto';
+import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
+import { EventAPISource } from './enums/event-source.enum';
 
 @Controller('external/events')
 export class ExternalEventsController {
@@ -139,7 +156,10 @@ export class ExternalEventsController {
     @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,
     @Query() query: GetEventListQueryDto,
   ) {
-    return await this.externalEventsService.getEventsListFromSource(source, query);
+    return await this.externalEventsService.getEventsListFromSource(
+      source,
+      query,
+    );
   }
 
 

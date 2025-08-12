@@ -7,15 +7,8 @@ import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rat
 import { ClientAuthModule } from 'src/client-auth/client-auth.module';
 
 @Module({
-  imports: [
-    ClientAuthModule,
-    HttpModule,
-  ],
+  imports: [ClientAuthModule, HttpModule],
   controllers: [OAuthController],
-  providers: [
-    OAuthService,
-    LeaderOAuthService,
-    LeaderApiRateLimiterService,
-  ],
+  providers: [OAuthService, LeaderOAuthService, LeaderApiRateLimiterService],
 })
 export class OauthModule {}

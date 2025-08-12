@@ -17,7 +17,10 @@ import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { THROTTLE_DEFAULT_LIMIT, THROTTLE_DEFAULT_TTL } from './common/constants/throttle.constant';
+import {
+  THROTTLE_DEFAULT_LIMIT,
+  THROTTLE_DEFAULT_TTL,
+} from './common/constants/throttle.constant';
 import { ApiKeyGuard } from './common/guards/api-key.guard';
 import { StorageModule } from './storage/storage.module';
 
@@ -53,7 +56,7 @@ import { StorageModule } from './storage/storage.module';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: ThrottlerGuard,
     },
     ApiKeyGuard,
   ],

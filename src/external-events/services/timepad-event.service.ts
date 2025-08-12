@@ -49,7 +49,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
     const rawEvents = response.values || [];
     const mappedEvents = await Promise.all(
-      rawEvents.map(this.timepadMapper.map)
+      rawEvents.map(this.timepadMapper.map),
     );
 
     this.logger.debug('Timepad event list recieved successfully');
@@ -71,7 +71,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
     const rawEvents = response.values || [];
     const mappedEvents = await Promise.all(
-      rawEvents.map(this.timepadMapper.map)
+      rawEvents.map(this.timepadMapper.map),
     );
 
     this.logger.debug('Timepad event list with meta recieved successfully');

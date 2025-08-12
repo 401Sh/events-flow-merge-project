@@ -1,9 +1,15 @@
-import { Injectable, Logger, ConflictException, BadRequestException, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { LessThan, Repository } from "typeorm";
-import { UserEntity } from "./entities/user.entity";
+import {
+  Injectable,
+  Logger,
+  ConflictException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LessThan, Repository } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
 import * as argon2 from 'argon2';
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +30,7 @@ export class UsersService {
     if (!isAvailable) {
       this.logger.log(`Cannot create user. Email ${email} is already used`);
       throw new ConflictException(`Email ${email} is already used`);
-    };
+    }
 
     const hashedPassword = await this.hashData(password);
 
@@ -62,7 +68,7 @@ export class UsersService {
     if (!user) {
       this.logger.log(`No user with id: ${id}`);
       throw new BadRequestException('User does not exist');
-    };
+    }
 
     this.logger.log(`Finded user with id: ${id}`);
     return user;
@@ -75,14 +81,16 @@ export class UsersService {
     if (updateResult.affected === 0) {
       this.logger.debug(`Cannot update user with id: ${userId}`);
       throw new NotFoundException('User not found');
-    };
+    }
 
     return updateResult;
   }
 
 
   private async isEmailAvailable(email: string): Promise<boolean> {
-    const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.findOne({
+      where: { email },
+    });
     return !existingUser;
   }
 

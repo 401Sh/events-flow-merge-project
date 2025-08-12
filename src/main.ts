@@ -26,7 +26,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const apiKeyGuard = app.get(ApiKeyGuard);
-  app.useGlobalGuards(apiKeyGuard)
+  app.useGlobalGuards(apiKeyGuard);
 
   app.use(
     cors({

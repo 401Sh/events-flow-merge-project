@@ -1,11 +1,34 @@
-import { Controller, Post, UseGuards, Request, Patch, Delete, Get, Param, Body, UseInterceptors, UploadedFile, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Patch,
+  Delete,
+  Get,
+  Param,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { EventsService } from './events.service';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { EventOwnerGuard } from './guards/event-owner.guard';
 import { CreateEventBodyDto } from './dto/create-event-body.dto';
 import { UpdateEventBodyDto } from './dto/update-event-body.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiSecurity,
+} from '@nestjs/swagger';
 import { EventDto } from './dto/event.dto';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { EventsListResultDto } from './dto/event-list-result.dto';
@@ -31,10 +54,7 @@ export class EventsController {
   })
   @UseGuards(AccessTokenGuard)
   @Post()
-  async create(
-    @Request() req,
-    @Body() data: CreateEventBodyDto,
-  ) {
+  async create(@Request() req, @Body() data: CreateEventBodyDto) {
     const userId = req.user['sub'];
     const result = await this.eventsService.create(userId, data);
 
@@ -60,9 +80,7 @@ export class EventsController {
   })
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Get(':eventId/self')
-  async findMyEvent(
-    @Param('eventId', ParseIntPipe) eventId: number
-  ) {
+  async findMyEvent(@Param('eventId', ParseIntPipe) eventId: number) {
     const result = await this.eventsService.findById(eventId);
 
     return result;
@@ -113,10 +131,7 @@ export class EventsController {
   })
   @UseGuards(AccessTokenGuard)
   @Get(':eventId/self')
-  async findAllMyEvents(
-    @Query() query: GetEventListQueryDto,
-    @Request() req,
-  ) {
+  async findAllMyEvents(@Query() query: GetEventListQueryDto, @Request() req) {
     const userId = req.user['sub'];
 
     const result = await this.eventsService.findMy(userId, query);
@@ -211,13 +226,11 @@ export class EventsController {
   })
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Delete(':eventId')
-  async delete(
-    @Param('eventId', ParseIntPipe) eventId: number
-  ) {
+  async delete(@Param('eventId', ParseIntPipe) eventId: number) {
     await this.eventsService.delete(eventId);
 
     return {
-      message: 'Event deleted successfully'
-    }
+      message: 'Event deleted successfully',
+    };
   }
 }

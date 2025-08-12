@@ -1,7 +1,17 @@
-import { UserEntity } from "../../users/entities/user.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { EventAccess } from "../enums/event-access.enum";
-import { EventThemeEntity } from "../../dictionaries/entities/theme.entity";
+import { UserEntity } from '../../users/entities/user.entity';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { EventAccess } from '../enums/event-access.enum';
+import { EventThemeEntity } from '../../dictionaries/entities/theme.entity';
 
 @Entity('events')
 export class EventEntity extends BaseEntity {
@@ -44,18 +54,15 @@ export class EventEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToMany(
-    () => EventThemeEntity,
-    (theme) => theme.events,
-    { cascade: true },
-  )
+  @ManyToMany(() => EventThemeEntity, (theme) => theme.events, {
+    cascade: true,
+  })
   @JoinTable()
   themes: EventThemeEntity[];
-  
-  @ManyToOne(
-    () => UserEntity,
-    (user) => user.events,
-    { onDelete: 'SET NULL', nullable: true }
-  )
+
+  @ManyToOne(() => UserEntity, (user) => user.events, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   user: UserEntity;
 }

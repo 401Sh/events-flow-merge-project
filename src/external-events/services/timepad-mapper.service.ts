@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { DictionariesService } from "src/dictionaries/dictionaries.service";
+import { Injectable } from '@nestjs/common';
+import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { formatISO, parseISO } from 'date-fns';
 import { EventAPISource } from '../enums/event-source.enum';
 import { EventLocation } from '../interfaces/event-location.interface';
@@ -7,10 +7,12 @@ import { TimepadData } from '../interfaces/timepad-data.interface';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { plainToInstance } from 'class-transformer';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
-import { APIMapperInterface } from "./api-interfaces/api-mapper.service.interface";
+import { APIMapperInterface } from './api-interfaces/api-mapper.service.interface';
 
 @Injectable()
-export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> {
+export class TimepadMapperService
+  implements APIMapperInterface<TimepadDataDto>
+{
   constructor(private readonly dictionariesService: DictionariesService) {}
 
   map = async (raw: any) => {
@@ -19,7 +21,7 @@ export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> 
 
     // TODO: add short_description check
     const description = raw.description_html ? raw.description_html : null;
-  
+
     const timepadObj: TimepadData = {
       id: raw.id,
       title: raw.name,
@@ -32,21 +34,21 @@ export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> 
       url: raw.url || null,
       posterUrl: raw.poster_image?.default_url || null,
       organizer: raw.organization?.name || null,
-  
+
       location,
       themes,
-  
+
       source: EventAPISource.TIMEPAD,
-  
+
       specificData: {
         isSendingFreeTickets: raw.is_sending_free_tickets ?? null,
       },
     };
-  
+
     return plainToInstance(TimepadDataDto, timepadObj);
-  }
-  
-  
+  };
+
+
   private mapLocation(rawLocation: any): EventLocation {
     return {
       country: rawLocation?.country || null,
@@ -54,17 +56,18 @@ export class TimepadMapperService implements APIMapperInterface<TimepadDataDto> 
       address: rawLocation?.address || null,
     };
   }
-  
-  
+
+
   private async mapThemes(rawCategories: any[]): Promise<EventThemesDto[]> {
     if (!rawCategories?.length) return [];
 
     const sourceIds = rawCategories.map((c) => c.id);
 
-    const themes = await this.dictionariesService.findEventThemesByExternalThemeIds(
-      sourceIds,
-      EventAPISource.TIMEPAD,
-    );
+    const themes =
+      await this.dictionariesService.findEventThemesByExternalThemeIds(
+        sourceIds,
+        EventAPISource.TIMEPAD,
+      );
 
     return themes;
   }

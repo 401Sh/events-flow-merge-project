@@ -1,8 +1,18 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { EventAccess } from "../enums/event-access.enum";
-import { ArrayUnique, IsArray, IsBoolean, IsDate, IsEnum, IsInt, IsOptional, IsString, Validate } from "class-validator";
-import { Type } from "class-transformer";
-import { IsDatesConsistent } from "../validators/event-date.validator";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { EventAccess } from '../enums/event-access.enum';
+import {
+  ArrayUnique,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Validate,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDatesConsistent } from '../validators/event-date.validator';
 
 export class CreateEventBodyDto {
   @ApiProperty({
@@ -67,7 +77,8 @@ export class CreateEventBodyDto {
   location: string;
 
   @ApiPropertyOptional({
-    description: 'Опубликовано ли мероприятие ' +
+    description:
+      'Опубликовано ли мероприятие ' +
       '(false - не опубликовано, true - опубликовано)',
     type: Boolean,
   })
@@ -76,7 +87,8 @@ export class CreateEventBodyDto {
   isPublished: boolean = false;
 
   @ApiPropertyOptional({
-    description: 'Форма доступа записи на мероприятие.\n' +
+    description:
+      'Форма доступа записи на мероприятие.\n' +
       'public - мероприятие видно всем, link - мероприятие доступно по ссылке',
     enum: EventAccess,
   })

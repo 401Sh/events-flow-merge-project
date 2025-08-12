@@ -3,7 +3,8 @@ import { IsBoolean, IsNumber } from 'class-validator';
 
 export class SubscribeLeaderEventDto {
   @ApiProperty({
-    description: 'Отключение уведомлений о мероприятии ' +
+    description:
+      'Отключение уведомлений о мероприятии ' +
       '(без дополнительных прав доступен только false)',
     example: false,
     default: false,

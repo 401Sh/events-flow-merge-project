@@ -18,7 +18,7 @@ export class TokenResponseDto {
 
   @ApiProperty({
     description: 'Источник токена доступа (leaderId или timepad)',
-    type: String
+    type: String,
   })
   @IsString()
   source: string;

@@ -11,9 +11,7 @@ export class MailService {
   private readonly mailer: nodemailer.Transporter;
   private readonly confirmationTemplate: handlebars.TemplateDelegate;
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.confirmationTemplate = this.loadTemplate('confirmation.hbs');
 
     this.mailer = nodemailer.createTransport(
@@ -36,7 +34,7 @@ export class MailService {
   }
 
   async sendUserConfirmation(user: UserEntity, code: string) {
-    const html = this.confirmationTemplate({name: user.login, code})
+    const html = this.confirmationTemplate({ name: user.login, code });
 
     await this.mailer.sendMail({
       to: user.email,

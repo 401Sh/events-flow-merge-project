@@ -1,11 +1,29 @@
-import { Body, Controller, Delete, Headers, Ip, Post, Res, Request, UseGuards, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Headers,
+  Ip,
+  Post,
+  Res,
+  Request,
+  UseGuards,
+  Get,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { refreshCookieOptions } from 'src/common/configs/cookie.config';
 import { AuthDto } from './dto/auth.dto';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiOperation,
+  ApiResponse,
+  ApiSecurity,
+} from '@nestjs/swagger';
 import { TokenResultDto } from './dto/token-result.dto';
 import { SignUpConfirmDto } from './dto/signup-confirm.dto';
 
@@ -26,14 +44,12 @@ export class AuthController {
     description: 'Код подтверждения отправлен на почту',
   })
   @Post('signup')
-  async signup(
-    @Body() authDto: AuthDto,
-  ) {
+  async signup(@Body() authDto: AuthDto) {
     await this.authService.signUp(authDto);
 
     return {
-      message: 'Confirmation code sent to your mail'
-    }
+      message: 'Confirmation code sent to your mail',
+    };
   }
 
 
@@ -86,16 +102,16 @@ export class AuthController {
   @ApiOperation({
     summary: 'Авторизация пользователя',
   })
-  @ApiBody({ 
+  @ApiBody({
     description: 'Данные для входа в аккаунт',
     type: AuthDto,
-    required: true
+    required: true,
   })
   @ApiHeader({
     name: 'user-agent',
     description: 'User-Agent заголовок',
     required: true,
-    example: 'Mozilla/5.0'
+    example: 'Mozilla/5.0',
   })
   @ApiHeader({
     name: 'x-fingerprint',
@@ -114,12 +130,12 @@ export class AuthController {
     @Headers('x-fingerprint') fingerprint: string,
     @Ip() ip: string,
     @Body() authDto: AuthDto,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const tokens = await this.authService.signIn(
       authDto,
       userAgent,
-      ip, 
+      ip,
       fingerprint,
     );
 
@@ -150,7 +166,7 @@ export class AuthController {
   async logout(
     @Headers('x-fingerprint') fingerprint: string,
     @Request() req,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const userId = req.user['sub'];
 
@@ -160,7 +176,7 @@ export class AuthController {
 
     return res.status(200).send({
       message: 'Succesfully logout',
-      accessToken: ''
+      accessToken: '',
     });
   }
 

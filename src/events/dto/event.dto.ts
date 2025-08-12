@@ -1,8 +1,16 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { EventAccess } from "../enums/event-access.enum";
-import { IsBoolean, IsDate, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
-import { EventThemeDto } from "./event-theme.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { EventAccess } from '../enums/event-access.enum';
+import {
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { EventThemeDto } from './event-theme.dto';
 
 export class EventDto {
   @ApiProperty({
@@ -68,7 +76,7 @@ export class EventDto {
   })
   @IsString()
   location: string;
-  
+
   @ApiProperty({
     description: 'Ссылка на постер мероприятия',
     nullable: true,

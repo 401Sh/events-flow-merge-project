@@ -16,9 +16,6 @@ import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
     DictionariesModule,
   ],
   controllers: [EventsController],
-  providers: [
-    EventsService,
-    EventOwnerGuard,
-  ],
+  providers: [EventsService, EventOwnerGuard],
 })
 export class EventsModule {}

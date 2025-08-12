@@ -14,18 +14,16 @@ export class StorageService {
   private readonly s3Client: S3Client;
   private readonly appUrl: string;
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.appUrl = this.configService.getOrThrow('APP_BASE_URL');
-    
+
     this.s3Client = new S3Client({
       region: this.configService.getOrThrow('S3_REGION'),
       endpoint: this.configService.getOrThrow('S3_URL'),
       credentials: {
-          accessKeyId: this.configService.getOrThrow('S3_ACCESS_KEY'),
-          secretAccessKey: this.configService.getOrThrow('S3_SECRET_KEY'),
-        },
+        accessKeyId: this.configService.getOrThrow('S3_ACCESS_KEY'),
+        secretAccessKey: this.configService.getOrThrow('S3_SECRET_KEY'),
+      },
       forcePathStyle: this.configService.get<boolean>('S3_FORCE_PATH'),
     });
   }
@@ -85,7 +83,9 @@ export class StorageService {
     try {
       return await this.s3Client.send(command);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to upload file to storage');
+      throw new InternalServerErrorException(
+        'Failed to upload file to storage',
+      );
     }
   }
 

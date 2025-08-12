@@ -8,6 +8,7 @@ import {
   Res,
   Request,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
@@ -39,7 +40,7 @@ export class OAuthController {
     example: 'leaderId',
   })
   @ApiResponse({
-    status: 302,
+    status: HttpStatus.FOUND,
     description: 'Редирект на страницу авторизации leaderId или timepad',
   })
   @Get('redirect/:source')
@@ -64,7 +65,7 @@ export class OAuthController {
     type: String,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Access токен для доступа к ресурсам на leaderId',
     type: TokenResponseDto,
   })
@@ -94,7 +95,7 @@ export class OAuthController {
       'Требуется наличие refresh токена в защищенных куки',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Новый access токен для доступа к ресурсам на leaderId',
     type: TokenResponseDto,
   })

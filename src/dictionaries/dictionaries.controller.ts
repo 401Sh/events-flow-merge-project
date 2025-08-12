@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { DictionariesService } from './dictionaries.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EventThemesList } from './dto/event-themes-list.dto';
@@ -11,7 +11,7 @@ export class DictionariesController {
     summary: 'Получить общий список тем мероприятий',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список общий список тем',
     type: EventThemesList,
   })

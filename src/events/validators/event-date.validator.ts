@@ -2,12 +2,11 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
   ValidationArguments,
-  Validate,
 } from 'class-validator';
 
 @ValidatorConstraint({ name: 'IsDatesConsistent', async: false })
 export class IsDatesConsistent implements ValidatorConstraintInterface {
-  validate(obj: any, args: ValidationArguments) {
+  validate(obj: any, _args: ValidationArguments) {
     if (!obj) return true;
 
     if (obj.endsAt && obj.startsAt && obj.startsAt > obj.endsAt) {
@@ -25,7 +24,7 @@ export class IsDatesConsistent implements ValidatorConstraintInterface {
     return true;
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage(_args: ValidationArguments) {
     return 'The start date cannot be later than the end date.';
   }
 }

@@ -21,6 +21,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { MailService } from 'src/mail/mail.service';
 import { SignUpConfirmDto } from './dto/signup-confirm.dto';
 import { MAIL_CONFIRMATION_CODE_TTL } from 'src/common/constants/mail-confirmation-code.constant';
+import { CONFIRMATION_CODE_LENGTH } from 'src/common/constants/confirmation-code.constant';
 
 @Injectable()
 export class AuthService {
@@ -182,7 +183,7 @@ export class AuthService {
 
 
   private async resendSignUpCode(user: UserEntity) {
-    const code = this.generateOtp();
+    const code = this.generateOtp(CONFIRMATION_CODE_LENGTH);
     const hashedCode = await this.hashData(code);
     const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
 
@@ -198,7 +199,7 @@ export class AuthService {
 
 
   private async signUpNewUser(authDto: AuthDto) {
-    const code = this.generateOtp();
+    const code = this.generateOtp(CONFIRMATION_CODE_LENGTH);
     const hashedCode = await this.hashData(code);
     const expiresAt = new Date(Date.now() + MAIL_CONFIRMATION_CODE_TTL);
 
@@ -361,7 +362,7 @@ export class AuthService {
   }
 
   // TODO: Change on normal implementation
-  private generateOtp(length = 6): string {
+  private generateOtp(length: number): string {
     const digits = '0123456789';
 
     let otp = '';

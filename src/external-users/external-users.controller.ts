@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
@@ -46,7 +47,7 @@ export class ExternalUsersController {
     example: 6893310,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Профиль пользователя в leaderId',
     type: UserProfileResultDto,
   })
@@ -87,7 +88,7 @@ export class ExternalUsersController {
     required: true,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список посещенных и предстоящих мероприятий в leaderId',
     type: VisitedEventsListWithMetaResultDto,
   })
@@ -134,7 +135,7 @@ export class ExternalUsersController {
     required: true,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список посещенных/предстоящих мероприятий в leaderId',
     type: VisitedEventsListResultDto,
   })
@@ -176,7 +177,7 @@ export class ExternalUsersController {
     required: true,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Мероприятие на которое была произведена запись в leaderId',
     type: VisitedEventDto,
   })
@@ -220,11 +221,11 @@ export class ExternalUsersController {
     required: true,
   })
   @ApiResponse({
-    status: 204,
+    status: HttpStatus.NO_CONTENT,
     description: 'Запись на мероприятие в leaderId успешно отменена',
   })
   @UseGuards(SimpleAuthGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':userId/leaderId/participations/:uuid')
   async unsubscribeToLeaderEvent(
     @Param('userId', ParseIntPipe) userId: number,

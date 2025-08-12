@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -15,13 +15,13 @@ export class AppController {
     summary: 'Проверить работу сервера',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'API работает',
   })
   @Get('ping')
   ping() {
     return {
-      status: 'ok',
+      status: HttpStatus.OK,
       timestamp: new Date().toISOString(),
     };
   }

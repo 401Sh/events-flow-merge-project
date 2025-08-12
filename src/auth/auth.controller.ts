@@ -9,6 +9,7 @@ import {
   Request,
   UseGuards,
   Get,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -40,7 +41,7 @@ export class AuthController {
     required: true,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Код подтверждения отправлен на почту',
   })
   @Post('signup')
@@ -51,7 +52,6 @@ export class AuthController {
       message: 'Confirmation code sent to your mail',
     };
   }
-
 
   @ApiOperation({
     summary: 'Подтверждение регистрации аккаунта',
@@ -74,7 +74,7 @@ export class AuthController {
     required: true,
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Пользователь успешно зарегистрирован',
     type: TokenResultDto,
   })
@@ -98,7 +98,6 @@ export class AuthController {
     return res.json({ accessToken: tokens.accessToken });
   }
 
-
   @ApiOperation({
     summary: 'Авторизация пользователя',
   })
@@ -120,7 +119,7 @@ export class AuthController {
     example: '123456789abcdef',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Успешный вход',
     type: TokenResultDto,
   })
@@ -144,7 +143,6 @@ export class AuthController {
     return res.json({ accessToken: tokens.accessToken });
   }
 
-
   @ApiBearerAuth()
   @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
@@ -157,7 +155,7 @@ export class AuthController {
     example: '123456789abcdef',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Успешный выход',
     type: TokenResultDto,
   })
@@ -174,12 +172,11 @@ export class AuthController {
 
     res.clearCookie('refreshToken', { path: '/' });
 
-    return res.status(200).send({
+    return res.status(HttpStatus.OK).send({
       message: 'Succesfully logout',
       accessToken: '',
     });
   }
-
 
   @ApiBearerAuth()
   @ApiSecurity('ApiKeyAuth')
@@ -199,7 +196,7 @@ export class AuthController {
     example: '123456789abcdef',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Токены обновлены',
     type: TokenResultDto,
   })

@@ -1,0 +1,1 @@
+export const CONFIRMATION_CODE_LENGTH = 6;

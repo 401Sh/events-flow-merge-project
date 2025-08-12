@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -50,7 +51,7 @@ export class GeoController {
     example: 'Омск',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список городов с пагинацией',
     type: CititesListResultWithMetaDto,
   })
@@ -77,7 +78,7 @@ export class GeoController {
     default: 5,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список ближайших городов',
     type: CititesListResultDto,
   })
@@ -94,7 +95,7 @@ export class GeoController {
     summary: 'Получить id ближайшего города по координатам',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список ближайших городов',
     type: CityDto,
   })

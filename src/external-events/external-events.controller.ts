@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpStatus,
   Param,
   ParseEnumPipe,
   ParseIntPipe,
@@ -22,6 +23,10 @@ import {
 import { EventsListResultDto } from './dto/events-list-result.dto';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { EventAPISource } from './enums/event-source.enum';
+import {
+  LIMIT_EVENT_MIN_VALUE,
+  PAGE_START_VALUE,
+} from 'src/common/constants/dto-request-limits.constant';
 
 @Controller('external/events')
 export class ExternalEventsController {
@@ -35,14 +40,14 @@ export class ExternalEventsController {
     required: false,
     description: 'Количество мероприятий на странице',
     example: 10,
-    default: 4,
+    default: LIMIT_EVENT_MIN_VALUE,
   })
   @ApiQuery({
     name: 'page',
     required: false,
     description: 'Номер страницы',
     example: 2,
-    default: 1,
+    default: PAGE_START_VALUE,
   })
   @ApiQuery({
     name: 'search',
@@ -79,7 +84,7 @@ export class ExternalEventsController {
     example: '2020-12-31',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список мероприятий от двух источников',
     type: EventsListResultDto,
   })
@@ -103,14 +108,14 @@ export class ExternalEventsController {
     required: false,
     description: 'Количество мероприятий на странице',
     example: 10,
-    default: 4,
+    default: LIMIT_EVENT_MIN_VALUE,
   })
   @ApiQuery({
     name: 'page',
     required: false,
     description: 'Номер страницы',
     example: 2,
-    default: 1,
+    default: PAGE_START_VALUE,
   })
   @ApiQuery({
     name: 'search',
@@ -147,7 +152,7 @@ export class ExternalEventsController {
     example: '2020-12-31',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Список мероприятий от источника',
     type: EventsListResultDto,
   })
@@ -178,7 +183,7 @@ export class ExternalEventsController {
   })
   @ApiExtraModels(TimepadEventResultDto, LeaderEventResultDto)
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Данные о мероприятии',
     schema: {
       oneOf: [

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { PASSWORD_MIN_LENGTH } from 'src/common/constants/dto-request-limits.constant';
 
 export class AuthDto {
   @ApiProperty({
@@ -19,6 +20,8 @@ export class AuthDto {
   @Type(() => String)
   @IsString()
   @IsNotEmpty({ message: 'Password is required' })
-  @MinLength(6, { message: 'Password must be at least 6 characters long.' })
+  @MinLength(PASSWORD_MIN_LENGTH, {
+    message: 'Password must be at least 6 characters long.',
+  })
   password: string;
 }

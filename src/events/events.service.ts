@@ -46,8 +46,8 @@ export class EventsService {
 
     let themes: EventThemeEntity[] = [];
 
-    if (data.themeIds && data.themeIds.length != 0) {
-      themes = await this.dictionaryService.findEventThemesByIds(data.themeIds);
+    if (themeIds && themeIds.length != 0) {
+      themes = await this.dictionaryService.findEventThemesByIds(themeIds);
     }
 
     const event = await this.eventRepository.save({

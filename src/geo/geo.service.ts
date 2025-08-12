@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CityEntity } from './entities/city.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CoordinatesDto } from './dto/coordinates.dto';
 import { GetCitiesQueryDto } from './dto/get-cities-query.dto';
 import { GetNearestCitiesQueryDto } from './dto/get-nearest-cities-query.dto';
@@ -150,7 +150,6 @@ export class GeoService {
         'cities.posterUrl',
         'cities.location',
       ])
-      .limit(1)
       .getOne();
 
     if (!city) {

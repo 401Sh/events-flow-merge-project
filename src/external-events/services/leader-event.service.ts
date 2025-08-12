@@ -16,7 +16,7 @@ import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
-import { LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
+import { LEADER_EVENT_MIN_AMOUNT, LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
 import { LeaderMapperService } from './leader-mapper.service';
 
 @Injectable()
@@ -110,7 +110,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   async getOne(id: number): Promise<LeaderDataDto | null> {
     const urlPart = `/events/search`;
     const params = {
-      paginationSize: 2,
+      paginationSize: LEADER_EVENT_MIN_AMOUNT,
       paginationPage: 1,
       query: id,
     };
@@ -170,7 +170,8 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     limit?: number,
     page?: number,
   ): Promise<Record<string, any>> {
-    const apiLimit = limit && limit > 2 ? limit : 2;
+    const apiLimit = limit && limit > LEADER_EVENT_MIN_AMOUNT
+      ? limit : LEADER_EVENT_MIN_AMOUNT;
 
     const params: Record<string, any> = {
       paginationSize: apiLimit,

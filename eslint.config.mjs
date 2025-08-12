@@ -30,7 +30,8 @@ export default tseslint.config(
       'linebreak-style': ['error', 'windows'],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn'
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-magic-numbers': 'error'
     },
   },
 );

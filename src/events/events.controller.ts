@@ -12,6 +12,7 @@ import {
   UploadedFile,
   ParseIntPipe,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
@@ -48,7 +49,7 @@ export class EventsController {
     required: true,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Созданное мероприятие',
     type: EventDto,
   })
@@ -74,7 +75,7 @@ export class EventsController {
     example: 1,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Найденное свое мероприятие',
     type: EventDto,
   })
@@ -125,7 +126,7 @@ export class EventsController {
     example: '2020-12-31',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Найденные свои мероприятия',
     type: EventsListResultDto,
   })
@@ -157,7 +158,7 @@ export class EventsController {
     required: true,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Обновленное мероприятие',
     type: EventDto,
   })
@@ -186,7 +187,7 @@ export class EventsController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Постер успешно загружен',
   })
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
@@ -223,7 +224,7 @@ export class EventsController {
     example: 1,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Мероприятие успешно удалено',
   })
   @UseGuards(AccessTokenGuard, EventOwnerGuard)

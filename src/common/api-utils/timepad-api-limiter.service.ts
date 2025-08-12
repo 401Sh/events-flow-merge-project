@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { TIMEPAD_RATE_LIMITS } from 'src/common/constants/timepad-api-rate-limits.constant';
 import { ApiRateLimiterService } from './api-rate-limiter.abstract.service';
+import { TIMEPAD_RATE_LIMITS } from '../constants/api-rate-limits.constant';
 
 @Injectable()
 export class TimepadApiRateLimiterService extends ApiRateLimiterService {

@@ -36,7 +36,7 @@ export class StorageService {
   ) {
     const key = `images/${uuidv4()}-${fileName}`;
 
-    this.upload(bucket, key, body, mimetype);
+    await this.upload(bucket, key, body, mimetype);
 
     const url = `${this.appUrl}/${bucket}/${key}`;
 

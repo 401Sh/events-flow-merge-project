@@ -1,2 +1,3 @@
 export const LEADER_EVENT_PAGE_LIMIT = 100;
 export const LEADER_EVENT_MAX_AMOUNT = 100;
+export const LEADER_EVENT_MIN_AMOUNT = 2;

@@ -8,13 +8,13 @@ export class CallbackDto {
   })
   @IsString()
   @IsOptional()
-  code: string;
+  code?: string;
 
   @IsString()
   @IsOptional()
-  error_description: string;
+  error_description?: string;
 
   @IsString()
   @IsOptional()
-  error: string;
+  error?: string;
 }

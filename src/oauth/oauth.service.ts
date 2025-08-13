@@ -68,12 +68,23 @@ export class OAuthService {
    * containing the leader access token.
    */
   async getLeaderAccessToken(query: CallbackDto) {
-    if (query.error && query.error_description) {
+    if (query.error) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
           error: query.error,
           message: query.error_description,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!query.code) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          error: 'Invalid request',
+          message: 'Code or error query parameter must be present',
         },
         HttpStatus.BAD_REQUEST,
       );

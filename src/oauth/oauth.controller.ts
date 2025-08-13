@@ -6,17 +6,15 @@ import {
   Post,
   Query,
   Res,
-  Request,
-  UseGuards,
   HttpStatus,
+  Body,
 } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { Response } from 'express';
 import { EventAPISource } from 'src/external-events/enums/event-source.enum';
 import { CallbackDto } from './dto/callback.dto';
-import { refreshCookieOptions } from 'src/common/configs/cookie.config';
 import {
-  ApiCookieAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -24,7 +22,7 @@ import {
   ApiSecurity,
 } from '@nestjs/swagger';
 import { TokenResponseDto } from './dto/token-response.dto';
-import { LeaderRefreshTokenGuard } from './guards/leader-refresh-token.guard';
+import { RefreshBodyDto } from './dto/refresh-body.dto';
 
 @Controller('oauth')
 export class OAuthController {
@@ -73,26 +71,25 @@ export class OAuthController {
   async oauthLeaderCallback(@Query() query: CallbackDto, @Res() res: Response) {
     const result = await this.oAuthService.getLeaderAccessToken(query);
 
-    res.cookie(
-      'leaderIdRefreshToken',
-      result.refresh_token,
-      refreshCookieOptions,
-    );
-
     return res.json({
       userId: result.user_id,
       accessToken: result.access_token,
+      refreshToken: result.refresh_token,
       source: EventAPISource.LEADER_ID,
     });
   }
 
 
-  @ApiCookieAuth('refreshToken')
   @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary:
       'Обновить токены доступа к leaderId. ' +
       'Требуется наличие refresh токена в защищенных куки',
+  })
+  @ApiBody({
+    description: 'Данные для обновления токенов',
+    type: RefreshBodyDto,
+    required: true,
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -100,21 +97,18 @@ export class OAuthController {
     type: TokenResponseDto,
   })
   @Post('refresh/leaderId')
-  @UseGuards(LeaderRefreshTokenGuard)
-  async oauthLeaderRefresh(@Request() req, @Res() res: Response) {
-    const refreshToken = req.cookies['refreshToken'];
-
-    const result = await this.oAuthService.refreshLeaderToken(refreshToken);
-
-    res.cookie(
-      'leaderIdRefreshToken',
-      result.refresh_token,
-      refreshCookieOptions,
+  async oauthLeaderRefresh(
+    @Body() body: RefreshBodyDto, 
+    @Res() res: Response,
+  ) {
+    const result = await this.oAuthService.refreshLeaderToken(
+      body.refreshToken,
     );
 
     return res.json({
       userId: result.user_id,
       accessToken: result.access_token,
+      refreshToken: result.refresh_token,
       source: EventAPISource.LEADER_ID,
     });
   }

@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CacheServiceInterface } from './interfaces/cache-service.interface';
+import { CacheServiceInterface } from './cache-service.interface';
 import { LRUCache } from 'lru-cache';
+import {
+  CACHE_DEFAULT_TTL,
+  CACHE_MAX_AMOUNT,
+} from 'src/common/constants/cache.constant';
 
 @Injectable()
 export class CacheService implements CacheServiceInterface {
@@ -10,8 +14,8 @@ export class CacheService implements CacheServiceInterface {
 
   constructor() {
     this.cache = new LRUCache<string, any>({
-      max: 500,
-      ttl: 1000 * 60,
+      max: CACHE_MAX_AMOUNT,
+      ttl: CACHE_DEFAULT_TTL,
     });
   }
 

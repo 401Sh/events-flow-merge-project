@@ -138,12 +138,14 @@ npm run migration:revert
 ```
 src/
 │
-│── auth/               # Модули аунтентификации и авторизации
+│── auth/               # Модуль аунтентификации и авторизации
 │   ├── dto/
 │   ├── entities/
 │   ├── guards/
 │   ├── strategies/
 │   ├── types/
+│
+│── cache/              # Модуль кеширования
 │
 ├── client-auth/        # Модуль получения токенов доступа к API
 │

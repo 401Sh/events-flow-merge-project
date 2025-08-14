@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 
 export class SubscribeLeaderEventDto {
   @ApiProperty({
@@ -21,11 +21,7 @@ export class SubscribeLeaderEventDto {
   @IsNumber()
   eventId: number;
 
-  @ApiProperty({
-    example: 2,
-    default: 1,
-    type: Number,
-  })
   @IsNumber()
+  @IsOptional()
   numberParticipantst: number = 1;
 }

@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { EventsListResultDto } from './dto/events-list-result.dto';
+import { ExternalEventsListResultDto } from './dto/events-list-result.dto';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { LeaderDataDto } from './dto/leader-data.dto';
 import { TimepadDataDto } from './dto/timepad-data.dto';
@@ -112,7 +112,7 @@ export class ExternalEventsService {
     source: EventAPISource,
     query: GetEventListQueryDto,
   ) {
-    let result: EventsListResultDto;
+    let result: ExternalEventsListResultDto;
 
     if (source === EventAPISource.TIMEPAD) {
       result = await this.timepadService.getAllWithMeta(query);

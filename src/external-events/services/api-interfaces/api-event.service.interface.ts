@@ -1,4 +1,4 @@
-import { EventsListResultDto } from '../../dto/events-list-result.dto';
+import { ExternalEventsListResultDto } from '../../dto/events-list-result.dto';
 import { GetEventListQueryDto } from '../../dto/get-event-list-query.dto';
 
 export interface APIEventInterface<T> {
@@ -36,7 +36,9 @@ export interface APIEventInterface<T> {
    * }>} A promise that resolves to an object containing the list of events and
    * pagination metadata.
    */
-  getAllWithMeta(query: GetEventListQueryDto): Promise<EventsListResultDto>;
+  getAllWithMeta(
+    query: GetEventListQueryDto
+  ): Promise<ExternalEventsListResultDto>;
 
   /**
    * Retrieves a single API event by its ID.

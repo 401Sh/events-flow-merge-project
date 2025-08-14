@@ -26,7 +26,7 @@ export class EventsListMetaDto {
   currentPage: number;
 }
 
-export class EventsListResultDto {
+export class ExternalEventsListResultDto {
   @ApiProperty({
     description: 'Список мероприятий',
     isArray: true,

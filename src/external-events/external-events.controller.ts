@@ -20,7 +20,7 @@ import {
   TimepadEventResultDto,
   LeaderEventResultDto,
 } from './dto/event-result.dto';
-import { EventsListResultDto } from './dto/events-list-result.dto';
+import { ExternalEventsListResultDto } from './dto/events-list-result.dto';
 import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
 import { EventAPISource } from './enums/event-source.enum';
 import {
@@ -86,7 +86,7 @@ export class ExternalEventsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Список мероприятий от двух источников',
-    type: EventsListResultDto,
+    type: ExternalEventsListResultDto,
   })
   @Get()
   async getEventsList(@Query() query: GetEventListQueryDto) {
@@ -154,7 +154,7 @@ export class ExternalEventsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Список мероприятий от источника',
-    type: EventsListResultDto,
+    type: ExternalEventsListResultDto,
   })
   @Get(':source')
   async getEventsListBySource(

@@ -18,6 +18,7 @@ import { GeoService } from 'src/geo/geo.service';
 import { TimepadApiRateLimiterService } from 'src/common/api-utils/timepad-api-limiter.service';
 import { TimepadMapperService } from './timepad-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
+import { TIMEPAD_EVENT_MIN_AMOUNT } from 'src/common/constants/timepad-request.constant';
 
 @Injectable()
 export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
@@ -112,8 +113,9 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
 
   async getAmount(query: GetEventListQueryDto) {
+    const { limit, page, ...otherQuery } = query;
     const cacheKey =
-      TimepadEventService.name + this.getAmount.name + JSON.stringify(query);
+      TimepadEventService.name + this.getAmount.name + JSON.stringify(otherQuery);
 
     const cachedAmount = await this.cacheService.get<number>(cacheKey);
     if (cachedAmount) {
@@ -121,7 +123,10 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
       return cachedAmount;
     }
 
-    const params = await this.buildSearchParams(query, 1);
+    const params = await this.buildSearchParams(
+      query,
+      TIMEPAD_EVENT_MIN_AMOUNT,
+    );
 
     const data = await this.fetchFromTimepadApi<{ total: number }>(
       '/events',

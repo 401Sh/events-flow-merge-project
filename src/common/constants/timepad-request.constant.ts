@@ -1,0 +1,1 @@
+export const TIMEPAD_EVENT_MIN_AMOUNT = 1;

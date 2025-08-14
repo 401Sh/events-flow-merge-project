@@ -138,8 +138,9 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
 
   async getAmount(query: GetEventListQueryDto): Promise<number> {
+    const { limit, page, ...otherQuery } = query;
     const cacheKey =
-      LeaderEventService.name + this.getAmount.name + JSON.stringify(query);
+      LeaderEventService.name + this.getAmount.name + JSON.stringify(otherQuery);
 
     const cachedAmount = await this.cacheService.get<number>(cacheKey);
     if (cachedAmount) {

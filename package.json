@@ -50,6 +50,7 @@
     "editorjs-html": "^4.0.5",
     "handlebars": "^4.7.8",
     "he": "^1.2.0",
+    "lru-cache": "^11.1.0",
     "nodemailer": "^7.0.5",
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",

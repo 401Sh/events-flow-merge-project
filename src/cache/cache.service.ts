@@ -1,4 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { CacheServiceInterface } from './interfaces/cache-service.interface';
+import { LRUCache } from 'lru-cache';
 
 @Injectable()
-export class CacheService {}
+export class CacheService implements CacheServiceInterface {
+  private readonly logger = new Logger(CacheService.name);
+
+  private readonly cache: LRUCache<string, any>;
+
+  constructor() {
+    this.cache = new LRUCache<string, any>({
+      max: 500,
+      ttl: 1000 * 60,
+    });
+  }
+
+  get<T>(key: string): T | undefined {
+    const value = this.cache.get(key);
+
+    this.logger.debug(`Cache get key ${key} and found value ${value}`);
+    return value;
+  }
+
+
+  set<T>(key: string, value: T, ttl?: number): void {
+    if (ttl) {
+      this.cache.set(key, value, { ttl });
+    } else {
+      this.cache.set(key, value);
+    }
+    this.logger.debug(`Cache set key ${key} and value ${value}`);
+  }
+
+
+  del(key: string): void {
+    this.cache.delete(key);
+    this.logger.debug(`Cache deleted key ${key}`);
+  }
+
+
+  reset(): void {
+    this.cache.clear();
+    this.logger.debug('Cache has been reset');
+  }
+}

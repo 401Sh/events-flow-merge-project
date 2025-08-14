@@ -5,6 +5,7 @@ import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
 import { join } from 'path';
 import { readFileSync } from 'fs';
+import { MAIL_CONFIRMATION_SUBJECT, MAIL_FROM_NAME, MAIL_TEMPLATES_PATH } from 'src/common/constants/mail.constant';
 
 @Injectable()
 export class MailService {
@@ -26,7 +27,7 @@ export class MailService {
       },
       {
         from: {
-          name: 'No-reply',
+          name: MAIL_FROM_NAME,
           address: this.configService.getOrThrow('MAIL_FROM'),
         },
       },
@@ -38,14 +39,14 @@ export class MailService {
 
     await this.mailer.sendMail({
       to: user.email,
-      subject: 'Welcome to Our Events! Confirm your Email',
+      subject: MAIL_CONFIRMATION_SUBJECT,
       html,
     });
   }
 
 
   private loadTemplate(name: string) {
-    const tempFolder = join(__dirname, './templates');
+    const tempFolder = join(__dirname, MAIL_TEMPLATES_PATH);
     const tempPath = join(tempFolder, name);
 
     const source = readFileSync(tempPath, 'utf8');

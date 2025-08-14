@@ -23,6 +23,7 @@ import {
 } from './common/constants/throttle.constant';
 import { ApiKeyGuard } from './common/guards/api-key.guard';
 import { StorageModule } from './storage/storage.module';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { StorageModule } from './storage/storage.module';
       ],
     }),
     StorageModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [

@@ -18,7 +18,7 @@ export function mapLeaderVisited(raw: any): VisitedEventDto {
     completedAt: raw.completedAt || null,
     signedUpAt: raw.createdAt,
 
-    title: raw.name,
+    title: raw.event?.name,
     description: description,
     startsAt: raw.event?.dateStart
       ? localeDateToIso(raw.event!.dateStart, tz)

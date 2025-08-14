@@ -51,7 +51,6 @@ export class ExternalEventsService {
    * event data and pagination metadata.
    */
   async getEventsList(query: GetEventListQueryDto) {
-    // TODO: Add cache
     const { leaderEventsAmount, timepadEventsAmount } =
       await this.getEventsAmount(query);
 

@@ -18,6 +18,7 @@ import { GeoService } from 'src/geo/geo.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LEADER_EVENT_MIN_AMOUNT, LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
 import { LeaderMapperService } from './leader-mapper.service';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -32,6 +33,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     private readonly geoService: GeoService,
     private readonly rateLimiter: LeaderApiRateLimiterService,
     private readonly leaderMapper: LeaderMapperService,
+    private readonly cacheService: CacheService,
   ) {
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');
   }
@@ -136,6 +138,15 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
 
   async getAmount(query: GetEventListQueryDto): Promise<number> {
+    const cacheKey =
+      LeaderEventService.name + this.getAmount.name + JSON.stringify(query);
+
+    const cachedAmount = await this.cacheService.get<number>(cacheKey);
+    if (cachedAmount) {
+      this.logger.debug(`Finded leader cache for key: ${cacheKey}`);
+      return cachedAmount;
+    }
+
     const params = await this.buildSearchParams(query);
 
     const data = await this.fetchFromLeaderApi<{
@@ -148,6 +159,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     const totalAmount = data.meta?.totalCount || 0;
     const normalizedAmount = totalAmount > maxEvents ? maxEvents : totalAmount;
 
+    this.cacheService.set<number>(cacheKey, normalizedAmount);
     return normalizedAmount;
   }
 

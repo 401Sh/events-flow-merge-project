@@ -11,9 +11,16 @@ import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
 import { GeoModule } from 'src/geo/geo.module';
 import { LeaderMapperService } from './services/leader-mapper.service';
 import { TimepadMapperService } from './services/timepad-mapper.service';
+import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
-  imports: [ClientAuthModule, HttpModule, DictionariesModule, GeoModule],
+  imports: [
+    ClientAuthModule,
+    HttpModule,
+    DictionariesModule,
+    GeoModule,
+    CacheModule,
+  ],
   controllers: [ExternalEventsController],
   providers: [
     ExternalEventsService,

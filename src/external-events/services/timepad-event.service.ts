@@ -17,6 +17,7 @@ import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { TimepadApiRateLimiterService } from 'src/common/api-utils/timepad-api-limiter.service';
 import { TimepadMapperService } from './timepad-mapper.service';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
@@ -31,6 +32,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     private readonly geoService: GeoService,
     private readonly rateLimiter: TimepadApiRateLimiterService,
     private readonly timepadMapper: TimepadMapperService,
+    private readonly cacheService: CacheService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');
   }
@@ -110,6 +112,15 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
 
   async getAmount(query: GetEventListQueryDto) {
+    const cacheKey =
+      TimepadEventService.name + this.getAmount.name + JSON.stringify(query);
+
+    const cachedAmount = await this.cacheService.get<number>(cacheKey);
+    if (cachedAmount) {
+      this.logger.debug(`Finded timepad cache for key: ${cacheKey}`);
+      return cachedAmount;
+    }
+
     const params = await this.buildSearchParams(query, 1);
 
     const data = await this.fetchFromTimepadApi<{ total: number }>(
@@ -118,7 +129,10 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     );
 
     this.logger.debug('Timepad events amount recieved successfully');
-    return data.total || 0;
+    const amount = data.total || 0;
+
+    this.cacheService.set<number>(cacheKey, amount);
+    return amount;
   }
 
 

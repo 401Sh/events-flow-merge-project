@@ -53,6 +53,7 @@ export class AuthController {
     };
   }
 
+
   @ApiOperation({
     summary: 'Подтверждение регистрации аккаунта',
   })
@@ -97,6 +98,7 @@ export class AuthController {
 
     return res.json({ accessToken: tokens.accessToken });
   }
+
 
   @ApiOperation({
     summary: 'Авторизация пользователя',
@@ -143,6 +145,7 @@ export class AuthController {
     return res.json({ accessToken: tokens.accessToken });
   }
 
+
   @ApiBearerAuth()
   @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
@@ -177,6 +180,7 @@ export class AuthController {
       accessToken: '',
     });
   }
+
 
   @ApiBearerAuth()
   @ApiSecurity('ApiKeyAuth')

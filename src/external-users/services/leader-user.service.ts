@@ -88,7 +88,7 @@ export class LeaderUserService implements APIUserInterface {
     const rawEvents = data.items || [];
     const mappedEvents = rawEvents.map(mapLeaderVisited);
 
-    this.logger.debug('Leader event list recieved successfully');
+    this.logger.debug('Leader participation list recieved successfully');
 
     const dataWithMeta = {
       data: mappedEvents,
@@ -167,6 +167,24 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
+  /**
+   * Fetches a paginated list of visited event participations from the leader API.
+   *
+   * Sends an HTTP GET request to retrieve one page of event participations for 
+   * a specific user, including pagination parameters such as page number and 
+   * page size.
+   *
+   * This method requires an authorization token and user ID to query the API.
+   *
+   * @async
+   * @param {string} token - Authorization token for accessing the API.
+   * @param {number} userId - The ID of the user whose event participations are 
+   * being fetched.
+   * @param {number} page - The page number to fetch, used for pagination.
+   * @returns {Promise<LeaderResponseType>} A promise resolving to the response 
+   * containing the list of event participations and pagination metadata.
+   * @private
+   */
   private async fetchVisitedEventPage(
     token: string,
     userId: number,
@@ -184,6 +202,26 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
+  /**
+   * Filters visited events based on their start date relative to the current date,
+   * allowing selection of either completed (past) or upcoming (future) events.
+   *
+   * This method compares each event's `event.dateStart` against the provided 
+   * `now` date and returns events that are either before or after `now`, 
+   * depending on the `isCompleted` flag.
+   *
+   * @param {any[]} events - The array of visited events to filter.
+   * @param {Date} now - The reference date used to determine if an event is 
+   * completed or upcoming.
+   * @param {boolean} isCompleted - Flag indicating which events to select:
+   *   - `true`: returns events where the start date is less than or equal to 
+   * `now` (completed events).
+   *   - `false`: returns events where the start date is greater than `now` 
+   * (upcoming events).
+   * @returns {any[]} A filtered array of events matching the specified 
+   * completion criteria.
+   * @private
+   */
   private filterVisitedEvents(
     events: any[] = [],
     now: Date,

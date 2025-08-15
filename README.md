@@ -174,6 +174,7 @@ src/
 │   ├── enums/
 │   ├── interfaces/
 │   ├── services/       # Сервисы логики запросов данных со сторонних API
+│   ├── types/
 │
 │── external-users/     # Модуль пользователей сторонних API
 │   ├── api-utils/      # Мапперы для приведения данных к visited events

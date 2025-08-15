@@ -18,6 +18,7 @@ import { VisitedEventDto } from '../dto/visited-event.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LEADER_EVENT_MAX_AMOUNT } from 'src/common/constants/leader-request.constant';
+import { LeaderResponseType } from 'src/external-events/types/leader-response.type';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -168,57 +169,50 @@ export class LeaderUserService implements APIUserInterface {
    */
   private async getFutureUserEvents(token: string, userId: number) {
     let page = 1;
+    const now = new Date();
     const allEvents: any[] = [];
 
-    type LeaderResponseType = {
-      items: any[];
-      meta: {
-        totalCount: number;
-        paginationPageCount: number;
-        paginationPage: number;
-      };
-    };
-
-    const firstPageData = await this.requestLeaderApi<LeaderResponseType>(
-      RESTMethod.GET,
-      `/users/${userId}/event-participations`,
-      token,
-      {
-        paginationSize: LEADER_EVENT_MAX_AMOUNT,
-        paginationPage: page++,
-      }
-    );
+    const firstPageData = await this.fetchVisitedEventPage(token, userId, page);
 
     const totalPages = firstPageData.meta.paginationPageCount;
 
     let rawEvents = firstPageData.items || [];
 
-    const now = new Date();
-    const futureEvents = rawEvents.filter(
-      (e) => new Date(e.event.dateStart) > now
-    );
+    const futureEvents = this.filterVisitedEvents(rawEvents, now);
     allEvents.push(...futureEvents);
 
     for (; page <= totalPages; page++) {
-      const data = await this.requestLeaderApi<LeaderResponseType>(
-        RESTMethod.GET,
-        `/users/${userId}/event-participations`,
-        token,
-        {
-          paginationSize: LEADER_EVENT_MAX_AMOUNT,
-          paginationPage: page,
-        }
-      );
+      const data = await this.fetchVisitedEventPage(token, userId, page);
   
       const rawEvents = data.items || [];
 
-      const futureEvents = rawEvents.filter(
-        (e) => new Date(e.event.dateStart) > now
-      );
+      const futureEvents = this.filterVisitedEvents(rawEvents, now);
       allEvents.push(...futureEvents);
     }
 
     return allEvents.map(mapLeaderVisited);
+  }
+
+
+  private async fetchVisitedEventPage(
+    token: string,
+    userId: number,
+    page: number
+  ): Promise<LeaderResponseType> {
+    return await this.requestLeaderApi(
+      RESTMethod.GET,
+      `/users/${userId}/event-participations`,
+      token,
+      {
+        paginationSize: LEADER_EVENT_MAX_AMOUNT,
+        paginationPage: page,
+      },
+    );
+  }
+
+
+  private filterVisitedEvents(events: any[] = [], now: Date): any[] {
+    return events.filter(e => new Date(e.event.dateStart) > now);
   }
 
 

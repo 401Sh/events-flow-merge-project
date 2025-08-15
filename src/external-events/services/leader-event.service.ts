@@ -19,6 +19,7 @@ import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rat
 import { LEADER_EVENT_MIN_AMOUNT, LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
 import { LeaderMapperService } from './leader-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
+import { LeaderResponseType } from '../types/leader-response.type';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -67,15 +68,6 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     const { limit, page } = query;
 
     const params = await this.buildSearchParams(query, limit, page);
-
-    type LeaderResponseType = {
-      items: any[];
-      meta: {
-        totalCount: number;
-        paginationPageCount: number;
-        paginationPage: number;
-      };
-    };
 
     const data = await this.fetchFromLeaderApi<LeaderResponseType>(
       '/events/search',

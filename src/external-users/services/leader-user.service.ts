@@ -69,15 +69,6 @@ export class LeaderUserService implements APIUserInterface {
       paginationPage: page,
     };
 
-    type LeaderResponseType = {
-      items: any[];
-      meta: {
-        totalCount: number;
-        paginationPageCount: number;
-        paginationPage: number;
-      };
-    };
-
     const data = await this.requestLeaderApi<LeaderResponseType>(
       RESTMethod.GET,
       `/users/${userId}/event-participations`,
@@ -121,7 +112,7 @@ export class LeaderUserService implements APIUserInterface {
     const futureEvents = this.filterVisitedEvents(rawEvents, now, isCompleted);
     allEvents.push(...futureEvents);
 
-    for (; page <= totalPages; page++) {
+    for (page += 1; page <= totalPages; page++) {
       const data = await this.fetchVisitedEventPage(token, userId, page);
   
       const rawEvents = data.items || [];
@@ -130,6 +121,7 @@ export class LeaderUserService implements APIUserInterface {
       allEvents.push(...futureEvents);
     }
 
+    this.logger.debug('Leader participation list received and filtered successfully');
     return allEvents.map(mapLeaderVisited);
   }
 

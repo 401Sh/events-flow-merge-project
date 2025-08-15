@@ -150,24 +150,25 @@ export class LeaderUserService implements APIUserInterface {
 
   /**
    * Fetches all future (not completed) event participations for a user from
-   * the leader API.
+   * the leader API by paginating through all available pages.
    *
-   * This method paginates through results until no more future events remain
-   * or all pages are fetched.
+   * This method fetches each page of event participations, filters out past
+   * events by comparing event start date with the current time, and aggregates
+   * all future events until all pages are processed.
    *
    * @async
-   * @param {string} token - Authorization token used to authenticate the
+   * @param {string} token - Authorization token used to authenticate the 
    * request.
-   * @param {number} userId - The ID of the user whose future events are being
+   * @param {number} userId - The ID of the user whose future events are being 
    * fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array
-   * of future event participations, normalized.
+   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array 
+   * of normalized
+   * future event participations for the user.
    * @private
    */
   private async getFutureUserEvents(token: string, userId: number) {
     let page = 1;
     const allEvents: any[] = [];
-    const keepFetching = true;
 
     type LeaderResponseType = {
       items: any[];
@@ -178,29 +179,43 @@ export class LeaderUserService implements APIUserInterface {
       };
     };
 
-    while (keepFetching) {
-      const params = {
+    const firstPageData = await this.requestLeaderApi<LeaderResponseType>(
+      RESTMethod.GET,
+      `/users/${userId}/event-participations`,
+      token,
+      {
         paginationSize: LEADER_EVENT_MAX_AMOUNT,
-        paginationPage: page,
-      };
+        paginationPage: page++,
+      }
+    );
 
+    const totalPages = firstPageData.meta.paginationPageCount;
+
+    let rawEvents = firstPageData.items || [];
+
+    const now = new Date();
+    const futureEvents = rawEvents.filter(
+      (e) => new Date(e.event.dateStart) > now
+    );
+    allEvents.push(...futureEvents);
+
+    for (; page <= totalPages; page++) {
       const data = await this.requestLeaderApi<LeaderResponseType>(
         RESTMethod.GET,
         `/users/${userId}/event-participations`,
         token,
-        params,
+        {
+          paginationSize: LEADER_EVENT_MAX_AMOUNT,
+          paginationPage: page,
+        }
       );
-
+  
       const rawEvents = data.items || [];
-      if (rawEvents.length === 0) break;
 
-      const futureEvents = rawEvents.filter((e) => e.completed === false);
+      const futureEvents = rawEvents.filter(
+        (e) => new Date(e.event.dateStart) > now
+      );
       allEvents.push(...futureEvents);
-
-      if (rawEvents.some((e) => e.completed === true)) break;
-      if (rawEvents.length < LEADER_EVENT_MAX_AMOUNT) break;
-
-      page++;
     }
 
     return allEvents.map(mapLeaderVisited);

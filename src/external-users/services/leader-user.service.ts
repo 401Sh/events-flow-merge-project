@@ -108,11 +108,29 @@ export class LeaderUserService implements APIUserInterface {
     userId: number,
     isCompleted: boolean,
   ) {
-    if (isCompleted) {
-      return await this.getVisitedUserEvents(token, userId);
+    let page = 1;
+    const now = new Date();
+    const allEvents: any[] = [];
+
+    const firstPageData = await this.fetchVisitedEventPage(token, userId, page);
+
+    const totalPages = firstPageData.meta.paginationPageCount;
+
+    let rawEvents = firstPageData.items || [];
+
+    const futureEvents = this.filterVisitedEvents(rawEvents, now, isCompleted);
+    allEvents.push(...futureEvents);
+
+    for (; page <= totalPages; page++) {
+      const data = await this.fetchVisitedEventPage(token, userId, page);
+  
+      const rawEvents = data.items || [];
+
+      const futureEvents = this.filterVisitedEvents(rawEvents, now, isCompleted);
+      allEvents.push(...futureEvents);
     }
 
-    return await this.getFutureUserEvents(token, userId);
+    return allEvents.map(mapLeaderVisited);
   }
 
 
@@ -149,51 +167,6 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  /**
-   * Fetches all future (not completed) event participations for a user from
-   * the leader API by paginating through all available pages.
-   *
-   * This method fetches each page of event participations, filters out past
-   * events by comparing event start date with the current time, and aggregates
-   * all future events until all pages are processed.
-   *
-   * @async
-   * @param {string} token - Authorization token used to authenticate the 
-   * request.
-   * @param {number} userId - The ID of the user whose future events are being 
-   * fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array 
-   * of normalized
-   * future event participations for the user.
-   * @private
-   */
-  private async getFutureUserEvents(token: string, userId: number) {
-    let page = 1;
-    const now = new Date();
-    const allEvents: any[] = [];
-
-    const firstPageData = await this.fetchVisitedEventPage(token, userId, page);
-
-    const totalPages = firstPageData.meta.paginationPageCount;
-
-    let rawEvents = firstPageData.items || [];
-
-    const futureEvents = this.filterVisitedEvents(rawEvents, now);
-    allEvents.push(...futureEvents);
-
-    for (; page <= totalPages; page++) {
-      const data = await this.fetchVisitedEventPage(token, userId, page);
-  
-      const rawEvents = data.items || [];
-
-      const futureEvents = this.filterVisitedEvents(rawEvents, now);
-      allEvents.push(...futureEvents);
-    }
-
-    return allEvents.map(mapLeaderVisited);
-  }
-
-
   private async fetchVisitedEventPage(
     token: string,
     userId: number,
@@ -211,74 +184,15 @@ export class LeaderUserService implements APIUserInterface {
   }
 
 
-  private filterVisitedEvents(events: any[] = [], now: Date): any[] {
-    return events.filter(e => new Date(e.event.dateStart) > now);
-  }
-
-
-  /**
-   * Fetches all completed (visited) event participations for a user from the
-   * leader API.
-   * It paginates through results and collects events marked as completed.
-   *
-   * @async
-   * @param {string} token - Authorization token used to authenticate the
-   * request.
-   * @param {number} userId - The ID of the user whose visited events are being
-   * fetched.
-   * @returns {Promise<VisitedEventDto[]>} A promise that resolves to an array
-   * of completed event participations, normalized.
-   * @private
-   */
-  private async getVisitedUserEvents(token: string, userId: number) {
-    let page = 1;
-    let allEvents: any[] = [];
-    let foundVisited = false;
-    const keepFetching = true;
-
-    type LeaderResponseType = {
-      items: any[];
-      meta: {
-        totalCount: number;
-        paginationPageCount: number;
-        paginationPage: number;
-      };
-    };
-
-    while (keepFetching) {
-      const params = {
-        paginationSize: LEADER_EVENT_MAX_AMOUNT,
-        paginationPage: page,
-      };
-
-      const data = await this.requestLeaderApi<LeaderResponseType>(
-        RESTMethod.GET,
-        `/users/${userId}/event-participations`,
-        token,
-        params,
-      );
-
-      const rawEvents = data.items || [];
-      if (rawEvents.length === 0) break;
-
-      if (!foundVisited) {
-        const visitedEvents = rawEvents.filter((e) => e.completed === true);
-        if (visitedEvents.length > 0) {
-          foundVisited = true;
-          allEvents.push(...visitedEvents);
-        }
-      } else {
-        allEvents.push(...rawEvents);
-      }
-
-      if (rawEvents.length < LEADER_EVENT_MAX_AMOUNT) break;
-
-      page++;
-    }
-
-    allEvents = allEvents.filter((e) => e.completed === true);
-
-    return allEvents.map(mapLeaderVisited);
+  private filterVisitedEvents(
+    events: any[] = [],
+    now: Date,
+    isCompleted: boolean,
+  ) {
+    return events.filter(e => {
+      const eventDate = new Date(e.event.dateStart);
+      return isCompleted ? eventDate <= now : eventDate > now;
+    });
   }
 
 

@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { EventAccess } from '../enums/event-access.enum';
 import { EventThemeEntity } from '../../dictionaries/entities/theme.entity';
-import { EventParticipationApprove } from '../enums/event-approve.enum';
+import { EventParticipationApprove } from '../enums/event-participation-approve.enum';
 import { ParticipantEntity } from 'src/users/entities/participant.entity';
 
 @Entity('events')

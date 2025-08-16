@@ -98,7 +98,7 @@ export class EventsService {
    * @throws {BadRequestException} Throws if the event with the given ID does
    * not exist.
    */
-  async findById(eventId: number) {
+  async findMyById(eventId: number) {
     const event = await this.eventRepository
       .createQueryBuilder('events')
       .leftJoinAndSelect('events.themes', 'themes')
@@ -202,7 +202,7 @@ export class EventsService {
    *   }
    * }>} Paginated list of events matching the criteria.
    */
-  async findMy(userId: number, query: GetEventListQueryDto) {
+  async findAllMy(userId: number, query: GetEventListQueryDto) {
     const { limit, page, search, dateFrom, dateTo } = query;
 
     const queryBuilder = this.eventRepository.createQueryBuilder('events');

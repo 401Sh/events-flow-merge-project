@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsDatesConsistent } from '../validators/event-date.validator';
-import { EventParticipationApprove } from '../enums/event-approve.enum';
+import { EventParticipationApprove } from '../enums/event-participation-approve.enum';
 
 export class UpdateEventBodyDto {
   @ApiPropertyOptional({

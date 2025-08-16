@@ -213,7 +213,7 @@ export class ExternalUsersController {
   ) {
     const token = req.userToken;
 
-    await this.externalUsersService.unsubscribeToLeaderEvent(
+    return await this.externalUsersService.unsubscribeToLeaderEvent(
       token,
       userId,
       uuid,

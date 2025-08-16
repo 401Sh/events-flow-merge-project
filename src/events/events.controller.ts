@@ -104,7 +104,7 @@ export class EventsController {
   @UseGuards(AccessTokenGuard, EventOwnerGuard)
   @Get(':eventId/self')
   async findMyEvent(@Param('eventId', ParseIntPipe) eventId: number) {
-    const result = await this.eventsService.findById(eventId);
+    const result = await this.eventsService.findMyById(eventId);
 
     return result;
   }
@@ -208,7 +208,7 @@ export class EventsController {
   ) {
     const userId = req.user['sub'];
 
-    const result = await this.eventsService.findMy(userId, query);
+    const result = await this.eventsService.findAllMy(userId, query);
 
     return result;
   }

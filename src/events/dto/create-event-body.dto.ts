@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsDatesConsistent } from '../validators/event-date.validator';
+import { EventParticipationApprove } from '../enums/event-approve.enum';
 
 export class CreateEventBodyDto {
   @ApiProperty({
@@ -95,6 +96,17 @@ export class CreateEventBodyDto {
   @IsOptional()
   @IsEnum(EventAccess)
   accessType: EventAccess = EventAccess.PUBLIC;
+
+  @ApiPropertyOptional({
+    description:
+      'Форма одобрения записи на мероприятие.\n' +
+      'open - участие в мероприятии одобряется автоматически для всех,\n' +
+      'manual - одобрение участия в мероприятии нужно выполнять вручную',
+    enum: EventParticipationApprove,
+  })
+  @IsOptional()
+  @IsEnum(EventParticipationApprove)
+  approveType: EventParticipationApprove = EventParticipationApprove.OPEN;
 
   @ApiPropertyOptional({
     description: 'Список id тем, связанных с мероприятием',

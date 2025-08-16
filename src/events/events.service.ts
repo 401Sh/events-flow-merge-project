@@ -102,9 +102,17 @@ export class EventsService {
     const event = await this.eventRepository
       .createQueryBuilder('events')
       .leftJoinAndSelect('events.themes', 'themes')
+      .leftJoinAndSelect('events.participants', 'participants')
+      .leftJoin('participants.user', 'participantUser')
       .leftJoin('events.user', 'user')
       .where('events.id = :eventId', { eventId })
-      .select(['events', 'themes', 'user.id'])
+      .select([
+        'events',
+        'themes',
+        'participants',
+        'user.id',
+        'participantUser.id'
+      ])
       .getOne();
 
     if (!event) {
@@ -199,9 +207,11 @@ export class EventsService {
 
     const queryBuilder = this.eventRepository.createQueryBuilder('events');
 
-    queryBuilder.leftJoinAndSelect('events.themes', 'themes');
-    queryBuilder.leftJoin('events.user', 'user');
-    queryBuilder.where('user.id = :userId', { userId });
+    queryBuilder.leftJoinAndSelect('events.themes', 'themes')
+      .leftJoinAndSelect('events.participants', 'participants')
+      .leftJoin('participants.user', 'participantUser')
+      .leftJoin('events.user', 'user')
+      .where('user.id = :userId', { userId });
 
     if (search) {
       const searchLower = search.toLowerCase();
@@ -222,8 +232,15 @@ export class EventsService {
       queryBuilder.andWhere('events.endsAt <= :dateTo', { dateTo });
     }
 
-    queryBuilder.orderBy('events.startsAt', 'ASC');
-    queryBuilder.skip((page - 1) * limit).take(limit);
+    queryBuilder.orderBy('events.startsAt', 'ASC')
+      .skip((page - 1) * limit).take(limit)
+      .select([
+        'events',
+        'themes',
+        'participants',
+        'user.id',
+        'participantUser.id'
+      ]);
 
     const [events, eventsCount] = await queryBuilder.getManyAndCount();
     const totalPagesAmount = Math.ceil(eventsCount / limit);

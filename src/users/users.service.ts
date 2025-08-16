@@ -87,6 +87,21 @@ export class UsersService {
   }
 
 
+  async unsubscribeToEvent(userId: number, id: number) {
+    throw new Error('Method not implemented.');
+  }
+
+
+  async subscribeToEvent(userId: number, id: number) {
+    throw new Error('Method not implemented.');
+  }
+
+
+  async getUserEventHistory(userId: number, isCompleted: boolean) {
+    throw new Error('Method not implemented.');
+  }
+
+
   private async isEmailAvailable(email: string): Promise<boolean> {
     const existingUser = await this.userRepository.findOne({
       where: { email },

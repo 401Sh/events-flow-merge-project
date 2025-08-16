@@ -9,6 +9,7 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
+import { ParticipantEntity } from './participant.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -48,4 +49,7 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => EventEntity, (event) => event.user)
   events: EventEntity[];
+
+  @OneToMany(() => ParticipantEntity, (participation) => participation.user)
+  participations: ParticipantEntity[];
 }

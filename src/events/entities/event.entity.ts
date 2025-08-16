@@ -7,11 +7,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EventAccess } from '../enums/event-access.enum';
 import { EventThemeEntity } from '../../dictionaries/entities/theme.entity';
+import { EventParticipationApprove } from '../enums/event-approve.enum';
+import { ParticipantEntity } from 'src/users/entities/participant.entity';
 
 @Entity('events')
 export class EventEntity extends BaseEntity {
@@ -48,6 +51,13 @@ export class EventEntity extends BaseEntity {
   @Column({ type: 'enum', enum: EventAccess, default: EventAccess.PUBLIC })
   accessType: EventAccess = EventAccess.PUBLIC;
 
+  @Column({
+    type: 'enum',
+    enum: EventParticipationApprove,
+    default: EventParticipationApprove.OPEN,
+  })
+  approveType: EventParticipationApprove = EventParticipationApprove.OPEN;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -65,4 +75,7 @@ export class EventEntity extends BaseEntity {
     nullable: true,
   })
   user: UserEntity;
+
+  @OneToMany(() => ParticipantEntity, (participant) => participant.event)
+  participants: ParticipantEntity[];
 }

@@ -119,7 +119,6 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
     const cachedAmount = await this.cacheService.get<number>(cacheKey);
     if (cachedAmount) {
-      this.logger.debug(`Finded timepad cache for key: ${cacheKey}`);
       return cachedAmount;
     }
 

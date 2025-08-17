@@ -16,10 +16,14 @@ import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
-import { LEADER_EVENT_MIN_AMOUNT, LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
+import {
+  LEADER_EVENT_MIN_AMOUNT,
+  LEADER_EVENT_PAGE_LIMIT
+} from 'src/common/constants/leader-request.constant';
 import { LeaderEventMapperService } from './leader-event-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
 import { LeaderResponseType } from '../types/leader-response.type';
+import { CACHE_LONG_TTL } from 'src/common/constants/cache.constant';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -136,7 +140,6 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     const cachedAmount = await this.cacheService.get<number>(cacheKey);
     if (cachedAmount) {
-      this.logger.debug(`Finded leader cache for key: ${cacheKey}`);
       return cachedAmount;
     }
 
@@ -196,21 +199,36 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     }
 
     if (query.cityId) {
-      const city = await this.geoService.findCityById(query.cityId);
-      if (!city) return params;
+      const leaderCityId = await this.findLeaderCity(query.cityId);
 
-      const leaderCities = await this.fetchFromLeaderApi<any[]>(
-        '/cities/search',
-        { q: city.name },
-      );
-
-      const leaderCity = leaderCities[0];
-      if (leaderCity?.id) {
-        params['cityId'] = leaderCity.id;
-      }
+      params['cityId'] = leaderCityId;
     }
 
     return params;
+  }
+
+
+  private async findLeaderCity(cityId: number): Promise<number | undefined> {
+    const cacheKey = LeaderEventService.name + this.findLeaderCity.name + cityId;
+
+    const cachedCityId = await this.cacheService.get<number>(cacheKey);
+    if (cachedCityId) {
+      return cachedCityId;
+    }
+
+    const city = await this.geoService.findCityById(cityId);
+    if (!city) return undefined;
+
+    const leaderCities = await this.fetchFromLeaderApi<any[]>(
+      '/cities/search',
+      { q: city.name },
+    );
+
+    if (leaderCities[0]?.id) {
+      this.cacheService.set<number>(cacheKey, leaderCities[0]?.id, CACHE_LONG_TTL);
+      return leaderCities[0].id;
+    }
+    return undefined;
   }
 
 

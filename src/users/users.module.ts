@@ -3,8 +3,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
-import { ParticipantEntity } from './entities/participant.entity';
-import { EventsModule } from 'src/events/events.module';
+import { ParticipantEntity } from '../participants/entities/participant.entity';
 
 @Module({
   imports: [
@@ -12,7 +11,6 @@ import { EventsModule } from 'src/events/events.module';
       UserEntity,
       ParticipantEntity,
     ]),
-    EventsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

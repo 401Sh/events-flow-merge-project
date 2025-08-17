@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserEntity } from "./user.entity";
+import { UserEntity } from "../../users/entities/user.entity";
 import { EventEntity } from "../../events/entities/event.entity";
 
 @Entity('participants')

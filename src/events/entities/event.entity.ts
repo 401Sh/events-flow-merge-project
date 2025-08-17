@@ -14,7 +14,7 @@ import {
 import { EventAccess } from '../enums/event-access.enum';
 import { EventThemeEntity } from '../../dictionaries/entities/theme.entity';
 import { EventParticipationApprove } from '../enums/event-participation-approve.enum';
-import { ParticipantEntity } from '../../users/entities/participant.entity';
+import { ParticipantEntity } from '../../participants/entities/participant.entity';
 
 @Entity('events')
 export class EventEntity extends BaseEntity {

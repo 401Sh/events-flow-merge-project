@@ -9,7 +9,7 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { ParticipantEntity } from './participant.entity';
+import { ParticipantEntity } from '../../participants/entities/participant.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {

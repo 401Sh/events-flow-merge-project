@@ -79,7 +79,7 @@ export class AuthController {
     description: 'Пользователь успешно зарегистрирован',
     type: TokenResultDto,
   })
-  @Get('signup/confirm')
+  @Post('signup/confirm')
   async confirmEmail(
     @Headers('user-agent') userAgent: string,
     @Headers('x-fingerprint') fingerprint: string,

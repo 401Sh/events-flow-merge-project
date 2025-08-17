@@ -18,7 +18,7 @@ export class EventOwnerGuard implements CanActivate {
     const user = request.user;
     const eventId = request.params.eventId;
 
-    const event = await this.eventsService.findById(eventId);
+    const event = await this.eventsService.findMyById(eventId);
 
     if (event.user.id !== user.sub) {
       this.logger.log(

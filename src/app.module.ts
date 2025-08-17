@@ -24,6 +24,7 @@ import {
 import { ApiKeyGuard } from './common/guards/api-key.guard';
 import { StorageModule } from './storage/storage.module';
 import { CacheModule } from './cache/cache.module';
+import { ParticipantsModule } from './participants/participants.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { CacheModule } from './cache/cache.module';
     }),
     StorageModule,
     CacheModule,
+    ParticipantsModule,
   ],
   controllers: [AppController],
   providers: [

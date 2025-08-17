@@ -20,9 +20,9 @@
 - [ ] Список мероприятий на которые записался пользователь Timepad
 - [X] Регистрация и авторизация пользователя в Our events
 - [X] CRUD для собственных мероприятий Our events
-- [ ] Запись и отмена записи на мероприятия Our events
-- [ ] Список посещенных пользователем мероприятий Our events
-- [ ] Список мероприятий на которые записался пользователь Our events
+- [X] Запись и отмена записи на мероприятия Our events
+- [X] Список посещенных пользователем мероприятий Our events
+- [X] Список мероприятий на которые записался пользователь Our events
 
 ### Технологии
 
@@ -197,6 +197,9 @@ src/
 │   ├── interfaces/
 │   ├── services/       # Сервисы логики запросов данных со сторонних API
 │
+│── participants/       # Модуль участия в мероприятиях
+│   ├── entities/       # Сущности БД
+│
 │── storage/            # Модуль работы с S3
 │
 │── users/              # Модуль пользователей
@@ -231,7 +234,7 @@ package.json
 
 - **GET    /external/users/:userId/leaderId**                                          - Получение данных пользователя leaderId
 - protected **GET    /external/users/:userId/leaderId/participations**                 - Получения посещенных и предстоящих мероприятий пользователя leaderId
-- protected **GET    /external/users/:userId/leaderId/participations/:completed**      - Получения посещенных или предстоящих мероприятий пользователя leaderId
+- protected **GET    /external/users/:userId/leaderId/participations/:isCompleted**    - Получения посещенных или предстоящих мероприятий пользователя leaderId
 - protected **POST   /external/users/:userId/leaderId/participations**                 - Запись на мероприятие leaderId
 - protected **DELETE /external/users/:userId/leaderId/participations/:uuid**           - Отмена записи на мероприятие leaderId
 
@@ -244,7 +247,7 @@ package.json
 ### Модуль auth
 
 - **POST   /auth/signup**                       - Регистрация аккаунта по почте и паролю
-- **GET    /auth/signup/confirm**               - Подтверждение регистрации
+- **POST    /auth/signup/confirm**              - Подтверждение регистрации
 - **POST   /auth/signin**                       - Авторизация пользователя
 - protected **DELETE /auth/logout**             - Удаление пользовательской сессии
 - protected **POST   /auth/refresh**            - Обновление токенов доступа
@@ -259,6 +262,12 @@ package.json
 - protected **PATCH  /events/:eventId**               - Обновить данные мероприятия
 - protected **DELETE /events/:eventId**               - Удалить мероприятие
 - protected **POST   /events/:eventId/poster**        - Загрузить изображение-постер мероприятия
+
+### Модуль participants
+
+- protected **GET    /participants/:isCompleted**          - Получения посещенных или предстоящих мероприятий
+- protected **POST   /participants/:eventId**              - Запись на мероприятие
+- protected **DELETE /participants/:eventId**              - Отмена записи на мероприятие
 
 ## Статус проекта
 

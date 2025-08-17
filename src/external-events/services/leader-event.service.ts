@@ -17,7 +17,7 @@ import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LEADER_EVENT_MIN_AMOUNT, LEADER_EVENT_PAGE_LIMIT } from 'src/common/constants/leader-request.constant';
-import { LeaderMapperService } from './leader-mapper.service';
+import { LeaderEventMapperService } from './leader-event-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
 import { LeaderResponseType } from '../types/leader-response.type';
 
@@ -33,7 +33,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
     private readonly rateLimiter: LeaderApiRateLimiterService,
-    private readonly leaderMapper: LeaderMapperService,
+    private readonly leaderMapper: LeaderEventMapperService,
     private readonly cacheService: CacheService,
   ) {
     this.baseUrl = this.configService.getOrThrow('LEADER_API_URL');

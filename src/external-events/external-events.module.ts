@@ -9,8 +9,8 @@ import { HttpModule } from '@nestjs/axios';
 import { ClientAuthModule } from 'src/client-auth/client-auth.module';
 import { DictionariesModule } from 'src/dictionaries/dictionaries.module';
 import { GeoModule } from 'src/geo/geo.module';
-import { LeaderMapperService } from './services/leader-mapper.service';
-import { TimepadMapperService } from './services/timepad-mapper.service';
+import { LeaderEventMapperService } from './services/leader-event-mapper.service';
+import { TimepadEventMapperService } from './services/timepad-event-mapper.service';
 import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
@@ -28,8 +28,8 @@ import { CacheModule } from 'src/cache/cache.module';
     TimepadEventService,
     LeaderApiRateLimiterService,
     TimepadApiRateLimiterService,
-    LeaderMapperService,
-    TimepadMapperService,
+    LeaderEventMapperService,
+    TimepadEventMapperService,
   ],
 })
 export class ExternalEventsModule {}

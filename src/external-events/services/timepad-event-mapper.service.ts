@@ -10,7 +10,7 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { APIMapperInterface } from './api-interfaces/api-mapper.service.interface';
 
 @Injectable()
-export class TimepadMapperService
+export class TimepadEventMapperService
   implements APIMapperInterface<TimepadDataDto>
 {
   constructor(private readonly dictionariesService: DictionariesService) {}

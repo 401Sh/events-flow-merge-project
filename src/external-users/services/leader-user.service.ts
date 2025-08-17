@@ -11,7 +11,6 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
 import { GetParticipantsQueryDto } from '../dto/get-participants-query.dto';
-import { mapLeaderVisited } from '../api-utils/visited-leader-map';
 import { mapLeaderUser } from '../api-utils/user-profile-map';
 import { RESTMethod } from '../enums/rest-method.enum';
 import { VisitedEventDto } from '../dto/visited-event.dto';
@@ -19,6 +18,7 @@ import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LEADER_EVENT_MAX_AMOUNT } from 'src/common/constants/leader-request.constant';
 import { LeaderResponseType } from 'src/external-events/types/leader-response.type';
+import { LeaderVisitedMapperService } from './leader-visited-mapper.service';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -30,6 +30,7 @@ export class LeaderUserService implements APIUserInterface {
     private readonly httpService: HttpService,
     private readonly authService: LeaderClientAuthService,
     private readonly rateLimiter: LeaderApiRateLimiterService,
+    private readonly leaderMapper: LeaderVisitedMapperService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
   }
@@ -77,7 +78,7 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     const rawEvents = data.items || [];
-    const mappedEvents = rawEvents.map(mapLeaderVisited);
+    const mappedEvents = rawEvents.map(this.leaderMapper.map);
 
     this.logger.debug('Leader participation list recieved successfully');
 
@@ -122,7 +123,7 @@ export class LeaderUserService implements APIUserInterface {
     }
 
     this.logger.debug('Leader participation list received and filtered successfully');
-    return allEvents.map(mapLeaderVisited);
+    return allEvents.map(this.leaderMapper.map);
   }
 
 
@@ -140,7 +141,7 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event subscribed successfully');
-    const mappedEvent = mapLeaderVisited(rawEvent);
+    const mappedEvent = this.leaderMapper.map(rawEvent);
 
     return mappedEvent;
   }

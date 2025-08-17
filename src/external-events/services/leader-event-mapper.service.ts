@@ -11,7 +11,7 @@ import EditorJSHTML from 'editorjs-html';
 import { localeDateToIso } from 'src/common/functions/local-date-to-iso';
 
 @Injectable()
-export class LeaderMapperService implements APIMapperInterface<LeaderDataDto> {
+export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDto> {
   private readonly editjsParser = EditorJSHTML();
 
   constructor(private readonly dictionariesService: DictionariesService) {}

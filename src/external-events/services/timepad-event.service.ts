@@ -16,7 +16,7 @@ import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
 import { GeoService } from 'src/geo/geo.service';
 import { TimepadApiRateLimiterService } from 'src/common/api-utils/timepad-api-limiter.service';
-import { TimepadMapperService } from './timepad-mapper.service';
+import { TimepadEventMapperService } from './timepad-event-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
 import { TIMEPAD_EVENT_MIN_AMOUNT } from 'src/common/constants/timepad-request.constant';
 
@@ -32,7 +32,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
     private readonly dictionariesService: DictionariesService,
     private readonly geoService: GeoService,
     private readonly rateLimiter: TimepadApiRateLimiterService,
-    private readonly timepadMapper: TimepadMapperService,
+    private readonly timepadMapper: TimepadEventMapperService,
     private readonly cacheService: CacheService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>('TIMEPAD_API_URL');

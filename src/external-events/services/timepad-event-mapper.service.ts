@@ -19,7 +19,6 @@ export class TimepadEventMapperService
     const location = this.mapLocation(raw.location);
     const themes = await this.mapThemes(raw.categories);
 
-    // TODO: add short_description check
     const description = raw.description_html ? raw.description_html : null;
 
     const timepadObj: TimepadData = {

@@ -87,7 +87,6 @@ export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDt
   }
 
 
-  // TODO: Improve and add better 'other' theme logic
   private async mapThemes(rawThemes: any[]): Promise<EventThemesDto[]> {
     if (!rawThemes?.length) return [];
 

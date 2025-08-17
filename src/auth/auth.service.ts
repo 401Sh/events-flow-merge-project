@@ -361,7 +361,6 @@ export class AuthService {
     return session;
   }
 
-  // TODO: Change on normal implementation
   private generateOtp(length: number): string {
     const digits = '0123456789';
 

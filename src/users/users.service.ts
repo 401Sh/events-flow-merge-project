@@ -2,8 +2,8 @@ import {
   Injectable,
   Logger,
   ConflictException,
-  BadRequestException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
@@ -67,7 +67,7 @@ export class UsersService {
 
     if (!user) {
       this.logger.log(`No user with id: ${id}`);
-      throw new BadRequestException('User does not exist');
+      throw new UnauthorizedException();
     }
 
     this.logger.log(`Finded user with id: ${id}`);

@@ -211,7 +211,6 @@ export class ExternalEventsService {
   ): Promise<UnifiedEventDto[]> {
     const promises: Promise<UnifiedEventDto[]>[] = [];
 
-    // TODO: Refactor
     if (batchData.firstAmount != 0) {
       promises.push(
         this.leaderService.getAll(

@@ -157,7 +157,6 @@ export class LeaderClientAuthService implements OnModuleInit {
         error?.response?.data || error.message,
       );
 
-      // TODO: Implement error handling for failed re-authorization
       return this.authenticateClient();
     }
   }

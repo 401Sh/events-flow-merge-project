@@ -115,15 +115,15 @@ export class ExternalUsersService {
    * request.
    * @param {number} userId - The ID of the user who is unsubscribing from the
    * event.
-   * @param {string} uuid - The unique identifier of the event subscription to
+   * @param {string} eventId - The unique identifier of the event subscription to
    * cancel.
    * @returns {Promise<any>} Result of the unsubscription operation.
    */
-  async unsubscribeToLeaderEvent(token: string, userId: number, uuid: string) {
+  async unsubscribeToLeaderEvent(token: string, userId: number, eventId: number) {
     const result = await this.leaderService.unsubscribeToEvent(
       token,
       userId,
-      uuid,
+      eventId,
     );
 
     return result;

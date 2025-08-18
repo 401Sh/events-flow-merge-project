@@ -183,10 +183,10 @@ export class ExternalUsersController {
     example: 6893310,
   })
   @ApiParam({
-    name: 'uuid',
+    name: 'eventId',
     required: true,
-    description: 'UUID записи на мероприятие',
-    example: '158a3f67-1eba-46cd-bb85-34767232149d',
+    description: 'Id мероприятия',
+    example: 1,
   })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
@@ -194,10 +194,10 @@ export class ExternalUsersController {
   })
   @UseGuards(SimpleAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':userId/leaderId/participations/:uuid')
+  @Delete(':userId/leaderId/participations/:eventId')
   async unsubscribeToLeaderEvent(
     @Param('userId', ParseIntPipe) userId: number,
-    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Param('eventId', ParseIntPipe) eventId: number,
     @Request() req,
   ) {
     const token = req.userToken;
@@ -205,7 +205,7 @@ export class ExternalUsersController {
     return await this.externalUsersService.unsubscribeToLeaderEvent(
       token,
       userId,
-      uuid,
+      eventId,
     );
   }
 }

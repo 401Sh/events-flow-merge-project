@@ -1,5 +1,6 @@
 import { APIUserInterface } from './api-user.service.interface';
 import {
+  BadRequestException,
   Injectable,
   Logger,
   NotFoundException,
@@ -11,19 +12,18 @@ import { VisitedEventDto } from '../dto/visited-event.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 import { LeaderVisitedMapperService } from './leader-visited-mapper.service';
 import { LeaderUserFetchService } from './leader-user-fetch.service';
+import { LeaderParticipationService } from './leader-participation.service';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
   private readonly logger = new Logger(LeaderUserService.name);
-  private readonly baseUrl: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly leaderMapper: LeaderVisitedMapperService,
     private readonly leaderUserFetchService: LeaderUserFetchService,
-  ) {
-    this.baseUrl = this.configService.getOrThrow<string>('LEADER_API_URL');
-  }
+    private readonly leaderParticipationService: LeaderParticipationService,
+  ) {}
 
   async getUser(userId: number) {
     const rawUser = await this.leaderUserFetchService.requestLeaderApi<{ data: any }>(
@@ -105,13 +105,26 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event subscribed successfully');
+    this.leaderParticipationService.addParticipation(userId, body.eventId);
     const mappedEvent = this.leaderMapper.map(rawEvent);
 
     return mappedEvent;
   }
 
 
-  async unsubscribeToEvent(token: string, userId: number, uuid: string) {
+  async unsubscribeToEvent(token: string, userId: number, eventId: number) {
+    const participation = await this.leaderParticipationService.getEventParticipations(
+      token,
+      userId,
+      eventId
+    );
+
+    if (!participation) {
+      throw new BadRequestException('Event subscription not found');
+    }
+
+    const uuid = participation.eventParticipationUuid;
+
     const result = await this.leaderUserFetchService.requestLeaderApi<any>(
       RESTMethod.DELETE,
       `/users/${userId}/event-participations/${uuid}`,
@@ -119,6 +132,7 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event unsubscribed successfully');
+    this.leaderParticipationService.removeParticipation(userId, uuid);
 
     return result;
   }

@@ -59,9 +59,9 @@ export interface APIUserInterface {
    * @param {string} token - Authorization token used to authenticate the
    * request.
    * @param {number} userId - The ID of the user unsubscribing from the event.
-   * @param {string} uuid - The unique identifier of the event participation to
+   * @param {string} eventId - The unique identifier of the event participation to
    * unsubscribe from.
    * @returns {Promise<any>} Result of the unsubscription operation.
    */
-  unsubscribeToEvent(token: any, userId: number, uuid: string): Promise<any>;
+  unsubscribeToEvent(token: any, userId: number, eventId: number): Promise<any>;
 }

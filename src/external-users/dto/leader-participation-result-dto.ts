@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, IsOptional } from "class-validator";
+import { IsBoolean, IsNumber } from "class-validator";
 
 export class LeaderParticipationResult {
   @ApiProperty({
@@ -14,7 +14,6 @@ export class LeaderParticipationResult {
     description: 'Id мероприятия',
     type: Number,
   })
-  @IsOptional()
   @IsNumber()
-  eventId?: number;
+  eventId: number;
 }

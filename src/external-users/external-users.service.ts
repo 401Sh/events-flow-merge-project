@@ -47,6 +47,7 @@ export class ExternalUsersService {
 
     return {
       isParticipated: false,
+      eventId: eventId,
     };
   }
 

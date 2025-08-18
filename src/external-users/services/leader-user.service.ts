@@ -66,8 +66,7 @@ export class LeaderUserService implements APIUserInterface {
 
     let rawEvents = firstPageData.items || [];
 
-    const filteredEvents = this.filterVisitedEvents(rawEvents, now, isCompleted);
-    allEvents.push(...filteredEvents);
+    allEvents.push(...rawEvents);
 
     for (page += 1; page <= totalPages; page++) {
       const data = await this.leaderUserFetchService.fetchVisitedEventPage(
@@ -78,13 +77,15 @@ export class LeaderUserService implements APIUserInterface {
   
       const rawEvents = data.items || [];
 
-      const filteredEvents = this.filterVisitedEvents(rawEvents, now, isCompleted);
-      allEvents.push(...filteredEvents);
+      allEvents.push(...rawEvents);
     }
 
+    const filteredEvents = this.filterVisitedEvents(allEvents, now, isCompleted);
+    
     this.logger.debug('Leader participation list received and filtered successfully');
-    this.leaderParticipationService.refreshAllParticipation(token, userId);
-    return allEvents.map(this.leaderMapper.map);
+    await this.leaderParticipationService.refreshAllParticipation(userId, filteredEvents);
+
+    return filteredEvents.map(this.leaderMapper.map);
   }
 
 

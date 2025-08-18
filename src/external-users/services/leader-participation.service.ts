@@ -74,12 +74,12 @@ export class LeaderParticipationService {
   }
 
 
-  async refreshAllParticipation(token: string, userId: number) {
+  async refreshAllParticipation(userId: number, raw: any[]) {
     await this.leaderParticipationRepository.delete({
       userId: userId,
     });
 
-    await this.createAllParticipation(token, userId);
+    await this.createAllParticipation(userId, raw);
   }
 
 
@@ -90,14 +90,15 @@ export class LeaderParticipationService {
       },
     });
 
-    if (amount == 0) await this.createAllParticipation(token, userId);
+    if (amount == 0) {
+      const events = await this.fetchUserParticipation(token, userId);
+      await this.createAllParticipation(userId, events);
+    }
   }
 
 
-  private async createAllParticipation(token: string, userId: number) {
-    const events = await this.fetchUserParticipation(token, userId);
-
-    const participationEntities = events.map(e => {
+  private async createAllParticipation(userId: number, raw: any[]) {
+    const participationEntities = raw.map(e => {
       const participation = new LeaderParticipationEntity();
       
       participation.eventId = e.eventId;

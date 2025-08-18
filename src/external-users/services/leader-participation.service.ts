@@ -35,8 +35,27 @@ export class LeaderParticipationService {
       },
     });
 
-    if (participation) return true;
-    return false;
+    return participation;
+  }
+
+
+  async addParticipation(userId: number, eventId: number) {
+    const participation = new LeaderParticipationEntity();
+
+    participation.userId = userId;
+    participation.eventId = eventId;
+
+    return await this.leaderParticipationRepository.save(participation);
+  }
+
+
+  async removeParticipation(userId: number, participationUuid: string) {
+    const deleteResult = await this.leaderParticipationRepository.delete({
+      userId: userId,
+      eventParticipationUuid: participationUuid,
+    });
+
+    return deleteResult;
   }
 
 

@@ -7,9 +7,15 @@ import { LeaderUserService } from './services/leader-user.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LeaderVisitedMapperService } from './services/leader-visited-mapper.service';
 import { LeaderParticipationService } from './services/leader-participation.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LeaderParticipationEntity } from './entities/leader-participation.entity';
 
 @Module({
-  imports: [ClientAuthModule, HttpModule],
+  imports: [
+    ClientAuthModule,
+    HttpModule,
+    TypeOrmModule.forFeature([LeaderParticipationEntity]),
+  ],
   controllers: [ExternalUsersController],
   providers: [
     ExternalUsersService,

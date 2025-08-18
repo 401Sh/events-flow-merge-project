@@ -40,8 +40,12 @@ export class ExternalUsersService {
       eventId,
     );
 
+    if (result) return {
+      isParticipated: true,
+    };
+
     return {
-      isParticipated: result,
+      isParticipated: false,
     };
   }
 

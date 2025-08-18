@@ -104,7 +104,7 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event subscribed successfully');
-    this.leaderParticipationService.addParticipation(userId, body.eventId);
+    this.leaderParticipationService.addParticipation(token, userId, body.eventId);
     const mappedEvent = this.leaderMapper.map(rawEvent);
 
     return mappedEvent;
@@ -131,7 +131,7 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event unsubscribed successfully');
-    this.leaderParticipationService.removeParticipation(userId, uuid);
+    this.leaderParticipationService.removeParticipation(token, userId, uuid);
 
     return result;
   }

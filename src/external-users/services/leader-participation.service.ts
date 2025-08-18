@@ -21,13 +21,7 @@ export class LeaderParticipationService {
     userId: number,
     eventId: number,
   ) {
-    const amount = await this.leaderParticipationRepository.count({
-      where: {
-        userId: userId,
-      },
-    });
-
-    if (amount == 0) await this.createAllParticipation(token, userId);
+    await this.checkAndFillParticipation(token, userId);
 
     const participation = await this.leaderParticipationRepository.findOne({
       where: {
@@ -40,7 +34,9 @@ export class LeaderParticipationService {
   }
 
 
-  async addParticipation(userId: number, eventId: number) {
+  async addParticipation(token: string, userId: number, eventId: number) {
+    await this.checkAndFillParticipation(token, userId);
+
     const participation = new LeaderParticipationEntity();
 
     participation.userId = userId;
@@ -50,7 +46,13 @@ export class LeaderParticipationService {
   }
 
 
-  async removeParticipation(userId: number, participationUuid: string) {
+  async removeParticipation(
+    token: string,
+    userId: number,
+    participationUuid: string
+  ) {
+    await this.checkAndFillParticipation(token, userId);
+
     const deleteResult = await this.leaderParticipationRepository.delete({
       userId: userId,
       eventParticipationUuid: participationUuid,
@@ -72,6 +74,17 @@ export class LeaderParticipationService {
     });
 
     await this.createAllParticipation(token, userId);
+  }
+
+
+  private async checkAndFillParticipation(token: string, userId: number) {
+    const amount = await this.leaderParticipationRepository.count({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (amount == 0) await this.createAllParticipation(token, userId);
   }
 
 

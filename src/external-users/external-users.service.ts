@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { LeaderUserService } from '../external-users/services/leader-user.service';
 import { SubscribeLeaderEventDto } from '../external-users/dto/subscribe-leader-event.dto';
 import { LeaderParticipationService } from './services/leader-participation.service';
+import { LeaderParticipationResult } from './dto/leader-participation-result-dto';
 
 @Injectable()
 export class ExternalUsersService {
@@ -32,14 +33,16 @@ export class ExternalUsersService {
     token: string,
     userId: number,
     eventId: number
-  ) {
+  ): Promise<LeaderParticipationResult> {
     const result = await this.leaderParticipationService.getEventParticipations(
       token,
       userId,
       eventId,
     );
 
-    return result;
+    return {
+      isParticipated: result,
+    };
   }
 
 

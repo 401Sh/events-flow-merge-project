@@ -13,7 +13,7 @@ import {
   PAGE_START_VALUE,
 } from 'src/common/constants/dto-request-limits.constant';
 
-export class GetEventListQueryDto {
+export class GetExternalEventListQueryDto {
   @ApiPropertyOptional({
     description: 'Количество мероприятий на странице',
     example: 10,

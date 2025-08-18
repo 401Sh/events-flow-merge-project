@@ -21,7 +21,7 @@ import {
   LeaderEventResultDto,
 } from './dto/event-result.dto';
 import { ExternalEventsListResultDto } from './dto/events-list-result.dto';
-import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
+import { GetExternalEventListQueryDto } from './dto/get-external-event-list-query.dto';
 import { EventAPISource } from './enums/event-source.enum';
 import {
   LIMIT_EVENT_MIN_VALUE,
@@ -89,7 +89,7 @@ export class ExternalEventsController {
     type: ExternalEventsListResultDto,
   })
   @Get()
-  async getEventsList(@Query() query: GetEventListQueryDto) {
+  async getEventsList(@Query() query: GetExternalEventListQueryDto) {
     return await this.externalEventsService.getEventsList(query);
   }
 
@@ -159,7 +159,7 @@ export class ExternalEventsController {
   @Get(':source')
   async getEventsListBySource(
     @Param('source', new ParseEnumPipe(EventAPISource)) source: EventAPISource,
-    @Query() query: GetEventListQueryDto,
+    @Query() query: GetExternalEventListQueryDto,
   ) {
     return await this.externalEventsService.getEventsListFromSource(
       source,

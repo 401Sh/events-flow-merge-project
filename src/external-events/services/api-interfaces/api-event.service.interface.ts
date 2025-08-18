@@ -1,5 +1,5 @@
 import { ExternalEventsListResultDto } from '../../dto/events-list-result.dto';
-import { GetEventListQueryDto } from '../../dto/get-event-list-query.dto';
+import { GetExternalEventListQueryDto } from '../../dto/get-external-event-list-query.dto';
 
 export interface APIEventInterface<T> {
   /**
@@ -8,7 +8,7 @@ export interface APIEventInterface<T> {
    * @async
    * @param {number} limit - The maximum number of events to retrieve.
    * @param {number} skip - The number of events to skip (offset).
-   * @param {GetEventListQueryDto} query - The query parameters to filter the
+   * @param {GetExternalEventListQueryDto} query - The query parameters to filter the
    * events.
    * @returns {Promise<T[]>} A promise that resolves to an array of event data
    * transfer objects.
@@ -16,7 +16,7 @@ export interface APIEventInterface<T> {
   getAll(
     limit: number,
     skip: number,
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
   ): Promise<T[]>;
 
   /**
@@ -24,7 +24,7 @@ export interface APIEventInterface<T> {
    * metadata.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The event list query parameters
+   * @param {GetExternalEventListQueryDto} query - The event list query parameters
    * including pagination.
    * @returns {Promise<{
    *   data: LeaderDataDto[];
@@ -37,7 +37,7 @@ export interface APIEventInterface<T> {
    * pagination metadata.
    */
   getAllWithMeta(
-    query: GetEventListQueryDto
+    query: GetExternalEventListQueryDto
   ): Promise<ExternalEventsListResultDto>;
 
   /**
@@ -54,9 +54,9 @@ export interface APIEventInterface<T> {
    * Retrieves the total number of events from the API matching the given query.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters to filter events.
+   * @param {GetExternalEventListQueryDto} query - The query parameters to filter events.
    * @returns {Promise<number>} A promise that resolves to the total count of
    * matching events.
    */
-  getAmount(query: GetEventListQueryDto): Promise<number>;
+  getAmount(query: GetExternalEventListQueryDto): Promise<number>;
 }

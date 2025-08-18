@@ -10,7 +10,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
 import { ConfigService } from '@nestjs/config';
-import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
+import { GetExternalEventListQueryDto } from '../dto/get-external-event-list-query.dto';
 import { LeaderDataDto } from '../dto/leader-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
@@ -46,7 +46,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   async getAll(
     limit: number,
     skip: number,
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
   ): Promise<LeaderDataDto[]> {
     const page = Math.floor(skip / limit) + 1;
 
@@ -68,7 +68,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
-  async getAllWithMeta(query: GetEventListQueryDto) {
+  async getAllWithMeta(query: GetExternalEventListQueryDto) {
     const { limit, page } = query;
 
     const params = await this.buildSearchParams(query, limit, page);
@@ -133,7 +133,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
   }
 
 
-  async getAmount(query: GetEventListQueryDto): Promise<number> {
+  async getAmount(query: GetExternalEventListQueryDto): Promise<number> {
     const { limit, page, ...otherQuery } = query;
     const cacheKey =
       LeaderEventService.name + this.getAmount.name + JSON.stringify(otherQuery);
@@ -165,7 +165,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
    * query.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query object containing filters
+   * @param {GetExternalEventListQueryDto} query - The query object containing filters
    * and search criteria.
    * @param {number} limit - The maximum number of results to return per page.
    * @param {number} [page] - The page number for pagination (optional).
@@ -174,7 +174,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
    * @private
    */
   private async buildSearchParams(
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
     limit?: number,
     page?: number,
   ): Promise<Record<string, any>> {

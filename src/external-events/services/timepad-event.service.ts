@@ -10,7 +10,7 @@ import { HttpService } from '@nestjs/axios';
 import { TimepadClientAuthService } from 'src/client-auth/timepad-client-auth.service';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
-import { GetEventListQueryDto } from '../dto/get-event-list-query.dto';
+import { GetExternalEventListQueryDto } from '../dto/get-external-event-list-query.dto';
 import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { DictionariesService } from 'src/dictionaries/dictionaries.service';
 import { EventAPISource } from '../enums/event-source.enum';
@@ -41,7 +41,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   async getAll(
     limit: number,
     skip: number,
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
   ): Promise<TimepadDataDto[]> {
     const params = await this.buildSearchParams(query, limit, skip);
 
@@ -61,7 +61,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
 
-  async getAllWithMeta(query: GetEventListQueryDto) {
+  async getAllWithMeta(query: GetExternalEventListQueryDto) {
     const { limit, page } = query;
     const skip = (page - 1) * limit;
 
@@ -112,7 +112,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   }
 
 
-  async getAmount(query: GetEventListQueryDto) {
+  async getAmount(query: GetExternalEventListQueryDto) {
     const { limit, page, ...otherQuery } = query;
     const cacheKey =
       TimepadEventService.name + this.getAmount.name + JSON.stringify(otherQuery);
@@ -145,7 +145,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
    * provided query object.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The event list query parameters.
+   * @param {GetExternalEventListQueryDto} query - The event list query parameters.
    * @param {number} limit - The maximum number of results to return.
    * @param {number} [skip] - The number of results to skip (for pagination).
    * @returns {Promise<Record<string, any>>} A promise resolving to an object
@@ -153,7 +153,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
    * @private
    */
   private async buildSearchParams(
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
     limit: number,
     skip?: number,
   ): Promise<Record<string, any>> {

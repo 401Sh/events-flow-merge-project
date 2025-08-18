@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ExternalEventsListResultDto } from './dto/events-list-result.dto';
-import { GetEventListQueryDto } from './dto/get-event-list-query.dto';
+import { GetExternalEventListQueryDto } from './dto/get-external-event-list-query.dto';
 import { LeaderDataDto } from './dto/leader-data.dto';
 import { TimepadDataDto } from './dto/timepad-data.dto';
 import { UnifiedEventDto } from './dto/unified-event.dto';
@@ -45,12 +45,12 @@ export class ExternalEventsService {
    * Retrieves a paginated list of events from Leader and Timepad sources.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters including
+   * @param {GetExternalEventListQueryDto} query - The query parameters including
    * pagination and filters.
    * @returns {Promise<object>} A promise that resolves to an object containing
    * event data and pagination metadata.
    */
-  async getEventsList(query: GetEventListQueryDto) {
+  async getEventsList(query: GetExternalEventListQueryDto) {
     const { leaderEventsAmount, timepadEventsAmount } =
       await this.getEventsAmount(query);
 
@@ -100,7 +100,7 @@ export class ExternalEventsService {
    *
    * @async
    * @param {EventAPISource} source - The source from which to fetch the events.
-   * @param {GetEventListQueryDto} query - The query parameters for filtering
+   * @param {GetExternalEventListQueryDto} query - The query parameters for filtering
    * and pagination.
    * @returns {Promise<EventsListResultDto>} A promise that resolves to events
    * data along with pagination metadata.
@@ -109,7 +109,7 @@ export class ExternalEventsService {
    */
   async getEventsListFromSource(
     source: EventAPISource,
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
   ) {
     let result: ExternalEventsListResultDto;
 
@@ -150,7 +150,7 @@ export class ExternalEventsService {
    * based on the query.
    *
    * @async
-   * @param {GetEventListQueryDto} query - The query parameters used to filter
+   * @param {GetExternalEventListQueryDto} query - The query parameters used to filter
    * events.
    * @returns {Promise<{
    * leaderEventsAmount: number; timepadEventsAmount: number
@@ -158,7 +158,7 @@ export class ExternalEventsService {
    * sources.
    * @private
    */
-  private async getEventsAmount(query: GetEventListQueryDto) {
+  private async getEventsAmount(query: GetExternalEventListQueryDto) {
     const [leaderEventsAmount, timepadEventsAmount] = await Promise.all([
       this.leaderService.getAmount(query),
       this.timepadService.getAmount(query),
@@ -194,7 +194,7 @@ export class ExternalEventsService {
    *   secondAmount: number;
    *   secondSkip: number;
    * }} batchData - Object containing amounts and offsets for both sources.
-   * @param {GetEventListQueryDto} query - The query parameters for filtering
+   * @param {GetExternalEventListQueryDto} query - The query parameters for filtering
    * and pagination.
    * @returns {Promise<UnifiedEventDto[]>} A promise that resolves to a
    * flattened array of events fetched from both sources.
@@ -207,7 +207,7 @@ export class ExternalEventsService {
       secondAmount: number;
       secondSkip: number;
     },
-    query: GetEventListQueryDto,
+    query: GetExternalEventListQueryDto,
   ): Promise<UnifiedEventDto[]> {
     const promises: Promise<UnifiedEventDto[]>[] = [];
 

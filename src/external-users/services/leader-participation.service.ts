@@ -1,8 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LeaderParticipationEntity } from "../entities/leader-participation.entity";
 import { Repository } from "typeorm";
 import { LeaderUserFetchService } from "./leader-user-fetch.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class LeaderParticipationService {
@@ -54,6 +55,12 @@ export class LeaderParticipationService {
       userId: userId,
       eventParticipationUuid: participationUuid,
     });
+
+    if (deleteResult.affected === 0) {
+      throw new NotFoundException(
+        `Participation not found for user ${userId} and uuid ${participationUuid}`
+      );
+    }
 
     return deleteResult;
   }
@@ -112,5 +119,12 @@ export class LeaderParticipationService {
 
     this.logger.debug('Leader participation list received and filtered successfully');
     return allEvents;
+  }
+
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleDeleteParticipations() {
+    const deleteResult = await this.leaderParticipationRepository.deleteAll();
+    this.logger.log(`Removing ${deleteResult} leader participation records`);
   }
 }

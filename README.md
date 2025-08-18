@@ -179,6 +179,7 @@ src/
 │── external-users/     # Модуль пользователей сторонних API
 │   ├── api-utils/      # Мапперы для приведения данных к visited events
 │   ├── dto/
+│   ├── entities/       # Сущности БД
 │   ├── enums/
 │   ├── guards/
 │   ├── interfaces/

@@ -73,7 +73,7 @@ export class LeaderUserService implements APIUserInterface {
       const data = await this.leaderUserFetchService.fetchVisitedEventPage(
         token,
         userId,
-        page
+        page,
       );
   
       const rawEvents = data.items || [];
@@ -104,8 +104,13 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event subscribed successfully');
-    this.leaderParticipationService.addParticipation(token, userId, body.eventId);
     const mappedEvent = this.leaderMapper.map(rawEvent);
+    await this.leaderParticipationService.addParticipation(
+      token,
+      userId,
+      mappedEvent.eventId,
+      mappedEvent.uuid,
+    );
 
     return mappedEvent;
   }
@@ -115,7 +120,7 @@ export class LeaderUserService implements APIUserInterface {
     const participation = await this.leaderParticipationService.getEventParticipations(
       token,
       userId,
-      eventId
+      eventId,
     );
 
     if (!participation) {
@@ -131,7 +136,7 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     this.logger.debug('Leader event unsubscribed successfully');
-    this.leaderParticipationService.removeParticipation(token, userId, uuid);
+    await this.leaderParticipationService.removeParticipation(token, userId, uuid);
 
     return result;
   }

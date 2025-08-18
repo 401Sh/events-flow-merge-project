@@ -34,13 +34,19 @@ export class LeaderParticipationService {
   }
 
 
-  async addParticipation(token: string, userId: number, eventId: number) {
+  async addParticipation(
+    token: string,
+    userId: number,
+    eventId: number,
+    eventParticipationUuid: string,
+  ) {
     await this.checkAndFillParticipation(token, userId);
 
     const participation = new LeaderParticipationEntity();
 
     participation.userId = userId;
     participation.eventId = eventId;
+    participation.eventParticipationUuid = eventParticipationUuid;
 
     return await this.leaderParticipationRepository.save(participation);
   }

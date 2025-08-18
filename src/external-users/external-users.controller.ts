@@ -15,22 +15,20 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ExternalUsersService } from './external-users.service';
-import { GetParticipantsQueryDto } from '../external-users/dto/get-participants-query.dto';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiSecurity,
 } from '@nestjs/swagger';
 import { VisitedEventsListResultDto } from '../external-users/dto/visited-event-list-result.dto';
 import { UserProfileResultDto } from '../external-users/dto/user-profile-result.dto';
-import { VisitedEventsListWithMetaResultDto } from '../external-users/dto/visited-event-list-with-meta-result.dto';
 import { SimpleAuthGuard } from '../external-users/guards/simple-auth.guard';
 import { SubscribeLeaderEventDto } from '../external-users/dto/subscribe-leader-event.dto';
 import { VisitedEventDto } from '../external-users/dto/visited-event.dto';
+import { LeaderParticipationResult } from './dto/leader-participation-result-dto';
 
 @Controller('external/users')
 export class ExternalUsersController {
@@ -56,10 +54,8 @@ export class ExternalUsersController {
   }
 
 
-  @ApiBearerAuth()
-  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
-    summary: 'Получить список посещенных и предстоящих мероприятий из leaderId',
+    summary: 'Проверить участие в мероприятии leaderId',
   })
   @ApiParam({
     name: 'userId',
@@ -67,38 +63,24 @@ export class ExternalUsersController {
     description: 'Id Пользователя',
     example: 6893310,
   })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    description: 'Количество посещенных и предстоящих мероприятий на странице',
-    example: 10,
-    default: 4,
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    description: 'Номер страницы',
-    example: 2,
-    default: 1,
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    description: 'Id Мероприятия',
+    example: 1,
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Список посещенных и предстоящих мероприятий в leaderId',
-    type: VisitedEventsListWithMetaResultDto,
+    type: LeaderParticipationResult,
   })
-  @UseGuards(SimpleAuthGuard)
-  @Get(':userId/leaderId/participations')
+  @Get(':userId/leaderId/participations/:eventId')
   async getLeaderUserParticipations(
     @Param('userId', ParseIntPipe) userId: number,
-    @Query() query: GetParticipantsQueryDto,
-    @Request() req,
+    @Param('eventId', ParseIntPipe) eventId: number,
   ) {
-    const token = req.userToken;
-
-    return await this.externalUsersService.getLeaderUserParticipations(
-      token,
+    return await this.externalUsersService.getLeaderEventParticipations(
+      eventId,
       userId,
-      query,
     );
   }
 

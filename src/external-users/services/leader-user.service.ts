@@ -10,7 +10,6 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { LeaderClientAuthService } from 'src/client-auth/leader-client-auth.service';
-import { GetParticipantsQueryDto } from '../dto/get-participants-query.dto';
 import { mapLeaderUser } from '../api-utils/user-profile-map';
 import { RESTMethod } from '../enums/rest-method.enum';
 import { VisitedEventDto } from '../dto/visited-event.dto';
@@ -56,42 +55,6 @@ export class LeaderUserService implements APIUserInterface {
     );
 
     return normalizedUser;
-  }
-
-
-  async getUserParticipations(
-    token: string,
-    userId: number,
-    query: GetParticipantsQueryDto,
-  ) {
-    const { limit, page } = query;
-    const params = {
-      paginationSize: limit,
-      paginationPage: page,
-    };
-
-    const data = await this.requestLeaderApi<LeaderResponseType>(
-      RESTMethod.GET,
-      `/users/${userId}/event-participations`,
-      token,
-      params,
-    );
-
-    const rawEvents = data.items || [];
-    const mappedEvents = rawEvents.map(this.leaderMapper.map);
-
-    this.logger.debug('Leader participation list recieved successfully');
-
-    const dataWithMeta = {
-      data: mappedEvents,
-      meta: {
-        totalEventsAmount: data.meta.totalCount,
-        totalPagesAmount: data.meta.paginationPageCount,
-        currentPage: data.meta.paginationPage,
-      },
-    };
-
-    return dataWithMeta;
   }
 
 

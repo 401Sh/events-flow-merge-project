@@ -1,13 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GetParticipantsQueryDto } from '../external-users/dto/get-participants-query.dto';
 import { LeaderUserService } from '../external-users/services/leader-user.service';
 import { SubscribeLeaderEventDto } from '../external-users/dto/subscribe-leader-event.dto';
+import { LeaderParticipationService } from './services/leader-participation.service';
 
 @Injectable()
 export class ExternalUsersService {
   private readonly logger = new Logger(ExternalUsersService.name);
 
-  constructor(private readonly leaderService: LeaderUserService) {}
+  constructor(
+    private readonly leaderService: LeaderUserService,
+    private readonly leaderParticipationService: LeaderParticipationService,
+  ) {}
 
   /**
    * Retrieves the profile information of a user under a leader's context.
@@ -25,36 +28,10 @@ export class ExternalUsersService {
   }
 
 
-  /**
-   * Retrieves a paginated list of event participations for a specific user
-   * under a leader's context.
-   *
-   * @async
-   * @param {string} token - Authorization token used to authenticate the
-   * request.
-   * @param {number} userId - The ID of the user whose participations are being
-   * requested.
-   * @param {GetParticipantsQueryDto} query - Query parameters for filtering
-   * and pagination.
-   * @returns {Promise<{
-   *   data: VisitedEventDto[],
-   *   meta: {
-   *     totalEventsAmount: number,
-   *     totalPagesAmount: number,
-   *     currentPage: number
-   *   }
-   * }>} A promise that resolves to an object containing a list of visited
-   * events and pagination metadata.
-   */
-  async getLeaderUserParticipations(
-    token: string,
-    userId: number,
-    query: GetParticipantsQueryDto,
-  ) {
-    const result = await this.leaderService.getUserParticipations(
-      token,
+  async getLeaderEventParticipations(userId: number, eventId: number) {
+    const result = await this.leaderParticipationService.getEventParticipations(
       userId,
-      query,
+      eventId
     );
 
     return result;

@@ -1,7 +1,5 @@
-import { GetParticipantsQueryDto } from '../dto/get-participants-query.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 import { UserProfileDto } from '../dto/user-profile.dto';
-import { VisitedEventsListResultDto } from '../dto/visited-event-list-result.dto';
 import { VisitedEventDto } from '../dto/visited-event.dto';
 
 export interface APIUserInterface {
@@ -16,35 +14,6 @@ export interface APIUserInterface {
    */
   getUser(userId: number): Promise<UserProfileDto>;
 
-  /**
-   * Retrieves a paginated list of event participations for a specific user
-   * from the API.
-   *
-   * Maps the raw data into internal `VisitedEventDto` format and includes
-   * pagination metadata.
-   *
-   * @async
-   * @param {string} token - Authorization token used to authenticate the
-   * request.
-   * @param {number} userId - The ID of the user whose participations are
-   * being requested.
-   * @param {GetParticipantsQueryDto} query - Query parameters for pagination
-   * (e.g., limit and page).
-   * @returns {Promise<{
-   *   data: VisitedEventDto[],
-   *   meta: {
-   *     totalEventsAmount: number,
-   *     totalPagesAmount: number,
-   *     currentPage: number
-   *   }
-   * }>} A promise that resolves to an object containing the user's event
-   * participations and pagination metadata.
-   */
-  getUserParticipations(
-    token: string,
-    userId: number,
-    query: GetParticipantsQueryDto,
-  ): Promise<VisitedEventsListResultDto>;
 
   /**
    * Retrieves a user's event history from the API, either completed or

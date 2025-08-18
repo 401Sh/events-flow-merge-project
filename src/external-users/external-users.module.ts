@@ -6,6 +6,7 @@ import { HttpModule } from '@nestjs/axios';
 import { LeaderUserService } from './services/leader-user.service';
 import { LeaderApiRateLimiterService } from 'src/common/api-utils/leader-api-rate-limiter.service';
 import { LeaderVisitedMapperService } from './services/leader-visited-mapper.service';
+import { LeaderParticipationService } from './services/leader-participation.service';
 
 @Module({
   imports: [ClientAuthModule, HttpModule],
@@ -15,6 +16,7 @@ import { LeaderVisitedMapperService } from './services/leader-visited-mapper.ser
     LeaderUserService,
     LeaderApiRateLimiterService,
     LeaderVisitedMapperService,
+    LeaderParticipationService,
   ],
 })
 export class ExternalUsersModule {}

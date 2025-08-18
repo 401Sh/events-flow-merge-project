@@ -8,9 +8,7 @@ import {
   Param,
   ParseBoolPipe,
   ParseIntPipe,
-  ParseUUIDPipe,
   Post,
-  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -76,7 +74,7 @@ export class ExternalUsersController {
     type: LeaderParticipationResult,
   })
   @UseGuards(SimpleAuthGuard)
-  @Get(':userId/leaderId/participations/:eventId')
+  @Get(':userId/leaderId/participations/check/:eventId')
   async getLeaderUserParticipations(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('eventId', ParseIntPipe) eventId: number,
@@ -86,8 +84,8 @@ export class ExternalUsersController {
 
     return await this.externalUsersService.getLeaderEventParticipations(
       token,
-      eventId,
       userId,
+      eventId,
     );
   }
 

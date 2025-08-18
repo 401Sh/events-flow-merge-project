@@ -9,6 +9,7 @@ import { LeaderVisitedMapperService } from './services/leader-visited-mapper.ser
 import { LeaderParticipationService } from './services/leader-participation.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LeaderParticipationEntity } from './entities/leader-participation.entity';
+import { LeaderUserFetchService } from './services/leader-user-fetch.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { LeaderParticipationEntity } from './entities/leader-participation.entit
     LeaderApiRateLimiterService,
     LeaderVisitedMapperService,
     LeaderParticipationService,
+    LeaderUserFetchService,
   ],
 })
 export class ExternalUsersModule {}

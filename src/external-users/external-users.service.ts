@@ -28,10 +28,15 @@ export class ExternalUsersService {
   }
 
 
-  async getLeaderEventParticipations(userId: number, eventId: number) {
+  async getLeaderEventParticipations(
+    token: string,
+    userId: number,
+    eventId: number
+  ) {
     const result = await this.leaderParticipationService.getEventParticipations(
+      token,
       userId,
-      eventId
+      eventId,
     );
 
     return result;

@@ -54,6 +54,8 @@ export class ExternalUsersController {
   }
 
 
+  @ApiBearerAuth()
+  @ApiSecurity('ApiKeyAuth')
   @ApiOperation({
     summary: 'Проверить участие в мероприятии leaderId',
   })
@@ -73,12 +75,17 @@ export class ExternalUsersController {
     status: HttpStatus.OK,
     type: LeaderParticipationResult,
   })
+  @UseGuards(SimpleAuthGuard)
   @Get(':userId/leaderId/participations/:eventId')
   async getLeaderUserParticipations(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('eventId', ParseIntPipe) eventId: number,
+    @Request() req,
   ) {
+    const token = req.userToken;
+
     return await this.externalUsersService.getLeaderEventParticipations(
+      token,
       eventId,
       userId,
     );

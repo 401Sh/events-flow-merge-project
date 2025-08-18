@@ -5,7 +5,6 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { mapLeaderUser } from '../api-utils/user-profile-map';
 import { RESTMethod } from '../enums/rest-method.enum';
 import { VisitedEventDto } from '../dto/visited-event.dto';
@@ -19,7 +18,6 @@ export class LeaderUserService implements APIUserInterface {
   private readonly logger = new Logger(LeaderUserService.name);
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly leaderMapper: LeaderVisitedMapperService,
     private readonly leaderUserFetchService: LeaderUserFetchService,
     private readonly leaderParticipationService: LeaderParticipationService,
@@ -85,6 +83,7 @@ export class LeaderUserService implements APIUserInterface {
     }
 
     this.logger.debug('Leader participation list received and filtered successfully');
+    this.leaderParticipationService.refreshAllParticipation(token, userId);
     return allEvents.map(this.leaderMapper.map);
   }
 

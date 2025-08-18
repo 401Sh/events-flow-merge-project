@@ -59,6 +59,15 @@ export class LeaderParticipationService {
   }
 
 
+  async refreshAllParticipation(token: string, userId: number) {
+    await this.leaderParticipationRepository.delete({
+      userId: userId,
+    });
+
+    await this.createAllParticipation(token, userId);
+  }
+
+
   private async createAllParticipation(token: string, userId: number) {
     const events = await this.fetchUserParticipation(token, userId);
 

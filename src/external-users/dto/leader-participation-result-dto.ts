@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 
 export class LeaderParticipationResult {
   @ApiProperty({
@@ -9,4 +9,12 @@ export class LeaderParticipationResult {
   })
   @IsBoolean()
   isParticipated: boolean;
+
+  @ApiProperty({
+    description: 'Id мероприятия',
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  eventId?: number;
 }

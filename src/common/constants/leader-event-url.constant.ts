@@ -1,0 +1,1 @@
+export const LEADER_EVENT_URL = 'https://leader-id.ru/events';

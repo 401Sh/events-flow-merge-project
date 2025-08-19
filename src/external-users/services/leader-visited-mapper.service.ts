@@ -6,6 +6,7 @@ import { VisitedEvent } from "../interfaces/visited-event.interface";
 import { EventAPISource } from "src/external-events/enums/event-source.enum";
 import { plainToInstance } from "class-transformer";
 import { LeaderVisitedType } from "../types/leader-visited-response.type";
+import { LEADER_EVENT_URL } from "src/common/constants/leader-event-url.constant";
 
 @Injectable()
 export class LeaderVisitedMapperService {
@@ -44,7 +45,7 @@ export class LeaderVisitedMapperService {
         ? localeDateToIso(raw.event!.registrationDateEnd, tz)
         : null,
 
-      url: `https://leader-id.ru/events/${raw.eventId}`,
+      url: `${LEADER_EVENT_URL}/${raw.eventId}`,
       posterUrl: raw.event?.photo?.full || null,
 
       source: EventAPISource.LEADER_ID,

@@ -13,6 +13,7 @@ import {
   LeaderAddressType,
   LeaderEventType
 } from '../types/leader-events-response.type';
+import { LEADER_EVENT_URL } from 'src/common/constants/leader-event-url.constant';
 
 @Injectable()
 export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDto> {
@@ -48,7 +49,7 @@ export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDt
         ? localeDateToIso(raw.registrationDateEnd, tz)
         : null,
 
-      url: `https://leader-id.ru/events/${raw.id}`,
+      url: `${LEADER_EVENT_URL}/${raw.id}`,
       posterUrl: raw.photo || null,
       organizer: raw.organizers?.[0]?.name || null,
 

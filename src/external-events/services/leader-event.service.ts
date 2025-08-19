@@ -22,8 +22,9 @@ import {
 } from 'src/common/constants/leader-request.constant';
 import { LeaderEventMapperService } from './leader-event-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
-import { LeaderResponseType } from '../types/leader-response.type';
 import { CACHE_LONG_TTL } from 'src/common/constants/cache.constant';
+import { LeaderEventsResponseType } from '../types/leader-events-response.type';
+import { LeaderCitiesResponseType } from '../types/leader-cities-response.type';
 
 @Injectable()
 export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
@@ -52,7 +53,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     const params = await this.buildSearchParams(query, limit, page);
 
-    const response = await this.fetchFromLeaderApi<{ items: any[] }>(
+    const response = await this.fetchFromLeaderApi<LeaderEventsResponseType>(
       '/events/search',
       params,
     );
@@ -73,7 +74,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     const params = await this.buildSearchParams(query, limit, page);
 
-    const data = await this.fetchFromLeaderApi<LeaderResponseType>(
+    const data = await this.fetchFromLeaderApi<LeaderEventsResponseType>(
       '/events/search',
       params,
     );
@@ -113,7 +114,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
       query: id,
     };
 
-    const dataResponce = await this.fetchFromLeaderApi<{ items: any[] }>(
+    const dataResponce = await this.fetchFromLeaderApi<LeaderEventsResponseType>(
       urlPart,
       params,
     );
@@ -145,9 +146,10 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
 
     const params = await this.buildSearchParams(query);
 
-    const data = await this.fetchFromLeaderApi<{
-      meta: { totalCount: number };
-    }>('/events/search', params);
+    const data = await this.fetchFromLeaderApi<LeaderEventsResponseType>(
+      '/events/search',
+      params,
+    );
 
     this.logger.debug('Leader events amount recieved successfully');
 
@@ -219,7 +221,7 @@ export class LeaderEventService implements APIEventInterface<LeaderDataDto> {
     const city = await this.geoService.findCityById(cityId);
     if (!city) return undefined;
 
-    const leaderCities = await this.fetchFromLeaderApi<any[]>(
+    const leaderCities = await this.fetchFromLeaderApi<LeaderCitiesResponseType[]>(
       '/cities/search',
       { q: city.name },
     );

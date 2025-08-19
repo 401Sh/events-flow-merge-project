@@ -9,6 +9,10 @@ import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { APIMapperInterface } from './api-interfaces/api-mapper.service.interface';
 import EditorJSHTML from 'editorjs-html';
 import { localeDateToIso } from 'src/common/functions/local-date-to-iso';
+import {
+  LeaderAddressType,
+  LeaderEventType
+} from '../types/leader-events-response.type';
 
 @Injectable()
 export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDto> {
@@ -16,7 +20,7 @@ export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDt
 
   constructor(private readonly dictionariesService: DictionariesService) {}
 
-  map = async (raw: any) => {
+  map = async (raw: LeaderEventType) => {
     const tz = raw.timezone?.value || '+03:00';
 
     const description = this.extractDescription(raw.full_info);
@@ -63,7 +67,7 @@ export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDt
   };
 
 
-  private extractDescription(fullInfoRaw: string | undefined): any | null {
+  private extractDescription(fullInfoRaw?: string): any | null {
     if (!fullInfoRaw) return null;
 
     const parsedJson = JSON.parse(fullInfoRaw);
@@ -76,7 +80,7 @@ export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDt
   }
 
 
-  private mapLocation(addr: any): EventLocation {
+  private mapLocation(addr?: LeaderAddressType): EventLocation {
     return {
       country: addr?.titles?.country || null,
       city: addr?.city || null,
@@ -87,8 +91,12 @@ export class LeaderEventMapperService implements APIMapperInterface<LeaderDataDt
   }
 
 
-  private async mapThemes(rawThemes: any[]): Promise<EventThemesDto[]> {
-    if (!rawThemes?.length) return [];
+  private async mapThemes(
+    rawThemes?: {
+      id: number,
+    }[],
+  ): Promise<EventThemesDto[]> {
+    if (!rawThemes || !rawThemes?.length) return [];
 
     const sourceIds = rawThemes.map((t) => t.id);
 

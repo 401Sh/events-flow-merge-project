@@ -19,6 +19,10 @@ import { TimepadApiRateLimiterService } from 'src/common/api-utils/timepad-api-l
 import { TimepadEventMapperService } from './timepad-event-mapper.service';
 import { CacheService } from 'src/cache/cache.service';
 import { TIMEPAD_EVENT_MIN_AMOUNT } from 'src/common/constants/timepad-request.constant';
+import {
+  TimepadEventsResponseType,
+  TimepadEventType
+} from '../types/timepad-events-response.type';
 
 @Injectable()
 export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
@@ -45,7 +49,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   ): Promise<TimepadDataDto[]> {
     const params = await this.buildSearchParams(query, limit, skip);
 
-    const response = await this.fetchFromTimepadApi<{ values: any[] }>(
+    const response = await this.fetchFromTimepadApi<TimepadEventsResponseType>(
       '/events',
       params,
     );
@@ -67,10 +71,10 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
 
     const params = await this.buildSearchParams(query, limit, skip);
 
-    const response = await this.fetchFromTimepadApi<{
-      values: any[];
-      total: number;
-    }>('/events', params);
+    const response = await this.fetchFromTimepadApi<TimepadEventsResponseType>(
+      '/events',
+      params
+    );
 
     const rawEvents = response.values || [];
     const mappedEvents = await Promise.all(
@@ -95,7 +99,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
   async getOne(id: number): Promise<TimepadDataDto | null> {
     const urlPart = `/events/${id}`;
 
-    const rawEvent = await this.fetchFromTimepadApi<any>(urlPart);
+    const rawEvent = await this.fetchFromTimepadApi<TimepadEventType>(urlPart);
 
     if (!rawEvent) {
       this.logger.log(`Timepad event ${id} not found`);
@@ -127,7 +131,7 @@ export class TimepadEventService implements APIEventInterface<TimepadDataDto> {
       TIMEPAD_EVENT_MIN_AMOUNT,
     );
 
-    const data = await this.fetchFromTimepadApi<{ total: number }>(
+    const data = await this.fetchFromTimepadApi<TimepadEventsResponseType>(
       '/events',
       params,
     );

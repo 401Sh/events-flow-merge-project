@@ -8,6 +8,10 @@ import { TimepadDataDto } from '../dto/timepad-data.dto';
 import { plainToInstance } from 'class-transformer';
 import { EventThemesDto } from 'src/dictionaries/dto/event-themes.dto';
 import { APIMapperInterface } from './api-interfaces/api-mapper.service.interface';
+import {
+  TimepadEventType,
+  TimepadLocationType
+} from '../types/timepad-events-response.type';
 
 @Injectable()
 export class TimepadEventMapperService
@@ -15,7 +19,7 @@ export class TimepadEventMapperService
 {
   constructor(private readonly dictionariesService: DictionariesService) {}
 
-  map = async (raw: any) => {
+  map = async (raw: TimepadEventType) => {
     const location = this.mapLocation(raw.location);
     const themes = await this.mapThemes(raw.categories);
 
@@ -48,7 +52,7 @@ export class TimepadEventMapperService
   };
 
 
-  private mapLocation(rawLocation: any): EventLocation {
+  private mapLocation(rawLocation?: TimepadLocationType): EventLocation {
     return {
       country: rawLocation?.country || null,
       city: rawLocation?.city || null,
@@ -57,8 +61,12 @@ export class TimepadEventMapperService
   }
 
 
-  private async mapThemes(rawCategories: any[]): Promise<EventThemesDto[]> {
-    if (!rawCategories?.length) return [];
+  private async mapThemes(
+    rawCategories?: {
+      id: number,
+    }[],
+  ): Promise<EventThemesDto[]> {
+    if (!rawCategories || !rawCategories?.length) return [];
 
     const sourceIds = rawCategories.map((c) => c.id);
 

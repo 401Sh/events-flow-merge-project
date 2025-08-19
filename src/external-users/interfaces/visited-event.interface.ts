@@ -4,9 +4,9 @@ export interface VisitedEvent {
   uuid: string;
   eventId: number;
   isCompleted: boolean;
-  completedAt: string | null;
   signedUpAt: string;
-  title: string;
+  completedAt: string | null;
+  title: string | null;
   description: string | null;
   startsAt: string | null;
   endsAt: string | null;

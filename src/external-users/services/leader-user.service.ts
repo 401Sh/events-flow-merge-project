@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common';
 import { mapLeaderUser } from '../api-utils/user-profile-map';
 import { RESTMethod } from '../enums/rest-method.enum';
-import { VisitedEventDto } from '../dto/visited-event.dto';
 import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
 import { LeaderVisitedMapperService } from './leader-visited-mapper.service';
 import { LeaderUserFetchService } from './leader-user-fetch.service';
 import { LeaderParticipationService } from './leader-participation.service';
+import { LeaderVisitedType } from '../types/leader-visited-response.type';
 
 @Injectable()
 export class LeaderUserService implements APIUserInterface {
@@ -95,7 +95,7 @@ export class LeaderUserService implements APIUserInterface {
     body: SubscribeLeaderEventDto,
   ) {
     const rawEvent = await this.leaderUserFetchService.requestLeaderApi<
-    VisitedEventDto
+      LeaderVisitedType
     >(
       RESTMethod.POST,
       `/users/${userId}/event-participations`,

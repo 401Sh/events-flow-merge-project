@@ -51,10 +51,12 @@ export class VisitedEventDto implements VisitedEvent {
 
   @ApiProperty({
     description: 'Заголовок мероприятия',
+    nullable: true,
     type: String,
   })
+  @IsOptional()
   @IsString()
-  title: string;
+  title: string | null;
 
   @ApiPropertyOptional({
     description: 'Описание мероприятия',

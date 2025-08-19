@@ -1,12 +1,12 @@
 import { HttpService } from "@nestjs/axios";
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { LeaderResponseType } from "src/external-events/types/leader-response.type";
 import { RESTMethod } from "../enums/rest-method.enum";
 import { LEADER_EVENT_MAX_AMOUNT } from "src/common/constants/leader-request.constant";
 import { LeaderClientAuthService } from "src/client-auth/leader-client-auth.service";
 import { LeaderApiRateLimiterService } from "src/common/api-utils/leader-api-rate-limiter.service";
 import { firstValueFrom } from "rxjs";
+import { LeaderVisitedResponseType } from "../types/leader-visited-response.type";
 
 @Injectable()
 export class LeaderUserFetchService {
@@ -37,16 +37,16 @@ export class LeaderUserFetchService {
    * @param {number} userId - The ID of the user whose event participations are 
    * being fetched.
    * @param {number} page - The page number to fetch, used for pagination.
-   * @returns {Promise<LeaderResponseType>} A promise resolving to the response 
-   * containing the list of event participations and pagination metadata.
+   * @returns {Promise<LeaderVisitedResponseType>} A promise resolving to the
+   * response containing the list of event participations and pagination metadata.
    * @private
    */
   async fetchVisitedEventPage(
     token: string,
     userId: number,
     page: number
-  ): Promise<LeaderResponseType> {
-    return await this.requestLeaderApi(
+  ): Promise<LeaderVisitedResponseType> {
+    return await this.requestLeaderApi<LeaderVisitedResponseType>(
       RESTMethod.GET,
       `/users/${userId}/event-participations`,
       token,

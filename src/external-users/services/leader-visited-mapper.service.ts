@@ -5,13 +5,14 @@ import { localeDateToIso } from "src/common/functions/local-date-to-iso";
 import { VisitedEvent } from "../interfaces/visited-event.interface";
 import { EventAPISource } from "src/external-events/enums/event-source.enum";
 import { plainToInstance } from "class-transformer";
+import { LeaderVisitedType } from "../types/leader-visited-response.type";
 
 @Injectable()
 export class LeaderVisitedMapperService {
   private readonly editjsParser = EditorJSHTML();
 
-  map = (raw: any): VisitedEventDto => {
-    const tz = raw.timezone?.value || '+03:00';
+  map = (raw: LeaderVisitedType): VisitedEventDto => {
+    const tz = raw.event?.timezone?.value || '+03:00';
 
     const description = this.extractDescription(raw.event?.info);
 
@@ -20,10 +21,12 @@ export class LeaderVisitedMapperService {
 
       eventId: raw.eventId,
       isCompleted: raw.completed,
-      completedAt: raw.completedAt || null,
       signedUpAt: localeDateToIso(raw.createdAt, tz),
+      completedAt: raw.completedAt
+        ? localeDateToIso(raw.completedAt, tz)
+        : null,
 
-      title: raw.event?.name,
+      title: raw.event?.name || null,
       description: description,
       startsAt: raw.event?.dateStart
         ? localeDateToIso(raw.event!.dateStart, tz)
@@ -51,7 +54,7 @@ export class LeaderVisitedMapperService {
   }
 
 
-  private extractDescription(fullInfoRaw: string | undefined): any | null {
+  private extractDescription(fullInfoRaw?: string): string | null {
     if (!fullInfoRaw) return null;
 
     const parsedJson = JSON.parse(fullInfoRaw);

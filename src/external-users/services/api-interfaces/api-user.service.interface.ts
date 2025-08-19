@@ -1,6 +1,6 @@
-import { SubscribeLeaderEventDto } from '../dto/subscribe-leader-event.dto';
-import { UserProfileDto } from '../dto/user-profile.dto';
-import { VisitedEventDto } from '../dto/visited-event.dto';
+import { SubscribeLeaderEventDto } from '../../dto/subscribe-leader-event.dto';
+import { UserProfileDto } from '../../dto/user-profile.dto';
+import { VisitedEventDto } from '../../dto/visited-event.dto';
 
 export interface APIUserInterface {
   /**

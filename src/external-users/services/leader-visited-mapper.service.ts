@@ -21,7 +21,7 @@ export class LeaderVisitedMapperService {
       eventId: raw.eventId,
       isCompleted: raw.completed,
       completedAt: raw.completedAt || null,
-      signedUpAt: raw.createdAt,
+      signedUpAt: localeDateToIso(raw.createdAt, tz),
 
       title: raw.event?.name,
       description: description,

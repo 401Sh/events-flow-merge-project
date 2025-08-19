@@ -1,4 +1,4 @@
-import { APIUserInterface } from './api-user.service.interface';
+import { APIUserInterface } from './api-interfaces/api-user.service.interface';
 import {
   BadRequestException,
   Injectable,

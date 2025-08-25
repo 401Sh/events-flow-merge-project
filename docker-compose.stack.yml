@@ -13,15 +13,19 @@ services:
       - DB_NAME=${DB_NAME}
 
       # s3 настройки
-      - S3_HOST=minio-s3
-      - S3_PORT=9000
-      - S3_USER=${S3_USER}
-      - S3_PASSWORD=${S3_PASSWORD}
+      - S3_URL=http://localhost:9000
+      - S3_REGION=${S3_REGION}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_FORCE_PATH=${S3_FORCE_PATH}
 
       # настройки проекта
       - HOST=0.0.0.0
       - PORT=${PORT}
       - LOG_LEVEL=${LOG_LEVEL}
+      - API_KEY=${API_KEY}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
 
       # настройки сайта
       - APP_BASE_URL=${APP_BASE_URL}
@@ -37,6 +41,14 @@ services:
       - TIMEPAD_OAUTH_URL=${TIMEPAD_OAUTH_URL}
       - TIMEPAD_TOKEN=${TIMEPAD_TOKEN}
       - TIMEPAD_CLIENT_ID=${TIMEPAD_CLIENT_ID}
+
+      # настройки почтового модуля
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_SECURE=${MAIL_SECURE}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
     ports:
       - "${PORT}:${PORT}"
     depends_on:
@@ -68,8 +80,8 @@ services:
     image: minio/minio
     container_name: minio-s3
     environment:
-      MINIO_ROOT_USER: ${S3_USER}
-      MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
     ports:
       - "9000:9000"
       - "9001:9001"
